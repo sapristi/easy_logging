@@ -21,6 +21,7 @@ module Make (H : HandlersT) =
   struct
     
     type level = Easy_logger_types.level
+               [@@deriving show {with_path = false}]
                
     class logger
             (name: string)
