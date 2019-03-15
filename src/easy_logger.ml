@@ -124,7 +124,7 @@ module Make (H : HandlersT) =
   end
 
 module Logger = Make(Default_handlers)
-
+module Handlers = Logger.Handlers
 (* module logger for maybe far later *)
           
   
