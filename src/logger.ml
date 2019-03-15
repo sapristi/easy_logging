@@ -2,7 +2,6 @@ open Easy_logger_types
 open Batteries
 open File
 
-type level = Easy_logger_types.level
    
 module type HandlersT =
   sig
@@ -20,11 +19,15 @@ module type HandlersT =
   
 module Make (H : HandlersT) =
   struct
+    
+    type level = Easy_logger_types.level
+               
     class logger
             (name: string)
             (levelo: level option)
             (handlers_desc : H.desc list)  =
     object(self)
+        
       val mutable handlers = List.map H.make handlers_desc
       val mutable levelo = levelo
       val name = name
