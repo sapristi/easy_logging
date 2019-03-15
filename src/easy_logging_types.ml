@@ -3,11 +3,11 @@ open File
 
    
 type level =
-  | Flash
-  | Error
-  | Warning
-  | Info
   | Debug
+  | Info
+  | Warning
+  | Error
+  | Flash
 [@@deriving ord, show { with_path = false }]
 (** Log levels *)
 
