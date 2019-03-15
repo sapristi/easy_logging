@@ -19,10 +19,11 @@ module type HandlersT =
   
 module Make (H : HandlersT) =
   struct
-    
-    type level = Easy_logger_types.level
+    module Level =
+      struct
+        type t = Easy_logger_types.level
                [@@deriving show {with_path = false}]
-               
+      end 
     class logger
             (name: string)
             (levelo: level option)
@@ -114,8 +115,8 @@ module Make (H : HandlersT) =
       
       
     let dummy = make_logger "dummy" ~lvl:None ~hdescs:[]
-
-    type hdesc = H.desc
+    module Handlers = H
+                    
   end
 
 module Logger = Make(Default_handlers)
