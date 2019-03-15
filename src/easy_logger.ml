@@ -14,6 +14,7 @@ module type HandlersT =
     val handle : t -> log_item -> unit
     type desc
     val make : desc -> t
+    val set_formatter : t -> log_formatter -> unit
   end
   
   
