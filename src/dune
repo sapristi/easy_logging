@@ -1,0 +1,14 @@
+(library
+ (name logger)
+ (public_name easy_logger)
+ (flags -w)
+ (preprocess
+  (pps ppx_deriving.show
+       ppx_deriving.ord ))
+ (libraries
+  batteries
+  ppx_deriving.show
+  ppx_deriving.ord)
+
+ )
+

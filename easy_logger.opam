@@ -5,15 +5,14 @@ synopsis: "Package to easily handle logging"
 description: """
 Inspired by the python logging module architecture.
 """
-maintainer: "Name <email>"
-authors: "Name <email>"
-license: ""
-homepage: ""
-bug-reports: ""
-dev-repo: ""
-depends: [ "ocaml" "ocamlfind" ]
+maintainer: "mathiasmillet@gmail.com"
+authors: "Mathias Millet"
+license: "GPL"
+# homepage: ""
+# bug-reports: ""
+# dev-repo: ""
+depends: [ "ocaml" "dune" "batteries" "ppx_deriving"]
 build: [
-  ["./configure" "--prefix=%{prefix}%"]
-  [make]
+  ["dune" "build" "-p" name "-j" jobs]
 ]
-install: [make "install"]
+

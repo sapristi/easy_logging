@@ -1,4 +1,6 @@
-   
+open Batteries
+open Colorize
+open File
 type level =
   | Flash
   | Error
@@ -32,17 +34,17 @@ let format_color item =
   
   let level_to_color lvl =
     match lvl with
-    | Flash -> Color.LMagenta
-    | Error -> Color.LRed
-    | Warning -> Color.LYellow
-    | Info -> Color.LBlue
-    | Debug -> Color.Green
+    | Flash -> Colorize.LMagenta
+    | Error -> Colorize.LRed
+    | Warning -> Colorize.LYellow
+    | Info -> Colorize.LBlue
+    | Debug -> Colorize.Green
   in
   
-  let item_level_str = Color.colorize  ~fgc:(level_to_color item.level)  (show_level item.level) in
+  let item_level_str = Colorize.colorize  ~fgc:(level_to_color item.level)  (show_level item.level) in
   let item_msg_str =
     match item.level with
-    | Flash -> Color.colorize ~fgc:Color.Black ~bgc:Color.LMagenta item.msg
+    | Flash -> Colorize.colorize ~fgc:Colorize.Black ~bgc:Colorize.LMagenta item.msg
     | _ -> item.msg in
   
   (Printf.sprintf "%-6.3f %-20s %-30s %s" (Sys.time ()) item.logger_name
@@ -99,7 +101,7 @@ module DefaultHandlers =
         then
           Hashtbl.find outputs filename
         else
-          let p = perm [user_read; user_write; group_read; group_write] in
+          let p = File.perm [user_read; user_write; group_read; group_write] in
           open_out ~mode:[`create (*; `append *)] ~perm:p ("logs/"^filename)
       in
       {fmt = format_default;
