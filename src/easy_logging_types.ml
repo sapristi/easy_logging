@@ -8,7 +8,7 @@ type level =
   | Warning
   | Error
   | Flash
-[@@deriving ord, show { with_path = false }]
+[@@deriving show { with_path = false }]
 (** Log levels *)
 
   

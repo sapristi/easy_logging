@@ -1,6 +1,5 @@
 
 open Easy_logging_types
-              
 
 
 let format_default item =

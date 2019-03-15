@@ -1,6 +1,22 @@
+(**       
+     Logging infrastructure inspired by the Python logging module.
+     
+     Quick example : 
+{[   
+logger = make_logger "my_logger" (Some Debug) [Cli Debug]
+logger#info "log_message" ]}   
+     Log messages are passed to a [logger] object. The logger then passes the message
+
+
+ *)
+
 open Easy_logging_types
 open Batteries
 open File
+
+
+(** Types used in easy_logging *)
+module Types = Easy_logging_types
 
 (** Handlers module type signature *)
 module type HandlersT =
@@ -15,12 +31,11 @@ module type HandlersT =
     val make : desc -> t
     val set_formatter : t -> log_formatter -> unit
   end
+
   
 (** Makes a logging module from a Handlers module *)
 module Make (H : HandlersT) =
   struct
-    
-    type log_formatter = Easy_logging_types.log_formatter
 
     (** logger class *)
     class logger
@@ -112,22 +127,21 @@ module Make (H : HandlersT) =
         Hashtbl.add _loggers name l;
         l
         
-    let make_logger ?lvl:(lvl=None) ?hdescs:(hdescs=[]) name =
+    let make_logger name lvl hdescs  =
       let l = new logger name lvl hdescs in
       Hashtbl.add _loggers name l;
       l
       
       
-    let dummy = make_logger "dummy" ~lvl:None ~hdescs:[]
+    let dummy = make_logger "dummy" None []
     module Handlers = H
                     
   end
 
+(** Instantiation of [Make] over [Default_handlers] *)
 module Logging = Make(Default_handlers)
-module Handlers = Logging.Handlers
 
-module Level =
-  struct
-    type t = Easy_logging_types.level
-               [@@deriving show {with_path = false}]
-  end
+module Default_formatters = Default_formatters
+(** Default formatters provided by easy_logging *)
+module Default_handlers = Default_handlers
+(** Default handlers provided by easy_logging *)

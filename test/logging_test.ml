@@ -1,9 +1,9 @@
 open Easy_logging
        
 let logger = Logging.make_logger
-               ~lvl:(Some Info)
-               ~hdescs:[Cli Debug]
-               "test";;
+               "test" (Some Info)
+               [Cli Debug];;
+               
 
 logger#info "ok";
 logger#warning "warn";
