@@ -19,11 +19,14 @@ module type HandlersT =
   
 module Make (H : HandlersT) =
   struct
+    
     module Level =
       struct
         type t = Easy_logger_types.level
                [@@deriving show {with_path = false}]
-      end 
+      end
+
+    type log_formatter = Easy_logger_types.log_formatter
     class logger
             (name: string)
             (levelo: level option)
