@@ -1,11 +1,10 @@
-open Easy_logger_types
+open Easy_logging_types
 open Batteries
 open File
 
-   
+(** Handlers module type signature *)
 module type HandlersT =
   sig
-    
     type t =
       {mutable fmt : log_formatter;
        mutable level : level;
@@ -17,32 +16,33 @@ module type HandlersT =
     val set_formatter : t -> log_formatter -> unit
   end
   
-  
+(** Makes a logging module from a Handlers module *)
 module Make (H : HandlersT) =
   struct
     
-    module Level =
-      struct
-        type t = Easy_logger_types.level
-               [@@deriving show {with_path = false}]
-      end
+    type log_formatter = Easy_logging_types.log_formatter
 
-    type log_formatter = Easy_logger_types.log_formatter
+    (** logger class *)
     class logger
             (name: string)
             (levelo: level option)
             (handlers_desc : H.desc list)  =
     object(self)
-        
+
+      (** Handlers associated to the logger *)
       val mutable handlers = List.map H.make handlers_desc
+
+      (** optional level of the logger *)
       val mutable levelo = levelo
+
+      (** Name of the logger *)
       val name = name
                
       method log_msg msg_level msg =
         match levelo with
         | None ->()
         | Some level ->
-           if level_gt msg_level level
+           if msg_level >= level
            then
              begin
                let item = {
@@ -60,7 +60,7 @@ module Make (H : HandlersT) =
         match levelo with
         | None ->()
         | Some level ->
-           if level_gt msg_level level
+           if msg_level >= level
            then
              begin
                let item = {
@@ -123,8 +123,11 @@ module Make (H : HandlersT) =
                     
   end
 
-module Logger = Make(Default_handlers)
-module Handlers = Logger.Handlers
-(* module logger for maybe far later *)
-          
-  
+module Logging = Make(Default_handlers)
+module Handlers = Logging.Handlers
+
+module Level =
+  struct
+    type t = Easy_logging_types.level
+               [@@deriving show {with_path = false}]
+  end

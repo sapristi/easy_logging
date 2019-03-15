@@ -1,5 +1,5 @@
 
-open Easy_logger_types
+open Easy_logging_types
               
 
 

@@ -1,4 +1,4 @@
-open Easy_logger_types
+open Easy_logging_types
 open Batteries
 open File
 open Default_formatters
@@ -12,7 +12,7 @@ type t =
 let outputs : (string, unit IO.output) Hashtbl.t =  Hashtbl.create 10
                                                   
 let handle (h : t) (item: log_item) =
-  if level_gt item.level h.level
+  if item.level >= h.level
   then
     (
       IO.write_line h.output (Printf.sprintf "%s" (h.fmt item));

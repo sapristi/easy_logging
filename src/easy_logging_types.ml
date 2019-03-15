@@ -12,8 +12,8 @@ type level =
 (** Log levels *)
 
   
-let level_gt l1 l2 =
-  compare_level l1 l2 <= 0
+(* let level_gt l1 l2 =
+ *   compare_level l1 l2 <= 0 *)
 
 
 type log_item = {
