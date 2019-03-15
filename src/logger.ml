@@ -1,9 +1,9 @@
-open Easy_logger_types              
-   
-  
+open Easy_logger_types
 open Batteries
 open File
 
+type level = Easy_logger_types.level
+   
 module type HandlersT =
   sig
     
