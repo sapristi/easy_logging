@@ -1,5 +1,5 @@
 (library
- (name logger)
+ (name easy_logger)
  (public_name easy_logger)
  (flags -w)
  (preprocess
