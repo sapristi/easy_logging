@@ -39,10 +39,10 @@ let style_to_codes s =
   | Fg c -> to_fg_code c, to_fg_code Default
   | Bg c -> to_bg_code c, to_bg_code Default
                       
-let rec tformat fl str =
+let rec format fl str =
   match fl with
   | _ as s :: flt ->
      let set, reset = style_to_codes s in
-     Printf.sprintf "\027[%dm%s\027[%dm" set (tformat flt str) reset
+     Printf.sprintf "\027[%dm%s\027[%dm" set (format flt str) reset
    | [] -> str
 

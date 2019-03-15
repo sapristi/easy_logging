@@ -19,10 +19,10 @@ let format_color item =
     | Debug -> Colorize.Green
   in
   
-  let item_level_str = Colorize.tformat [ Fg (level_to_color item.level)]  (show_level item.level) in
+  let item_level_str = Colorize.format [ Fg (level_to_color item.level)]  (show_level item.level) in
   let item_msg_str =
     match item.level with
-    | Flash -> Colorize.tformat [ Fg Black; Bg LMagenta] item.msg
+    | Flash -> Colorize.format [ Fg Black; Bg LMagenta] item.msg
     | _ -> item.msg in
   
   (Printf.sprintf "%-6.3f %-20s %-30s %s" (Sys.time ()) item.logger_name
