@@ -5,8 +5,8 @@ open Easy_logging_types
 open Batteries
 open File
 
-
-  
+type log_formatter = Easy_logging_types.log_formatter
+type level = Easy_logging_types.level
 (** Makes a logging module from a Handlers module *)
 module Make (H : HandlersT) =
   struct
@@ -127,6 +127,6 @@ module Default_formatters = Default_formatters
 
 
  (** Types used in easy_logging *) *)
-module Types = Easy_logging_types
-                
+
+module Handlers = Default_handlers                
                 
