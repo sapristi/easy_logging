@@ -120,16 +120,5 @@ module Make (H : HandlersT) =
 (** Instantiation of [Make] over [Default_handlers] *)
 module Logging = Make(Default_handlers)
 
-
-(*module Default_handlers = Default_handlers
-               
-(** Default formatters provided by easy_logging *)
-module Default_formatters = Default_formatters
-
-(** Default handlers provided by easy_logging *)
-
-
- (** Types used in easy_logging *) *)
-
-module Handlers = Default_handlers                
+module Handlers = Default_handlers
                 

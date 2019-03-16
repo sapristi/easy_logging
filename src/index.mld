@@ -2,7 +2,12 @@
 {1 Easy logging }
      Logging infrastructure inspired by the Python logging module.
      The aim of this module is to provide a quick and easy to use logging
-     infrastructure, with most of the features that can be expected.
+     infrastructure.
+
+It has the following features :
+   - one line logger creation
+   - log level adaptable at runtime from anywhere in the program
+   - send logs to multiple locations
 
 {4     Basic example } 
 {[   
@@ -11,6 +16,13 @@ logger = Logging.make_logger "my_logger" (Some Debug) [Cli Debug];;
 logger#info "log_message";; ]}   
 will output to the stdout a message of the form
 {v 1.306  test    Info    ok v}
+
+(2 Modules reference)
+
+ - {! Logging}   : predefined logging infrastructure
+ - {! logger}    : logger class
+ - {! Handlers}  : predifined handlers
+
 
 
 {2 Overall description }
@@ -48,7 +60,7 @@ The predefined levels are, in increasing order of precedence :
 
 {2 Defaults}
 
-{4 Handlers}
+{3 Handlers}
 
 By default, two handlers are provided:
  - Cli handler: outputs colored messages to stdout 
@@ -58,9 +70,18 @@ By default, two handlers are provided:
 
 See more about default handlers at {!module:Easy_logging__Default_handlers}
 
-{4 Loggers}
+{3 Loggers}
 
-Loggers are registered 
+{4 Creation}
+A logger object can be created directly :
+{[ let logger1 = new Logging.logger "my_logger1" (Some Warning) [Cli Debug] ]}
+or through the make_logger function :
+{[ let logger2 = Logging.make_logger "my_logger2" (Some Debug) [Cli Debug] ]}
+
+The [make_logger] function will register the logger internaly so that it will be possible to access and modify it from anywhere in the program.
+
+
+{4 Usage}
 
 {! Easy_logging}
 
