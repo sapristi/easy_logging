@@ -42,7 +42,6 @@ let style_to_codes s =
   | Bg c -> to_bg_code c, to_bg_code Default
 
 
-
 (** [format styles str] formats [str] to the given [styles] *)
 let rec format styles str =
   match styles with
