@@ -9,7 +9,7 @@ open Easy_logging
 logger = Logging.make_logger "my_logger" (Some Debug) [Cli Debug];;
 logger#info "log_message";; ]}   
 will output to the stdout a message of the form
-{v 1.306  test                 Info                 ok v}
+{v 1.306  test    Info    ok v}
 
 
 {2 Overall description }
@@ -45,29 +45,26 @@ The predefined levels are
  + Error   : used for errors
  + Flash   : used for one-shot debugging: displays an easy to spot message.
 
+{4 Handlers}
+
+By default, two handlers are provided:
+ - Cli handler: outputs colored messages to stdout 
+   {[ let h = Default_handlers.make (Cli Debug) ]}
+ - File handler : outputs messages to a given file
+   {[ let h = Default_handlers.make (File ("filename", Debug)) ]}
+
+See more about default handlers at {!module:Easy_logging__Default_handlers}
+
+{4 Loggers}
+
+
+{2 Modules definitions }       
  *)
 
 open Easy_logging_types
 open Batteries
 open File
 
-
-(** Types used in easy_logging *)
-module Types = Easy_logging_types
-
-(** Handlers module type signature *)
-module type HandlersT =
-  sig
-    type t =
-      {mutable fmt : log_formatter;
-       mutable level : level;
-       output : unit IO.output}
-
-    val handle : t -> log_item -> unit
-    type desc
-    val make : desc -> t
-    val set_formatter : t -> log_formatter -> unit
-  end
 
   
 (** Makes a logging module from a Handlers module *)
@@ -89,7 +86,8 @@ module Make (H : HandlersT) =
 
       (** Name of the logger *)
       val name = name
-               
+
+ 
       method log_msg msg_level msg =
         match levelo with
         | None ->()
@@ -125,6 +123,7 @@ module Make (H : HandlersT) =
              end
            else
              ()
+
       method add_handler h = handlers <- h::handlers
       method set_level new_levelo =
         levelo <- new_levelo
@@ -178,7 +177,16 @@ module Make (H : HandlersT) =
 (** Instantiation of [Make] over [Default_handlers] *)
 module Logging = Make(Default_handlers)
 
-module Default_formatters = Default_formatters
+                   
+               (*
 (** Default formatters provided by easy_logging *)
+module Default_formatters = Default_formatters
+
+(** Default handlers provided by easy_logging *)                          
 module Default_handlers = Default_handlers
-(** Default handlers provided by easy_logging *)
+
+
+(** Types used in easy_logging *)
+module Types = Easy_logging_types
+                
+                *)

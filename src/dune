@@ -1,3 +1,5 @@
+(documentation (mld_files :standard))
+
 (library
  (name easy_logging)
  (public_name easy_logging)

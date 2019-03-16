@@ -1,8 +1,10 @@
+
+
 open Easy_logging_types
 open Batteries
 open File
 open Default_formatters
-   
+
 type t =
   {mutable fmt : log_formatter;
    mutable level : level;

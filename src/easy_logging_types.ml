@@ -9,12 +9,6 @@ type level =
   | Error
   | Flash
 [@@deriving show { with_path = false }]
-(** Log levels *)
-
-  
-(* let level_gt l1 l2 =
- *   compare_level l1 l2 <= 0 *)
-
 
 type log_item = {
     level : level;
