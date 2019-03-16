@@ -1,65 +1,5 @@
-(**       
-     Logging infrastructure inspired by the Python logging module.
-     The aim of this module is to provide a quick and easy to use logging
-     infrastructure, with most of the features that can be expected.
-
-{4     Basic example } 
-{[   
-open Easy_logging
-logger = Logging.make_logger "my_logger" (Some Debug) [Cli Debug];;
-logger#info "log_message";; ]}   
-will output to the stdout a message of the form
-{v 1.306  test    Info    ok v}
 
 
-{2 Overall description }
-
-{4 Infrastructure }
-Like in the python logging module, this logging infrastructure is based on four concepts:
- 
-{i loggers, handlers,  formatter and log items }
-
-A call to {e logger} will create a {e log item}, which it will pass to its {e handlers}. Each {e handler} transforms the {e log item} to a string using its assigned formatter, and then treats the item (e.g. outputs to stdout or to a file).
-{v
-                                   ___________________________
-                                  |         handler 1         |
-                                  | (formatter) | (treatment) |
-             _______________      |---------------------------|
-            |     logger    | ==> | -> string  ==>    ( * )   |
-            |---------------|     |___________________________|
-message ==> | -> log item   |      ___________________________
-            [_______________| ==> |         handler 2         |
-                                  |            ...            |
-v}
-
-
-{4 Levels}
-
-To each logger, handler and log message are associated a level, which will
-be used to filter the messages going through the logging infrastructure.
-
-The predefined levels are  
- + Debug   : used for debugging
- + Info    : used to trace program execution
- + Warning : used for warnings
- + Error   : used for errors
- + Flash   : used for one-shot debugging: displays an easy to spot message.
-
-{4 Handlers}
-
-By default, two handlers are provided:
- - Cli handler: outputs colored messages to stdout 
-   {[ let h = Default_handlers.make (Cli Debug) ]}
- - File handler : outputs messages to a given file
-   {[ let h = Default_handlers.make (File ("filename", Debug)) ]}
-
-See more about default handlers at {!module:Easy_logging__Default_handlers}
-
-{4 Loggers}
-
-
-{2 Modules definitions }       
- *)
 
 open Easy_logging_types
 open Batteries
@@ -177,13 +117,14 @@ module Make (H : HandlersT) =
 (** Instantiation of [Make] over [Default_handlers] *)
 module Logging = Make(Default_handlers)
 
-                   
+
+                                             
+module Default_handlers = Default_handlers
                (*
 (** Default formatters provided by easy_logging *)
 module Default_formatters = Default_formatters
 
-(** Default handlers provided by easy_logging *)                          
-module Default_handlers = Default_handlers
+(** Default handlers provided by easy_logging *)
 
 
 (** Types used in easy_logging *)
