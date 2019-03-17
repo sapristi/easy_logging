@@ -27,8 +27,9 @@ sig
             method lerror : string lazy_t -> unit
             method lflash : string lazy_t -> unit
             method linfo : string lazy_t -> unit
+                 (*
             method log_msg : log_level -> string -> unit
-            method log_msg_lazy : log_level -> string lazy_t -> unit
+            method log_msg_lazy : log_level -> string lazy_t -> unit *)
             method lwarning : string lazy_t -> unit
             method set_level : log_level option -> unit
             method warning : string -> unit
@@ -104,9 +105,9 @@ Example:
             (** Sets the log level of the logger instance *)                 
             method set_level : log_level option -> unit
 
-                 
+                                                     (*
             method log_msg : log_level -> string -> unit
-            method log_msg_lazy : log_level -> string lazy_t -> unit
+            method log_msg_lazy : log_level -> string lazy_t -> unit *)
           end
   val _loggers : (string, logger) Batteries.Hashtbl.t
   val set_level : string -> log_level option -> unit

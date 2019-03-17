@@ -31,7 +31,7 @@ module Make (H : HandlersT) =
       val name = name
 
  
-      method log_msg msg_level msg =
+      method private log_msg msg_level msg =
         match levelo with
         | None ->()
         | Some level ->
@@ -49,7 +49,7 @@ module Make (H : HandlersT) =
            else
              ()                           
           
-      method log_msg_lazy (msg_level : level) msg =
+      method private log_msg_lazy (msg_level : level) msg =
         match levelo with
         | None ->()
         | Some level ->

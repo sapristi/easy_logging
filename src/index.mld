@@ -18,15 +18,11 @@ will output to the stdout a message of the form
 {v 1.306  test    Info    ok v}
 
 {2 Reference}
- - {! Logging}
- - {! logger}    : logger class
- - {! Handlers}  : handlers
- - {! Logging}   : underlying logging infrastructure
- - {! Easy_logging.Logging}
- - {! Easy_logging.Logging.logger}
- - {! Easy_logging.Handlers}
- - {! Easy_logging.Make}
- - {! Easy_logging.Make.logger}
+
+ - {! Easy_logging.Logging.logger} : Default logger class
+ - {! Easy_logging__Default_handlers} : Default handlers
+ - {! Easy_logging.Make} : Functor to create your own loggers
+ - {! Easy_logging__Easy_logging_types} : Types definitions
 
 
 {2 Overall description }
@@ -80,6 +76,8 @@ See more about default handlers at {!module:Easy_logging__Default_handlers}
 
 {3 Loggers}
 
+See complete class documentation at {! Easy_logging.Logging.logger}
+
 {4 Creation}
 A logger object can be created directly :
 {[ let logger1 = new Logging.logger "my_logger1" (Some Warning) [Cli Debug] ]}
@@ -95,6 +93,8 @@ A logger object has two methods for each of the log levels.
 
 {[logger1#debug "x is alive";
 logger1#ldebug (lazy (heavy_calculation ())); ]}
+
+
 {! Easy_logging}
 
 {! Easy_logging__Default_handlers}
