@@ -117,8 +117,8 @@ module Make (H : HandlersT) =
                     
   end
 
-(** Instantiation of [Make] over [Default_handlers] *)
-module Logging = Make(Default_handlers)
-
 module Handlers = Default_handlers
                 
+(** Instantiation of [Make] over [Default_handlers] *)
+module Logging = Make(Handlers)
+
