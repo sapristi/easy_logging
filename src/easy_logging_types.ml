@@ -22,12 +22,11 @@ type log_formatter = log_item -> string
 module type HandlersT =
   sig
     
-    type t =
-      {mutable fmt : log_formatter;
-       mutable level : level;
-       output : unit IO.output}
+    type t 
 
-    val handle : t -> log_item -> unit
+    val set_formatter : t -> log_formatter -> unit
+    val set_level : t -> level -> unit
+    val apply : t -> log_item -> unit
     type desc
     val make : desc -> t
   end                   

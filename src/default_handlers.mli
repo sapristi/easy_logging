@@ -19,7 +19,7 @@ type t =
 
 val outputs : (string, unit Batteries.IO.output) Batteries.Hashtbl.t
 
-val handle : t -> Easy_logging_types.log_item -> unit
+val apply : t -> Easy_logging_types.log_item -> unit
 
 val make_cli_handler : Easy_logging_types.level -> t
 

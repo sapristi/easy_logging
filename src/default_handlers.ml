@@ -41,7 +41,7 @@ type t =
   
 let outputs : (string, unit IO.output) Hashtbl.t =  Hashtbl.create 10
                                                   
-let handle (h : t) (item: log_item) =
+let apply (h : t) (item: log_item) =
   if item.level >= h.level
   then
     (
@@ -93,7 +93,7 @@ let make d = match d with
      Hashtbl.find handlers n
     
 let handle_test h fmt =
-  List.iter  (fun x -> handle h fmt )
+  List.iter  (fun x -> apply h fmt )
     [{level=Flash; logger_name="Flash"; msg="Flash"};
      {level=Error; logger_name="Error"; msg="Error"}; 
      {level=Warning; logger_name="Warning"; msg="Warning"};

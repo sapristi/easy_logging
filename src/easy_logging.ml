@@ -43,7 +43,7 @@ module Make (H : HandlersT) =
                    logger_name = name;
                msg = msg} in 
                List.iter (fun handler ->
-                   H.handle handler item)
+                   H.apply handler item)
                  handlers
              end
            else
@@ -61,7 +61,7 @@ module Make (H : HandlersT) =
                    logger_name = name;
                    msg = Lazy.force msg} in 
                List.iter (fun handler ->
-                   H.handle handler item)
+                   H.apply handler item)
                  handlers
              end
            else
