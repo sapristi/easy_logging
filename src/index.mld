@@ -6,8 +6,9 @@
 
 It has the following features :
    - one line logger creation
+   - log messages are either [string] or [string lazy_t]
    - log level adaptable at runtime from anywhere in the program
-   - send logs to multiple locations
+   - handlers associated to each logger will format and treat the message independantly
 
 {4     Basic example } 
 {[   
