@@ -14,10 +14,10 @@ type t =
   {
     mutable fmt : Easy_logging_types.log_formatter;
     mutable level : Easy_logging_types.level;
-    output : unit Batteries.IO.output;
+    output : out_channel;
   }
 
-val outputs : (string, unit Batteries.IO.output) Batteries.Hashtbl.t
+val outputs : (string, out_channel) Hashtbl.t
 
 val apply : t -> Easy_logging_types.log_item -> unit
 
@@ -31,7 +31,7 @@ val set_level : t -> Easy_logging_types.level -> unit
 val set_formatter :
   t -> Easy_logging_types.log_formatter -> unit
 
-val handlers : (string, t) Batteries.Hashtbl.t
+val handlers : (string, t) Hashtbl.t
 
 val register_handler : string -> t -> unit
 type desc  =

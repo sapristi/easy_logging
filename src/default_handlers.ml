@@ -1,8 +1,6 @@
 
 
 open Easy_logging_types
-open Batteries
-open File
 
 
 
@@ -36,24 +34,24 @@ let format_color item =
 type t =
   {mutable fmt : log_formatter;
    mutable level : level;
-   output : unit IO.output}
+   output : out_channel}
   
   
-let outputs : (string, unit IO.output) Hashtbl.t =  Hashtbl.create 10
+let outputs : (string, out_channel) Hashtbl.t =  Hashtbl.create 10
                                                   
 let apply (h : t) (item: log_item) =
   if item.level >= h.level
   then
     (
-      IO.write_line h.output (Printf.sprintf "%s" (h.fmt item));
-      IO.flush h.output;
+      output_string h.output (Printf.sprintf "%s\n" (h.fmt item));
+      flush h.output;
     )
   
 let make_cli_handler level =
-  Hashtbl.replace outputs "stdout" IO.stdout;
+  Hashtbl.replace outputs "stdout" stdout;
   {fmt = format_color;
    level = level;
-   output = IO.stdout}
+   output = stdout}
   
 let make_file_handler level filename  =
   
@@ -66,8 +64,11 @@ let make_file_handler level filename  =
     then
       Hashtbl.find outputs filename
     else
+      (*
       let p = File.perm [user_read; user_write; group_read; group_write] in
-      open_out ~mode:[`create (*; `append *)] ~perm:p ("logs/"^filename)
+      open_out_gen ~mode:[`create (*; `append *)] ~perm:p ("logs/"^filename)
+       *)
+      open_out @@ "logs/"^filename
   in
   {fmt = format_default;
    level = level;
