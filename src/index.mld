@@ -90,9 +90,4 @@ A logger object has two methods for each of the log levels.
 logger1#ldebug (lazy (heavy_calculation ())); ]}
 
 
-{! Easy_logging}
-
-{! Easy_logging__Default_handlers}
-
-{!class Easy_logging.Make.logger}
 
