@@ -8,9 +8,9 @@ Inspired by the python logging module architecture.
 maintainer: "mathiasmillet@gmail.com"
 authors: "Mathias Millet"
 license: "GPL"
-# homepage: ""
-# bug-reports: ""
-# dev-repo: ""
+homepage: "https://sapristi.github.io/easy_logging/easy_logging/"
+bug-reports: "https://github.com/sapristi/easy_logging/issues"
+dev-repo: "https://github.com/sapristi/easy_logging"
 depends: [ "ocaml" "dune" "batteries" "ppx_deriving"]
 build: [
   ["dune" "build" "-p" name "-j" jobs]
