@@ -15,7 +15,7 @@ open Easy_logging
 logger = Logging.make_logger "my_logger" (Some Debug) [Cli Debug];;
 logger#info "log_message";; ]}   
 will output to the stdout a message of the form
-{v 1.306  test    Info    ok v}
+{v 1.306  my_logger    Info    log_message v}
 
 {2 Reference}
 
