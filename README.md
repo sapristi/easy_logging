@@ -1,8 +1,8 @@
 Logging module for OCaml.
 
 Quick start :
-``ocaml
-`open Easy_logging
+```ocaml
+open Easy_logging
 logger = Logging.make_logger "my_logger" (Some Debug) [Cli Debug];;
 logger#info "log_message";;```
 
