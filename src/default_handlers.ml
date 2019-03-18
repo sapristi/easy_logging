@@ -29,7 +29,7 @@ let format_color item =
     | Flash -> Colorize.format [ Fg Black; Bg LMagenta] item.msg
     | _ -> item.msg in
   
-  (Printf.sprintf "%-6.3f %-30s %-20s %s" (Sys.time ())
+  (Printf.sprintf "%-6.3f %-20s %-30s %s" (Sys.time ())
      item_level_fmt
      logger_name_fmt
      item_msg_fmt)
