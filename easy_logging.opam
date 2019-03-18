@@ -8,10 +8,10 @@ The aim of this module is to provide a quick and easy to use logging
 infrastructure.
 
 It has the following features :
-   - one line logger creation
-   - log messages are either [string] or [string lazy_t]
-   - log level adaptable at runtime from anywhere in the program
-   - handlers associated to each logger will format and treat the message independantly
+   * one line logger creation
+   * log messages are either [string] or [string lazy_t]
+   * log level adaptable at runtime from anywhere in the program
+   * handlers associated to each logger will format and treat the message independantly
 """
 maintainer: "mathiasmillet@gmail.com"
 authors: "Mathias Millet"
