@@ -1,14 +1,13 @@
+(documentation (mld_files :standard))
+
 (library
- (name logger)
- (public_name easy_logger)
+ (name easy_logging)
+ (public_name easy_logging)
  (flags -w)
  (preprocess
-  (pps ppx_deriving.show
-       ppx_deriving.ord ))
+  (pps ppx_deriving.show))
  (libraries
   batteries
-  ppx_deriving.show
-  ppx_deriving.ord)
-
+  ppx_deriving.show)
  )
 
