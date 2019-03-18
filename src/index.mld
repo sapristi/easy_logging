@@ -60,12 +60,7 @@ The predefined levels are, in increasing order of precedence :
 
 {2 Defaults}
 
-{3 Handlers}
-A handler has type
-{[ type Handler.t =
-  {mutable fmt : log_formatter;
-   mutable level : level;
-   output : unit IO.output} ]}
+{3 Default Handlers}
 By default, two handlers are provided:
  - Cli handler: outputs colored messages to stdout 
    {[ let h = Default_handlers.make (Cli Debug) ]}
