@@ -5,8 +5,10 @@ open Easy_logging_types
 
 
 let format_default item =
-  Printf.sprintf "%-6.3f %-20s %-10s %s" (Sys.time ()) item.logger_name
-    (show_level item.level) item.msg
+  Printf.sprintf "%-6.3f %-10s %-20s %s" (Sys.time ())
+    (show_level item.level)
+    item.logger_name
+    item.msg
   
       
 let format_color item =
@@ -27,8 +29,10 @@ let format_color item =
     | Flash -> Colorize.format [ Fg Black; Bg LMagenta] item.msg
     | _ -> item.msg in
   
-  (Printf.sprintf "%-6.3f %-30s %-20s %s" (Sys.time ()) logger_name_fmt
-     item_level_fmt item_msg_fmt)
+  (Printf.sprintf "%-6.3f %-20s %-30s %s" (Sys.time ())
+     item_level_fmt
+     logger_name_fmt
+     item_msg_fmt)
 
    
 type t =
