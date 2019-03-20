@@ -2,8 +2,6 @@
 
 
 open Easy_logging_types
-open Batteries
-open File
 
 type log_formatter = Easy_logging_types.log_formatter
 
@@ -92,7 +90,7 @@ module Make (H : HandlersT) =
       Hashtbl.iter
         (fun n l  ->
           
-          if String.starts_with n p
+          if String.sub n 0 (String.length p) = p
           then
             l#set_level lvlo;)
         _loggers
@@ -117,8 +115,8 @@ module Make (H : HandlersT) =
                     
   end
 
-module Handlers = Default_handlers
+module Default_handlers = Default_handlers
                 
 (** Instantiation of [Make] over [Default_handlers] *)
-module Logging = Make(Handlers)
+module Logging = Make(Default_handlers)
 
