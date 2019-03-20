@@ -4,7 +4,7 @@
 type log_formatter = Easy_logging_types.log_formatter
 type log_level = Easy_logging_types.level
 val pp_log_level :
-  Batteries.Format.formatter -> log_level -> Ppx_deriving_runtime.unit
+  Format.formatter -> log_level -> Ppx_deriving_runtime.unit
 val show_log_level : log_level -> Ppx_deriving_runtime.string
 module Make :
 functor (H : Easy_logging__Easy_logging_types.HandlersT) ->
@@ -34,7 +34,7 @@ sig
             method set_level : log_level option -> unit
             method warning : string -> unit
           end
-  val _loggers : (string, logger) Batteries.Hashtbl.t
+  val _loggers : (string, logger) Hashtbl.t
   val set_level : string -> log_level option -> unit
   val get_logger : string -> logger
   val make_logger : string -> log_level option -> H.desc list -> logger
@@ -51,14 +51,14 @@ sig
   end
 end
 
-module Handlers = Default_handlers
+module Default_handlers = Default_handlers
 module Logging :
 sig
   (** {3 Attributes} *)
   class logger :
           string ->
           log_level option ->
-          Handlers.desc list ->
+          Default_handlers.desc list ->
           object
 
             (** Name displayed in log messages *)
@@ -69,7 +69,7 @@ sig
             (** {[type log_level = | Debug | Info | Warning | Error | Flash ]} *)
 
             
-            val mutable handlers : Handlers.t list
+            val mutable handlers : Default_handlers.t list
             (** Registered handlers for this logger 
               
               
@@ -100,7 +100,7 @@ Example:
             (** {3 Other methods} *)
 
             (** Adds a handler to the logger instance*)
-            method add_handler : Handlers.t -> unit
+            method add_handler : Default_handlers.t -> unit
             
             (** Sets the log level of the logger instance *)                 
             method set_level : log_level option -> unit
@@ -109,11 +109,11 @@ Example:
             method log_msg : log_level -> string -> unit
             method log_msg_lazy : log_level -> string lazy_t -> unit *)
           end
-  val _loggers : (string, logger) Batteries.Hashtbl.t
+  val _loggers : (string, logger) Hashtbl.t
   val set_level : string -> log_level option -> unit
   val get_logger : string -> logger
   val make_logger :
-    string -> log_level option -> Handlers.desc list -> logger
+    string -> log_level option -> Default_handlers.desc list -> logger
   val dummy : logger
     (*
   module Handlers :
