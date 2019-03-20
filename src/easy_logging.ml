@@ -1,21 +1,22 @@
 
 
-
-open Easy_logging_types
-
-type log_formatter = Easy_logging_types.log_formatter
-
+(* Type for log levels *)
 type log_level = Easy_logging_types.level
-                   [@@deriving show { with_path = false }]
-               
+                                  
+type log_item = Easy_logging_types.log_item
+              
+              
+module type HandlersT = Easy_logging_types.HandlersT
+                     
+                      
 (** Makes a logging module from a Handlers module *)
-module Make (H : HandlersT) =
+module MakeLogging (H : HandlersT) =
   struct
 
     (** logger class *)
     class logger
             (name: string)
-            (levelo: level option)
+            (levelo: log_level option)
             (handlers_desc : H.desc list)  =
     object(self)
 
@@ -36,7 +37,7 @@ module Make (H : HandlersT) =
            if msg_level >= level
            then
              begin
-               let item = {
+               let item : log_item= {
                    level = msg_level;
                    logger_name = name;
                msg = msg} in 
@@ -47,14 +48,14 @@ module Make (H : HandlersT) =
            else
              ()                           
           
-      method private log_msg_lazy (msg_level : level) msg =
+      method private log_msg_lazy (msg_level : log_level) msg =
         match levelo with
         | None ->()
         | Some level ->
            if msg_level >= level
            then
              begin
-               let item = {
+               let item : log_item = {
                    level = msg_level;
                    logger_name = name;
                    msg = Lazy.force msg} in 
@@ -117,6 +118,7 @@ module Make (H : HandlersT) =
 
 module Default_handlers = Default_handlers
                 
-(** Instantiation of [Make] over [Default_handlers] *)
-module Logging = Make(Default_handlers)
+(** Instantiation of [MakeLogging] over [Default_handlers] *)
+module Logging = MakeLogging(Default_handlers)
+
 
