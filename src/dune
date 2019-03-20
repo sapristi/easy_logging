@@ -7,7 +7,6 @@
  (preprocess
   (pps ppx_deriving.show))
  (libraries
-  batteries
   ppx_deriving.show)
  )
 
