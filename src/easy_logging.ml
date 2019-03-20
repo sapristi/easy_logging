@@ -1,17 +1,15 @@
 
-
+(* Type for log levels *)
 type log_level = Easy_logging_types.level
-                   [@@deriving show { with_path = false }]
-               
+                                  
 type log_item = Easy_logging_types.log_item
               
               
 module type HandlersT = Easy_logging_types.HandlersT
-                      
-                      
+                     
                       
 (** Makes a logging module from a Handlers module *)
-module Make (H : HandlersT) =
+module MakeLogging (H : HandlersT) =
   struct
 
     (** logger class *)
@@ -120,5 +118,5 @@ module Make (H : HandlersT) =
 module Default_handlers = Default_handlers
                 
 (** Instantiation of [Make] over [Default_handlers] *)
-module Logging = Make(Default_handlers)
+module Logging = MakeLogging(Default_handlers)
 
