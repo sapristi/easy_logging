@@ -1,11 +1,10 @@
 
-
-
-type log_formatter = Easy_logging_types.log_formatter
-type log_level = Easy_logging_types.level
+type log_level = Easy_logging__Easy_logging_types.log_level
 val pp_log_level :
   Format.formatter -> log_level -> Ppx_deriving_runtime.unit
 val show_log_level : log_level -> Ppx_deriving_runtime.string
+type log_item = Easy_logging.log_item
+module type HandlersT = HandlersT
 module Make :
 functor (H : Easy_logging__Easy_logging_types.HandlersT) ->
 sig
@@ -46,7 +45,7 @@ sig
     val make : desc -> t
     val apply :
       t -> Easy_logging__Easy_logging_types.log_item -> unit
-    val set_formatter : t -> log_formatter -> unit
+    val set_formatter : t -> Easy_logging__Easy_logging_types.log_formatter -> unit
     val set_level : t -> log_level -> unit
   end
 end
