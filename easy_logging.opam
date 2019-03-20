@@ -19,7 +19,11 @@ license: "GPL"
 homepage: "https://sapristi.github.io/easy_logging/easy_logging/"
 bug-reports: "https://github.com/sapristi/easy_logging/issues"
 dev-repo: "git+https://github.com/sapristi/easy_logging.git"
-depends: [ "ocaml" "dune" "ppx_deriving"]
+depends: [
+  "ocaml"
+  "dune" {build}
+  "ppx_deriving"
+]
 build: [
   ["dune" "build" "-p" name "-j" jobs]
 ]
