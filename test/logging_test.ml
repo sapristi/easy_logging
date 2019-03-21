@@ -126,3 +126,11 @@ module TagsLogging = MakeLogging(TaggedHandlers);;
 
 let logger = TagsLogging.make_logger "tagged" (Some Debug) [()];;
 logger#info ~tags:[Time; Value 4] "ok";
+
+
+let h = Default_handlers.make (Cli Debug) in
+Default_handlers.set_level h Info;
+let logger = Logging.make_logger "handlerTest" (Some Debug) [] in
+logger#add_handler h;
+logger#debug "this is an error";
+logger#info "this is ok"

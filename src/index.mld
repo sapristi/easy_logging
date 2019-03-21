@@ -22,7 +22,7 @@ will output to the stdout a message of the form
 {2 Index }
 
 {ol
-{- {!section:description}}
+{- {!section:description} ({! Easy_logging})}
 {- {!section:defaults}
    {ol
         {- {!section:defaulthandlers} ( {! Easy_logging__Default_handlers})}
