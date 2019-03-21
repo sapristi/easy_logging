@@ -3,16 +3,33 @@
 open Easy_logging_types
 
 
+type tag = unit
+         
+type log_item = {
+    level : Easy_logging_types.level;
+    logger_name : string;
+    msg : string;
+    tags : tag list
+  }
+              
+type log_formatter = log_item -> string
+
+type t =
+  {
+    mutable fmt : log_formatter;
+    mutable level : Easy_logging_types.level;
+    output : out_channel;
+  }
 
 
-let format_default item =
+let format_default (item : log_item) =
   Printf.sprintf "%-6.3f %-10s %-20s %s" (Sys.time ())
     (show_level item.level)
     item.logger_name
     item.msg
   
       
-let format_color item =
+let format_color (item : log_item) =
   
   let level_to_color lvl =
     match lvl with
@@ -35,11 +52,6 @@ let format_color item =
      logger_name_fmt
      item_msg_fmt)
 
-   
-type t =
-  {mutable fmt : log_formatter;
-   mutable level : level;
-   output : out_channel}
   
   
 let outputs : (string, out_channel) Hashtbl.t =  Hashtbl.create 10
@@ -100,8 +112,8 @@ let make d = match d with
     
 let handle_test h fmt =
   List.iter  (fun x -> apply h fmt )
-    [{level=Flash; logger_name="Flash"; msg="Flash"};
-     {level=Error; logger_name="Error"; msg="Error"}; 
-     {level=Warning; logger_name="Warning"; msg="Warning"};
-     {level=Info; logger_name="Info"; msg="Info"};
-     {level=Debug; logger_name="Debug"; msg="Debug"}] 
+    [{level=Flash; logger_name="Flash"; msg="Flash"; tags=[]};
+     {level=Error; logger_name="Error"; msg="Error"; tags=[]}; 
+     {level=Warning; logger_name="Warning"; msg="Warning"; tags=[]};
+     {level=Info; logger_name="Info"; msg="Info"; tags=[]};
+     {level=Debug; logger_name="Debug"; msg="Debug"; tags=[]}] 

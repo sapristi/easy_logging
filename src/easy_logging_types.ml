@@ -9,21 +9,23 @@ type level =
   | Flash
 [@@deriving show { with_path = false }]
 
-type log_item = {
-    level : level;
-    logger_name : string;
-    msg : string;
-  }
-
-
-type log_formatter = log_item -> string
-
+ 
 
 module type HandlersT =
   sig
     
     (** Type of a handler *) 
-    type t 
+    type t
+       
+    type tag
+       
+    type log_item = {
+        level : level;
+        logger_name : string;
+        msg : string;
+        tags : tag list
+      }
+    type log_formatter = log_item -> string
 
     (** Overrides the formatter of the given handler. *)
     val set_formatter : t -> log_formatter -> unit
@@ -39,4 +41,5 @@ module type HandlersT =
 
     (** Instantiates a handler *)
     val make : desc -> t
+
   end                   

@@ -11,16 +11,26 @@ In the [DefaultHandlers] module, handlers have level of their own. Their are two
 
 
 (** Type of a handler. *)
+type tag = unit
+         
+type log_item = {
+    level : Easy_logging_types.level;
+    logger_name : string;
+    msg : string;
+    tags : tag list
+  }
+type log_formatter = log_item -> string
 type t =
   {
-    mutable fmt : Easy_logging_types.log_formatter;
+    mutable fmt : log_formatter;
     mutable level : Easy_logging_types.level;
     output : out_channel;
   }
 
+  
 val outputs : (string, out_channel) Hashtbl.t
 
-val apply : t -> Easy_logging_types.log_item -> unit
+val apply : t -> log_item -> unit
 
 val make_cli_handler : Easy_logging_types.level -> t
 
@@ -30,7 +40,7 @@ val make_file_handler :
 val set_level : t -> Easy_logging_types.level -> unit
 
 val set_formatter :
-  t -> Easy_logging_types.log_formatter -> unit
+  t -> log_formatter -> unit
 
 val handlers : (string, t) Hashtbl.t
 
@@ -42,4 +52,4 @@ type desc  =
 
 val make : desc -> t
 
-val handle_test : t -> Easy_logging_types.log_item -> unit
+val handle_test : t -> log_item -> unit

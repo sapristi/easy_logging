@@ -38,6 +38,16 @@ Logging.set_level "test" (Some Warning);
 module MyHandlers =
   struct
     type t = string -> unit
+    type tag = unit
+    type log_item = {
+        level : Easy_logging__.Easy_logging_types.level;
+        logger_name : string;
+        msg : string;
+        tags : tag list
+      }
+                  
+    type log_formatter = log_item -> string
+
     type desc = string list ref
     let set_formatter _ _ = ()
     let set_level _ _ = ()
