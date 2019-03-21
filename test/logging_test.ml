@@ -51,8 +51,7 @@ module MyHandlers =
     type log_formatter = log_item -> string
 
     type desc = string list ref
-    let set_formatter _ _ = ()
-    let set_level _ _ = ()
+
     let apply h (item : log_item) = h item.msg
     let make (_internal : desc) =
       fun s -> _internal := s::!_internal
@@ -81,6 +80,7 @@ module TaggedHandlers =
     type tag =
       | Time
       | Value of int
+
     type log_item = {
         level : Easy_logging__.Easy_logging_types.level;
         logger_name : string;
@@ -92,8 +92,7 @@ module TaggedHandlers =
     type log_formatter = log_item -> string
 
     type desc = unit
-    let set_formatter _ _ = ()
-    let set_level _ _ = ()
+
     let apply h (item : log_item) = h item
 
     let rec tags_to_string tags =

@@ -27,12 +27,6 @@ module type HandlersT =
       }
     type log_formatter = log_item -> string
 
-    (** Overrides the formatter of the given handler. *)
-    val set_formatter : t -> log_formatter -> unit
-
-    (** Overrides the level of the given handler *)
-    val set_level : t -> level -> unit
-
     (** Applies the handler to a [log_item] *)
     val apply : t -> log_item -> unit
 
