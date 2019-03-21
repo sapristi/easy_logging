@@ -3,8 +3,7 @@
  (name logging_test)
        
     (preprocess
-     (pps ppx_deriving.show
-          ppx_deriving_cmdliner))
+     (pps ppx_deriving.show))
     (libraries easy_logging)
     )
 
