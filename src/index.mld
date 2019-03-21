@@ -9,6 +9,7 @@ It has the following features :
    - log messages are either [string] or [string lazy_t]
    - log level adaptable at runtime from anywhere in the program
    - handlers associated to each logger will format and treat the message independantly
+   - use the infrastructure with your own handlers with the [MakeLogging] functor.
 
 {4     Basic example } 
 {[   
@@ -18,16 +19,19 @@ logger#info "log_message";; ]}
 will output to the stdout a message of the form
 {v 1.306  my_logger    Info    log_message v}
 
-{2 Reference}
+{2 Index }
 
- - {! Easy_logging.Logging.logger} : Default logger class.
- - {! Easy_logging__Default_handlers} : Default handlers.
- - {! Easy_logging.MakeLogging} : Functor to create your own logging module.
- - {! Easy_logging__Easy_logging_types} : Types definitions.
- - {! Easy_logging} : Entry point of the module.
+{ol
+{- {!section:description}}
+{- {!section:defaults}
+   {ol
+        {- {!section:defaulthandlers} ( {! Easy_logging__Default_handlers})}
+        {- {!section:logger} ( {! Easy_logging.Logging.logger} )}
+        {- {!section:logging}  ({! Easy_logging.Logging}) }}}
+{- {!section:makelogging} ( {! Easy_logging.MakeLogging} )} }
 
 
-{2 Overall description }
+{2:description Overall description }
 
 {4 Infrastructure }
 Like in the python logging module, this logging infrastructure is based on four concepts:
@@ -62,8 +66,8 @@ The predefined levels are, in increasing order of precedence :
 
 {2 Defaults}
 
-{3 Default Handlers}
-By default, two handlers are provided:
+{3:defaulthandlers Default Handlers}
+By default, two handlers are provided. They are instantiated with a level of their own to filter messages :
  - Cli handler: outputs colored messages to stdout.
    {[ let h = Default_handlers.make (Cli Debug) ]}
  - File handler : outputs messages to a given file.
@@ -71,7 +75,7 @@ By default, two handlers are provided:
 
 See more about default handlers at {!module:Easy_logging__Default_handlers}.
 
-{3 Loggers}
+{3:logger Loggers}
 
 See complete class documentation at {! Easy_logging.Logging.logger}
 
@@ -86,10 +90,54 @@ The [make_logger] function will register the logger instance internaly so that i
 
 {4 Usage}
 
-A logger object has two methods for each of the log levels.
+A logger object has two methods for each of the log levels: one that takes a [string], and one that takes a [string lazy_t].
 
 {[logger1#debug "x is alive";
 logger1#ldebug (lazy (heavy_calculation ())); ]}
 
+{3:logging The Logging module}
+
+The {! Easy_logging.Logging} module is that application of [MakeLogging] over [DefaultHandlers].
+It provides three functions :
+
+ - {[ val make_logger :
+    string -> log_level option -> Default_handlers.desc list ]}
+    to instantiate and register a logger
+ - {[val set_level : string -> log_level option -> unit]}
+    [set_level prefix level] sets the level of all 
+      registered loggers whose name begins by [prefix]
+      to [level].
+ - {[ val get_logger : string -> logger ]}
+ Returns a registered logger.
+
+{2:makelogging The MakeLogging functor }
+
+The MakeLogging functor takes a {!Easy_logging__.Easy_logging_types.HandlersT} typed module, and creates a Logging module.
+
+{3 WARNING}
+When declaring your Handlers module, do not give it the type [HandlersT], because then  its internal types [t] and [desc] won't be accessible.
+
+{3 Example}
 
 
+Here is a very simple example :
+{[
+module MyHandlers =
+  struct
+    type t = string -> unit
+    type desc = string list ref
+    let set_formatter _ _ = ()
+    let set_level _ _ = ()
+    let apply h (item : log_item) = h item.msg
+    let make (_internal : desc) =
+
+      fun s -> _internal := s::!_internal
+  end
+
+module MyLogging = MakeLogging(MyHandlers)
+
+let l = ref [];;
+let mylogger = MyLogging.make_logger "mylogger" (Some Debug) [l];;
+mylogger#info "this is a message";
+
+]}

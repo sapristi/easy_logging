@@ -4,6 +4,7 @@ open Easy_logging_types
 
 
 
+
 let format_default item =
   Printf.sprintf "%-6.3f %-10s %-20s %s" (Sys.time ())
     (show_level item.level)

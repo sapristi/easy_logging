@@ -1,4 +1,5 @@
 (** 
+In the [DefaultHandlers] module, handlers have level of their own. Their are two kinds of logger : 
 
  - Cli handler: outputs colored messages to stdout 
    {[ let h = Default_handlers.make (Cli Debug) ]}
@@ -9,7 +10,7 @@
  *)
 
 
-(** handler type *)
+(** Type of a handler. *)
 type t =
   {
     mutable fmt : Easy_logging_types.log_formatter;

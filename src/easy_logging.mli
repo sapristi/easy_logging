@@ -126,7 +126,7 @@ Example:
   val make_logger :
     string -> log_level option -> Default_handlers.desc list -> logger
 
-  (** Registered loggers *)
+  (** Internally registered loggers. *)
   val _loggers : (string, logger) Hashtbl.t
 
 
@@ -137,7 +137,7 @@ Example:
 
 
     
-  (** Fetches a registered logger. *)
+  (** Returns a registered logger. *)
   val get_logger : string -> logger
 
 
