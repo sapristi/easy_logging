@@ -42,26 +42,7 @@ sig
   val get_logger : string -> logger
   val make_logger : string -> log_level option -> H.desc list -> logger
   val dummy : logger
-  module Handlers :
-  sig
-    type t
-    type tag
-       
-    type log_item = {
-        level : Easy_logging__Easy_logging_types.level;
-        logger_name : string;
-        msg : string;
-        tags : tag list
-      }
-                  
-    type log_formatter = log_item -> string
-    type desc = H.desc
-    val make : desc -> t
-    val apply :
-      t -> log_item -> unit
-    val set_formatter : t -> log_formatter -> unit
-    val set_level : t -> log_level -> unit
-  end
+
 end
 
 

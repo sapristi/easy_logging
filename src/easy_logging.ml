@@ -111,7 +111,7 @@ module MakeLogging (H : HandlersT) =
       
       
     let dummy = make_logger "dummy" None []
-    module Handlers = H
+    
                     
   end
 
