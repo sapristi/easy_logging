@@ -9,7 +9,9 @@
   {- {!section:handlers}
      - {!section:basic_handlers}
      - {!section:tagged_handlers}
-  }}
+  }
+  {- {!section:file_handler_defaults}}
+}
 
 {2:centralized Centralize all logs to a single file}
 
@@ -154,3 +156,19 @@ logger#info ~tags:[Time; Value 4] "log message with tags";
 ]}
 
 {v 23/3 18:33:3 [Val: 4] log message with tags v}
+
+
+{2:file_handlers_defaults Modifying the file handlers defaults}
+
+{[
+
+module H = Default_handlers
+let defaults : H.file_handler_defaults_t = {
+    logs_folder= "test/";
+    truncate= false;
+    file_perms=0o664;};;
+H.set_file_handler_defaults defaults;;
+module TestLogging = MakeLogging(H)
+let logger = TestLogging.make_logger
+               "test" (Some Debug) [File ("test", Debug)];; 
+logger#info "this is a message";]}

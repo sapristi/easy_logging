@@ -132,6 +132,9 @@ let logger = TagsLogging.make_logger "tagged" (Some Debug) [()];;
 logger#info ~tags:[Time; Value 4] "log message with tags";
 
 
+
+(* ******************************** *)
+(* modifying the level of a handler *)
 let h = Default_handlers.make (Cli Debug) in
 let logger = Logging.make_logger "handlerTest" (Some Debug) [] in
 logger#add_handler h;
@@ -139,3 +142,18 @@ logger#debug "this message is displayed";
 Default_handlers.set_level h Info;
 logger#debug "this message is not displayed";
 
+
+(* *********************************** *)
+(* modifying the file handler defaults *)
+
+module H = Default_handlers
+let defaults : H.file_handler_defaults_t = {
+    logs_folder= "test/";
+    truncate= false;
+    file_perms=0o664;};;
+H.set_file_handler_defaults defaults;;
+module TestLogging = MakeLogging(H)
+let logger = TestLogging.make_logger
+               "test" (Some Debug) [File ("test", Debug)];;
+logger#info "this is a message";
+assert (Sys.file_exists "test/test");
