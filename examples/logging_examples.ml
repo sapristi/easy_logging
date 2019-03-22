@@ -100,19 +100,21 @@ module TaggedHandlers =
     let rec tags_to_string tags =
       let open Unix in
       match tags with
+        
       | Time :: tags' -> 
-         let {
-   	     tm_sec;
-   	     tm_min;
-   	     tm_hour;
-   	     tm_mday;
-   	     tm_mon;
-   	     _;
-           } :tm = time () |> gmtime in
+         let {tm_sec; tm_min; tm_hour;
+   	      tm_mday; tm_mon;  _; } :tm
+           = time () |> gmtime
+         in
          let s = 
-           Printf.sprintf "%d/%d %d:%d:%d" (tm_mday+1) (tm_mon+1) tm_hour tm_min tm_sec
-         in s :: tags_to_string tags'
-      | Value n :: tags' -> (string_of_int n) :: tags_to_string tags'
+           Printf.sprintf "%d/%d %d:%d:%d"
+             (tm_mday+1) (tm_mon+1) tm_hour tm_min tm_sec
+         in
+         s :: tags_to_string tags'
+          
+      | Value n :: tags' ->
+         ( "[Val: "^(string_of_int n)^"]" ) :: tags_to_string tags'
+
       | [] -> []
          
     let make () =
@@ -127,12 +129,13 @@ module TaggedHandlers =
 module TagsLogging = MakeLogging(TaggedHandlers);;
 
 let logger = TagsLogging.make_logger "tagged" (Some Debug) [()];;
-logger#info ~tags:[Time; Value 4] "ok";
+logger#info ~tags:[Time; Value 4] "log message with tags";
 
 
 let h = Default_handlers.make (Cli Debug) in
-Default_handlers.set_level h Info;
 let logger = Logging.make_logger "handlerTest" (Some Debug) [] in
 logger#add_handler h;
-logger#debug "this is an error";
-logger#info "this is ok"
+logger#debug "this message is displayed";
+Default_handlers.set_level h Info;
+logger#debug "this message is not displayed";
+

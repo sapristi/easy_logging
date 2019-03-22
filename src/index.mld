@@ -24,12 +24,11 @@ will output to the stdout a message of the form
 {ol
 {- {!section:description} ({! Easy_logging})}
 {- {!section:defaults}
-   {ol
-        {- {!section:defaulthandlers} ( {! Easy_logging__Default_handlers})}
-        {- {!section:logger} ( {! Easy_logging.Logging.logger} )}
-        {- {!section:logging}  ({! Easy_logging.Logging}) }}}
-{- {!section:makelogging} ( {! Easy_logging.MakeLogging} )} }
-
+   + {!section:defaulthandlers} ( {! Easy_logging__Default_handlers})
+   + {!section:logger} ( {! Easy_logging.Logging.logger} )
+   + {!section:logging}  ({! Easy_logging.Logging}) }
+{- {!section:makelogging} ( {! Easy_logging.MakeLogging} )} 
+{- {{:examples.html} Examples}}}
 
 {2:description Overall description }
 
@@ -84,6 +83,8 @@ By default, two handlers are provided. They are instantiated with a level of the
  - File handler : outputs messages to a given file.
    {[ let h = Default_handlers.make (File ("filename", Debug)) ]}
 
+
+Note that file handlers will write to files in the [logs] folder in the current path, creating it if it doesn't exist.
 See more about default handlers at {!module:Easy_logging__Default_handlers}.
 
 {3:logger Loggers}
