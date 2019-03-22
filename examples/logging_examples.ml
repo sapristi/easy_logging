@@ -1,3 +1,5 @@
+(** Is this doc *)
+
 open Easy_logging
 
 (* ************* *)

@@ -1,0 +1,14 @@
+(documentation (package easy_logging))
+
+(library
+ (name logging_examples)
+ (libraries easy_logging)
+ (modules logging_examples)
+ )
+
+
+(test
+ (name test)
+ (modules test)
+ (libraries logging_examples)
+ )

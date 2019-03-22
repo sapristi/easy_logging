@@ -72,7 +72,7 @@ sig
               
               
 {3 Classic logging Methods}
-Each of these methods takes a [string] as an input. If the log level of the instance is low enough, a log item will be created theb passed to the handlers.
+Each of these methods takes an optional [tag list] and a [string] as an input. If the log level of the instance is low enough, a log item will be created theb passed to the handlers.
 
 Example : 
 {[logger#warning "Something wrong happened"]}
@@ -84,7 +84,7 @@ Example :
             method error : ?tags:Default_handlers.tag list -> string -> unit
             method flash : ?tags:Default_handlers.tag list -> string -> unit
             (** {3 Lazy logging methods} 
-Each of these methods takes a [string lazy_t] as an input. If the log level of the instance is low enough, the lazy value will forced into a [string], a log item will be created then passed to the handlers.
+Each of these methods takes a [string lazy_t] as an input (as well as the optional [tag list]. If the log level of the instance is low enough, the lazy value will forced into a [string], a log item will be created then passed to the handlers.
 
 Example:
 {[logger#ldebug (lazy (heavy_calculation () ))]}
