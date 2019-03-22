@@ -22,39 +22,37 @@ will output to the stdout a message of the form
 {2 Index }
 
 {ol
-{- {!section:description}}
+{- {!section:description} ({! Easy_logging})}
 {- {!section:defaults}
-   {ol
-        {- {!section:defaulthandlers} ( {! Easy_logging__Default_handlers})}
-        {- {!section:logger} ( {! Easy_logging.Logging.logger} )}
-        {- {!section:logging}  ({! Easy_logging.Logging}) }}}
-{- {!section:makelogging} ( {! Easy_logging.MakeLogging} )} }
-
+   + {!section:defaulthandlers} ( {! Easy_logging__Default_handlers})
+   + {!section:logger} ( {! Easy_logging.Logging.logger} )
+   + {!section:logging}  ({! Easy_logging.Logging}) }
+{- {!section:makelogging} ( {! Easy_logging.MakeLogging} )} 
+{- {{:examples.html} Examples}}}
 
 {2:description Overall description }
 
 {4 Infrastructure }
-Like in the python logging module, this logging infrastructure is based on four concepts:
+Like in the python logging module, this logging infrastructure is based on three concepts:
  
-{e loggers,  handlers, formatters} and {e log items }.
+{e loggers,  handlers} and {e log items }.
 
-A call to {e logger} will create a {e log item}, which it will pass to its {e handlers}. Each {e handler} transforms the {e log item} to a string using its assigned {e formatter}, and then treats the {e item} (e.g. outputs to stdout or to a file).
+A call to {e logger} will create a {e log item}, which it will pass to its {e handlers}. Each {e handler} will treats the {e item} (e.g. transform it to a string, and then outputs to stdout or to a file).
 {v
-                                   ___________________________
-                                  |         handler 1         |
-                                  | (formatter) | (treatment) |
-             _______________      |---------------------------|
-            |     logger    | ==> | -> string  ==>    ( * )   |
-            |---------------|     |___________________________|
-message ==> | -> log item   |      ___________________________
-            [_______________| ==> |         handler 2         |
-                                  |            ...            |
+                                   ___________
+                                  | handler 1 |
+             _______________      |-----------|
+            |     logger    | ==> |   ( * )   |
+            |---------------|     |___________|
+message ==> | -> log item   |      ___________
+            [_______________| ==> | handler 2 |
+                                  |   ...     |
 v}
 
 
 {4 Levels}
 
-To each logger, handler and log message are associated a level, which will
+To each logger and log message are associated a level, which will
 be used to filter the messages going through the logging infrastructure.
 
 The predefined levels are, in increasing order of precedence :
@@ -63,6 +61,18 @@ The predefined levels are, in increasing order of precedence :
  + Warning : used for warnings.
  + Error   : used for errors.
  + Flash   : used for one-shot debugging: displays an easy to spot message.
+
+{4 Log items }
+
+A log item has type
+{[
+    type log_item = {
+        level : level;
+        logger_name : string;
+        msg : string;
+        tags : tag list
+      } ]}
+      where the [tag] type if defined by the [Handlers] module.
 
 {2 Defaults}
 
@@ -73,6 +83,8 @@ By default, two handlers are provided. They are instantiated with a level of the
  - File handler : outputs messages to a given file.
    {[ let h = Default_handlers.make (File ("filename", Debug)) ]}
 
+
+Note that file handlers will write to files in the [logs] folder in the current path, creating it if it doesn't exist.
 See more about default handlers at {!module:Easy_logging__Default_handlers}.
 
 {3:logger Loggers}

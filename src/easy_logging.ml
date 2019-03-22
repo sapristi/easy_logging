@@ -2,10 +2,7 @@
 
 (* Type for log levels *)
 type log_level = Easy_logging_types.level
-                                  
-type log_item = Easy_logging_types.log_item
-              
-              
+               [@@deriving show { with_path = false }]
 module type HandlersT = Easy_logging_types.HandlersT
                      
                       
@@ -30,17 +27,18 @@ module MakeLogging (H : HandlersT) =
       val name = name
 
  
-      method private log_msg msg_level msg =
+      method private log_msg tags msg_level msg =
         match levelo with
         | None ->()
         | Some level ->
            if msg_level >= level
            then
              begin
-               let item : log_item= {
+               let item : H.log_item= {
                    level = msg_level;
                    logger_name = name;
-               msg = msg} in 
+                   msg = msg;
+                   tags=tags} in 
                List.iter (fun handler ->
                    H.apply handler item)
                  handlers
@@ -48,17 +46,18 @@ module MakeLogging (H : HandlersT) =
            else
              ()                           
           
-      method private log_msg_lazy (msg_level : log_level) msg =
+      method private log_msg_lazy tags (msg_level : log_level) msg =
         match levelo with
         | None ->()
         | Some level ->
            if msg_level >= level
            then
              begin
-               let item : log_item = {
+               let item : H.log_item = {
                    level = msg_level;
                    logger_name = name;
-                   msg = Lazy.force msg} in 
+                   msg = Lazy.force msg;
+                   tags= tags} in 
                List.iter (fun handler ->
                    H.apply handler item)
                  handlers
@@ -70,17 +69,17 @@ module MakeLogging (H : HandlersT) =
       method set_level new_levelo =
         levelo <- new_levelo
         
-      method flash = self#log_msg Flash
-      method error = self#log_msg Error
-      method warning = self#log_msg Warning
-      method info =  self#log_msg Info
-      method debug = self#log_msg Debug
+      method flash ?tags:(tags=[]) = self#log_msg tags Flash
+      method error ?tags:(tags=[]) = self#log_msg tags Error
+      method warning ?tags:(tags=[]) = self#log_msg tags Warning
+      method info ?tags:(tags=[]) =  self#log_msg tags Info
+      method debug ?tags:(tags=[]) = self#log_msg tags Debug
                    
-      method lflash = self#log_msg_lazy Flash
-      method lerror = self#log_msg_lazy Error
-      method lwarning = self#log_msg_lazy Warning
-      method linfo =  self#log_msg_lazy Info
-      method ldebug = self#log_msg_lazy Debug
+      method lflash ?tags:(tags=[]) = self#log_msg_lazy tags Flash
+      method lerror ?tags:(tags=[]) = self#log_msg_lazy tags Error
+      method lwarning ?tags:(tags=[]) = self#log_msg_lazy tags Warning
+      method linfo ?tags:(tags=[]) =  self#log_msg_lazy tags Info
+      method ldebug ?tags:(tags=[]) = self#log_msg_lazy tags Debug
     end
 
 
@@ -112,7 +111,7 @@ module MakeLogging (H : HandlersT) =
       
       
     let dummy = make_logger "dummy" None []
-    module Handlers = H
+    
                     
   end
 
