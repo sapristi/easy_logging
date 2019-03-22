@@ -1,6 +1,7 @@
 
 (** Type for log levels. *)
 type log_level = Easy_logging__.Easy_logging_types.level
+[@@deriving show { with_path = false }]
 
 
 
