@@ -54,8 +54,6 @@ let format_color (item : log_item) =
 
   
   
-let outputs : (string, out_channel) Hashtbl.t =  Hashtbl.create 10
-                                                  
 let apply (h : t) (item: log_item) =
   if item.level >= h.level
   then
@@ -65,7 +63,6 @@ let apply (h : t) (item: log_item) =
     )
   
 let make_cli_handler level =
-  Hashtbl.replace outputs "stdout" stdout;
   {fmt = format_color;
    level = level;
    output = stdout}
@@ -77,14 +74,6 @@ let make_file_handler level filename  =
     Unix.mkdir "logs" 0o777;
   
   let oc = 
-    if Hashtbl.mem outputs filename
-    then
-      Hashtbl.find outputs filename
-    else
-      (*
-      let p = File.perm [user_read; user_write; group_read; group_write] in
-      open_out_gen ~mode:[`create (*; `append *)] ~perm:p ("logs/"^filename)
-       *)
       open_out @@ "logs/"^filename
   in
   {fmt = format_default;

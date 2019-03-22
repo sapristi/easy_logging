@@ -27,9 +27,6 @@ type t =
     output : out_channel;
   }
 
-  
-val outputs : (string, out_channel) Hashtbl.t
-
 val apply : t -> log_item -> unit
 
 val make_cli_handler : Easy_logging_types.level -> t
