@@ -39,7 +39,7 @@ and loggerB = Logging.make_logger "B" (Some Debug)
 {3:dyn_logger Of a Logging module}
 file [a.ml]:
 {[ open Easy_logging
-logger = Logging.make_logger "MyApp.A" (Some Warning) (Cli Debug) ]}
+let loggerA = Logging.make_logger "MyApp.A" (Some Warning) (Cli Debug) ]}
 
 file [main.ml]:
 {[
@@ -48,6 +48,9 @@ if Sys.argv.(1) = "debug"
 then
    Logging.set_level "MyApp" (Some Debug);
 ]}
+
+At the call to [Logging.set_level], the level of [loggerA] is set to [Some Debug] (because it's name begins with [MyApp]).
+
 
 {3:dyn_handler Of a handler}
 {[
