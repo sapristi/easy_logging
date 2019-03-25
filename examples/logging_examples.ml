@@ -5,7 +5,7 @@ open Easy_logging
 (* ************* *)
 (* Basic example *)
 let logger = Logging.make_logger
-               "test" (Some Debug)
+               "test" Debug
                [Cli Debug];;
                
 logger#debug "This is a debug message";
@@ -16,7 +16,7 @@ logger#flash "This is a FLASH message";
 
 (* another logger *)
 let sublogger = Logging.make_logger
-                  "test.sub" (Some Info)
+                  "test.sub" Info
                   [Cli Debug]
 in
 
@@ -34,7 +34,7 @@ sublogger#warning "This is %s" "format !!";
 (* Globally modifying logger level :
  * sets the level of all loggers whose
  * name begins with "test"            *)
-Logging.set_level "test" (Some Warning);
+Logging.set_level "test" Warning;
 
 
 (* ***************************** *)
@@ -63,11 +63,11 @@ module MyHandlers =
 module MyLogging = MakeLogging(MyHandlers)
 
 let l = ref [];;
-let mylogger = MyLogging.make_logger "mylogger" (Some Debug) [l];;
+let mylogger = MyLogging.make_logger "mylogger" Debug [l];;
 mylogger#info "this is a message";
 assert (!l = ["this is a message"]);
 
-mylogger#set_level (Some Warning);
+mylogger#set_level Warning;
 mylogger#debug "this message will not be passed to the handler";
 assert (!l = ["this is a message"]);
 
@@ -129,7 +129,7 @@ module TaggedHandlers =
 
 module TagsLogging = MakeLogging(TaggedHandlers);;
 
-let logger = TagsLogging.make_logger "tagged" (Some Debug) [()];;
+let logger = TagsLogging.make_logger "tagged" Debug [()];;
 logger#info ~tags:[Time; Value 4] "log message with tags";
 
 
@@ -137,7 +137,7 @@ logger#info ~tags:[Time; Value 4] "log message with tags";
 (* ******************************** *)
 (* modifying the level of a handler *)
 let h = Default_handlers.make (Cli Debug) in
-let logger = Logging.make_logger "handlerTest" (Some Debug) [] in
+let logger = Logging.make_logger "handlerTest" Debug [] in
 logger#add_handler h;
 logger#debug "this message is displayed";
 Default_handlers.set_level h Info;
@@ -155,6 +155,6 @@ let defaults : H.file_handler_defaults_t = {
 H.set_file_handler_defaults defaults;;
 module TestLogging = MakeLogging(H)
 let logger = TestLogging.make_logger
-               "test" (Some Debug) [File ("test", Debug)];;
+               "test" Debug [File ("test", Debug)];;
 logger#info "this is a message";
 assert (Sys.file_exists "test/test");

@@ -16,22 +16,27 @@ sig
   
   class logger :
           string ->
-          log_level option ->
+          log_level  ->
           H.desc list ->
           object
             val mutable handlers : H.t list
-            val mutable levelo : log_level option
+            val mutable level : log_level 
             val name : string
             method add_handler : H.t -> unit
-            method set_level : log_level option -> unit
+            method set_level : log_level  -> unit
 
                  
                  
-            method flash :   'a. ?tags:H.tag list -> ('a, unit, string, unit) format4 -> 'a
-            method error :   'a. ?tags:H.tag list -> ('a, unit, string, unit) format4 -> 'a
-            method warning : 'a. ?tags:H.tag list -> ('a, unit, string, unit) format4 -> 'a
-            method info :    'a. ?tags:H.tag list -> ('a, unit, string, unit) format4 -> 'a
-            method debug :   'a. ?tags:H.tag list -> ('a, unit, string, unit) format4 -> 'a
+            method flash :   'a. ?tags:H.tag list ->
+                             ('a, unit, string, unit) format4 -> 'a
+            method error :   'a. ?tags:H.tag list ->
+                             ('a, unit, string, unit) format4 -> 'a
+            method warning : 'a. ?tags:H.tag list ->
+                             ('a, unit, string, unit) format4 -> 'a
+            method info :    'a. ?tags:H.tag list ->
+                             ('a, unit, string, unit) format4 -> 'a
+            method debug :   'a. ?tags:H.tag list ->
+                             ('a, unit, string, unit) format4 -> 'a
               
             method sdebug : ?tags:H.tag list -> string -> unit
             method serror : ?tags:H.tag list -> string -> unit
@@ -46,9 +51,9 @@ sig
             method lwarning : ?tags:H.tag list -> string lazy_t -> unit
           end
   val _loggers : (string, logger) Hashtbl.t
-  val set_level : string -> log_level option -> unit
+  val set_level : string -> log_level  -> unit
   val get_logger : string -> logger
-  val make_logger : string -> log_level option -> H.desc list -> logger
+  val make_logger : string -> log_level  -> H.desc list -> logger
   val dummy : logger
 
 end
@@ -63,15 +68,15 @@ sig
   (** {3 Attributes} *)
   class logger :
           string ->
-          log_level option ->
+          log_level  ->
           Default_handlers.desc list ->
           object
 
             (** Name of the logger, displayed in log messages *)
             val name : string
 
-            (** Value used to filter log messages. If levelo is [None], no message is outputed.*)
-            val mutable levelo : log_level option
+            (** Value used to filter log messages.*)
+            val mutable level : log_level 
             (** {[type log_level = | Debug | Info | Warning | Error | Flash ]} *)
 
             
@@ -122,7 +127,7 @@ Example:
             method add_handler : Default_handlers.t -> unit
             
             (** Sets the log level of the logger instance. *)                 
-            method set_level : log_level option -> unit
+            method set_level : log_level  -> unit
 
                                                      (*
             method log_msg : log_level -> string -> unit
@@ -133,7 +138,7 @@ Example:
       creates a new logger instance from the given arguments,
       then register it internally, and returns it.  *)
   val make_logger :
-    string -> log_level option -> Default_handlers.desc list -> logger
+    string -> log_level  -> Default_handlers.desc list -> logger
 
   (** Internally registered loggers. *)
   val _loggers : (string, logger) Hashtbl.t
@@ -142,7 +147,7 @@ Example:
   (** [set_level prefix level] sets the level of all 
       registered loggers whose name begins by [prefix]
       to [level]. *)
-  val set_level : string -> log_level option -> unit
+  val set_level : string -> log_level  -> unit
 
 
     
@@ -152,19 +157,4 @@ Example:
 
   (** dummy logger : does nothing. *)
   val dummy : logger
-    (*
-  module Handlers :
-  sig
-    type t =
-           Handlers.t = {
-        mutable fmt : log_formatter;
-        mutable level : log_level;
-        output : unit Batteries.IO.output;
-      }
-     
-    val handle : t -> Easy_logging__Easy_logging_types.log_item -> unit
-    type desc = Handlers.desc
-    val make : desc -> t
-  end
-     *)
 end

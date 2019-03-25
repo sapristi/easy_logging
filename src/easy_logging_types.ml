@@ -7,6 +7,7 @@ type level =
   | Warning
   | Error
   | Flash
+  | NoLevel
 [@@deriving show { with_path = false }]
 
  
