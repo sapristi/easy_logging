@@ -37,8 +37,10 @@ sig
             method lwarning : ?tags:H.tag list -> string lazy_t -> unit
             method set_level : log_level option -> unit
             method warning : ?tags:H.tag list -> string -> unit
+
                  
-            method flog : log_level -> (('a, unit, string, unit) format4) -> 'a
+            method flog :log_level -> (('a, unit, string, unit) format4) -> 'a
+              
           end
   val _loggers : (string, logger) Hashtbl.t
   val set_level : string -> log_level option -> unit

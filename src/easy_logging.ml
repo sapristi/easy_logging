@@ -69,9 +69,25 @@ module MakeLogging (H : HandlersT) =
       method set_level new_levelo =
         levelo <- new_levelo
 
-      method flog : 'a. log_level -> (('a, unit, string, unit) format4) -> 'a = 
-        fun lvl x -> 
-        Printf.ksprintf (self#log_msg [] lvl) x
+      method flog : 'b. log_level  -> ('b, unit, string, unit) format4 -> 'b
+        =  fun msg_level  ->
+
+        match levelo with
+        | None ->  Printf.ifprintf () 
+        | Some level ->
+           if msg_level >= level
+           then
+               Printf.ksprintf (
+                   fun msg -> 
+                   let item : H.log_item = {
+                       level = msg_level;
+                       logger_name = name;
+                       msg = msg;
+                       tags= []} in 
+                   List.iter (fun handler ->
+                       H.apply handler item)
+                     handlers)
+           else Printf.ifprintf () 
         
       method flash ?tags:(tags=[]) = self#log_msg tags Flash
       method error ?tags:(tags=[]) = self#log_msg tags Error
