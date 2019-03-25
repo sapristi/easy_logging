@@ -23,24 +23,26 @@ sig
             val mutable levelo : log_level option
             val name : string
             method add_handler : H.t -> unit
-            method debug : ?tags:H.tag list -> string -> unit
-            method error : ?tags:H.tag list -> string -> unit
-            method flash : ?tags:H.tag list -> string -> unit
-            method info : ?tags:H.tag list -> string -> unit
+            method set_level : log_level option -> unit
+
+            method flash : 'a. ?tags:(H.tag list) -> ('a, unit, string, unit) format4 -> 'a
+            method error : 'a. ?tags:(H.tag list) -> ('a, unit, string, unit) format4 -> 'a
+            method warning : 'a. ?tags:(H.tag list) -> ('a, unit, string, unit) format4 -> 'a
+            method info : 'a. ?tags:(H.tag list) -> ('a, unit, string, unit) format4 -> 'a
+            method debug : 'a. ?tags:(H.tag list) -> ('a, unit, string, unit) format4 -> 'a
+                 
+                 
+            method sdebug : ?tags:H.tag list -> string -> unit
+            method serror : ?tags:H.tag list -> string -> unit
+            method sflash : ?tags:H.tag list -> string -> unit
+            method sinfo : ?tags:H.tag list -> string -> unit
+            method swarning : ?tags:H.tag list -> string -> unit
+
             method ldebug : ?tags:H.tag list -> string lazy_t -> unit
             method lerror : ?tags:H.tag list -> string lazy_t -> unit
             method lflash : ?tags:H.tag list -> string lazy_t -> unit
             method linfo : ?tags:H.tag list -> string lazy_t -> unit
-                 (*
-            method log_msg : log_level -> string -> unit
-            method log_msg_lazy : log_level -> string lazy_t -> unit *)
             method lwarning : ?tags:H.tag list -> string lazy_t -> unit
-            method set_level : log_level option -> unit
-            method warning : ?tags:H.tag list -> string -> unit
-
-                 
-            method flog :log_level -> (('a, unit, string, unit) format4) -> 'a
-              
           end
   val _loggers : (string, logger) Hashtbl.t
   val set_level : string -> log_level option -> unit
@@ -82,28 +84,39 @@ Each of these methods takes an optional [tag list] and a [string] as an input. I
 Example : 
 {[logger#warning "Something wrong happened"]}
  *)
+              
+            method flash : 'a. ?tags:(Default_handlers.tag list) -> ('a, unit, string, unit) format4 -> 'a
+            method error : 'a. ?tags:(Default_handlers.tag list) -> ('a, unit, string, unit) format4 -> 'a
+            method warning : 'a. ?tags:(Default_handlers.tag list) -> ('a, unit, string, unit) format4 -> 'a
+            method info : 'a. ?tags:(Default_handlers.tag list) -> ('a, unit, string, unit) format4 -> 'a
+            method debug : 'a. ?tags:(Default_handlers.tag list) -> ('a, unit, string, unit) format4 -> 'a
+                 
+                 
+            method sdebug : ?tags:Default_handlers.tag list -> string -> unit
+            method serror : ?tags:Default_handlers.tag list -> string -> unit
+            method sflash : ?tags:Default_handlers.tag list -> string -> unit
+            method sinfo : ?tags:Default_handlers.tag list -> string -> unit
+            method swarning : ?tags:Default_handlers.tag list -> string -> unit
 
-            method debug : ?tags:Default_handlers.tag list -> string -> unit
-            method info : ?tags:Default_handlers.tag list -> string -> unit
-            method warning : ?tags:Default_handlers.tag list -> string -> unit
-            method error : ?tags:Default_handlers.tag list -> string -> unit
-            method flash : ?tags:Default_handlers.tag list -> string -> unit
+
+                 
             (** {3 Lazy logging methods} 
 Each of these methods takes a [string lazy_t] as an input (as well as the optional [tag list]. If the log level of the instance is low enough, the lazy value will forced into a [string], a log item will be created then passed to the handlers.
 
 Example:
 {[logger#ldebug (lazy (heavy_calculation () ))]}
 *)
+
                  
             method ldebug : ?tags:Default_handlers.tag list -> string lazy_t -> unit
             method linfo : ?tags:Default_handlers.tag list -> string lazy_t -> unit
             method lwarning : ?tags:Default_handlers.tag list -> string lazy_t -> unit
             method lerror : ?tags:Default_handlers.tag list -> string lazy_t -> unit
             method lflash : ?tags:Default_handlers.tag list -> string lazy_t -> unit
+
+                 
             (** {3 Other methods} *)
 
-            method flog : log_level -> (('a, unit, string, unit) format4) -> 'a
-              
             (** Adds a handler to the logger instance. *)
             method add_handler : Default_handlers.t -> unit
             

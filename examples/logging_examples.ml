@@ -26,7 +26,7 @@ let heavy_calculation () = "heavy result" in
 sublogger#ldebug (lazy (heavy_calculation ()));
 
 (* *** *)
-sublogger#flog Warning "This is %s" "format !!";
+sublogger#warning "This is %s" "format !!";
 
 
 

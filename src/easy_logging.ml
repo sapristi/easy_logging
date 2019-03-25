@@ -27,7 +27,12 @@ module MakeLogging (H : HandlersT) =
       val name = name
 
  
-      method private log_msg tags msg_level msg =
+      method add_handler h = handlers <- h::handlers
+      method set_level new_levelo =
+        levelo <- new_levelo
+
+      method private _log_msg : 'a. ('a -> string) -> H.tag list -> log_level -> 'a -> unit
+        = fun unwrap_fun tags msg_level msg ->
         match levelo with
         | None ->()
         | Some level ->
@@ -37,7 +42,7 @@ module MakeLogging (H : HandlersT) =
                let item : H.log_item= {
                    level = msg_level;
                    logger_name = name;
-                   msg = msg;
+                   msg = unwrap_fun msg;
                    tags=tags} in 
                List.iter (fun handler ->
                    H.apply handler item)
@@ -46,31 +51,9 @@ module MakeLogging (H : HandlersT) =
            else
              ()                           
           
-      method private log_msg_lazy tags (msg_level : log_level) msg =
-        match levelo with
-        | None ->()
-        | Some level ->
-           if msg_level >= level
-           then
-             begin
-               let item : H.log_item = {
-                   level = msg_level;
-                   logger_name = name;
-                   msg = Lazy.force msg;
-                   tags= tags} in 
-               List.iter (fun handler ->
-                   H.apply handler item)
-                 handlers
-             end
-           else
-             ()
 
-      method add_handler h = handlers <- h::handlers
-      method set_level new_levelo =
-        levelo <- new_levelo
-
-      method flog : 'b. log_level  -> ('b, unit, string, unit) format4 -> 'b
-        =  fun msg_level  ->
+      method private _flog_msg : 'a. H.tag list -> log_level -> ('a, unit, string, unit) format4 -> 'a
+        =  fun tags msg_level  ->
 
         match levelo with
         | None ->  Printf.ifprintf () 
@@ -83,25 +66,38 @@ module MakeLogging (H : HandlersT) =
                        level = msg_level;
                        logger_name = name;
                        msg = msg;
-                       tags= []} in 
+                       tags= tags} in 
                    List.iter (fun handler ->
                        H.apply handler item)
                      handlers)
            else Printf.ifprintf () 
-        
-      method flash ?tags:(tags=[]) = self#log_msg tags Flash
-      method error ?tags:(tags=[]) = self#log_msg tags Error
-      method warning ?tags:(tags=[]) = self#log_msg tags Warning
-      method info ?tags:(tags=[]) =  self#log_msg tags Info
-      method debug ?tags:(tags=[]) = self#log_msg tags Debug
-                   
-      method lflash ?tags:(tags=[]) = self#log_msg_lazy tags Flash
-      method lerror ?tags:(tags=[]) = self#log_msg_lazy tags Error
-      method lwarning ?tags:(tags=[]) = self#log_msg_lazy tags Warning
-      method linfo ?tags:(tags=[]) =  self#log_msg_lazy tags Info
-      method ldebug ?tags:(tags=[]) = self#log_msg_lazy tags Debug
-    end
 
+          
+      method flash : 'a. ?tags:(H.tag list) -> ('a, unit, string, unit) format4 -> 'a
+        = fun ?tags:(tags=[]) -> self#_flog_msg tags Flash
+      method error : 'a. ?tags:(H.tag list) -> ('a, unit, string, unit) format4 -> 'a
+        = fun ?tags:(tags=[]) -> self#_flog_msg tags Error
+      method warning : 'a. ?tags:(H.tag list) -> ('a, unit, string, unit) format4 -> 'a
+        = fun ?tags:(tags=[]) -> self#_flog_msg tags Warning
+      method info : 'a. ?tags:(H.tag list) -> ('a, unit, string, unit) format4 -> 'a
+        = fun ?tags:(tags=[]) -> self#_flog_msg tags Info
+      method debug : 'a. ?tags:(H.tag list) -> ('a, unit, string, unit) format4 -> 'a
+        = fun ?tags:(tags=[]) -> self#_flog_msg tags Debug
+
+                               
+      method sflash ?tags:(tags=[]) = self#_log_msg (fun x->x) tags Flash
+      method serror ?tags:(tags=[]) = self#_log_msg (fun x->x) tags Error
+      method swarning ?tags:(tags=[]) = self#_log_msg (fun x->x) tags Warning
+      method sinfo ?tags:(tags=[]) =  self#_log_msg (fun x->x) tags Info
+      method sdebug ?tags:(tags=[]) = self#_log_msg (fun x->x) tags Debug
+
+                                    
+      method lflash ?tags:(tags=[]) = self#_log_msg Lazy.force tags Flash
+      method lerror ?tags:(tags=[]) = self#_log_msg Lazy.force tags Error
+      method lwarning ?tags:(tags=[]) = self#_log_msg Lazy.force tags Warning
+      method linfo ?tags:(tags=[]) =  self#_log_msg Lazy.force tags Info
+      method ldebug ?tags:(tags=[]) = self#_log_msg Lazy.force tags Debug
+    end
 
   
     let _loggers : (string, logger) Hashtbl.t =  Hashtbl.create 10
