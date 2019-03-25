@@ -25,13 +25,14 @@ sig
             method add_handler : H.t -> unit
             method set_level : log_level option -> unit
 
-            method flash :   'a. ('a, unit, string, unit) format4 -> 'a
-            method error :   'a. ('a, unit, string, unit) format4 -> 'a
-            method warning : 'a. ('a, unit, string, unit) format4 -> 'a
-            method info :    'a. ('a, unit, string, unit) format4 -> 'a
-            method debug :   'a. ('a, unit, string, unit) format4 -> 'a
                  
                  
+            method flash :   'a. ?tags:H.tag list -> ('a, unit, string, unit) format4 -> 'a
+            method error :   'a. ?tags:H.tag list -> ('a, unit, string, unit) format4 -> 'a
+            method warning : 'a. ?tags:H.tag list -> ('a, unit, string, unit) format4 -> 'a
+            method info :    'a. ?tags:H.tag list -> ('a, unit, string, unit) format4 -> 'a
+            method debug :   'a. ?tags:H.tag list -> ('a, unit, string, unit) format4 -> 'a
+              
             method sdebug : ?tags:H.tag list -> string -> unit
             method serror : ?tags:H.tag list -> string -> unit
             method sflash : ?tags:H.tag list -> string -> unit
@@ -85,11 +86,11 @@ Example :
 {[logger#warning "Something wrong happened"]}
  *)
               
-            method flash : 'a. ('a, unit, string, unit) format4 -> 'a
-            method error : 'a. ('a, unit, string, unit) format4 -> 'a
-            method warning : 'a. ('a, unit, string, unit) format4 -> 'a
-            method info : 'a. ('a, unit, string, unit) format4 -> 'a
-            method debug : 'a. ('a, unit, string, unit) format4 -> 'a
+            method flash : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
+            method error : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
+            method warning : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
+            method info : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
+            method debug : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
                  
                  
             method sdebug : ?tags:Default_handlers.tag list -> string -> unit
@@ -107,7 +108,7 @@ Example:
 {[logger#ldebug (lazy (heavy_calculation () ))]}
 *)
 
-                 
+          
             method ldebug : ?tags:Default_handlers.tag list -> string lazy_t -> unit
             method linfo : ?tags:Default_handlers.tag list -> string lazy_t -> unit
             method lwarning : ?tags:Default_handlers.tag list -> string lazy_t -> unit
