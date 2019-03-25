@@ -6,7 +6,7 @@
 
 It has the following features :
    - one line logger creation
-   - log messages are either [string] or [string lazy_t]
+   - log messages printf style, or provide [string] or [string lazy_t] message
    - log level adaptable at runtime from anywhere in the program
    - handlers associated to each logger will format and treat the message independantly
    - use the infrastructure with your own handlers with the [MakeLogging] functor.
@@ -39,14 +39,14 @@ Like in the python logging module, this logging infrastructure is based on three
 
 A call to {e logger} will create a {e log item}, which it will pass to its {e handlers}. Each {e handler} will treats the {e item} (e.g. transform it to a string, and then outputs to stdout or to a file).
 {v
-                                   ___________
-                                  | handler 1 |
-             _______________      |-----------|
-            |     logger    | ==> |   ( * )   |
-            |---------------|     |___________|
-message ==> | -> log item   |      ___________
-            [_______________| ==> | handler 2 |
-                                  |   ...     |
+                                     ___________
+                                    | handler 1 |
+               _______________      |-----------|
+              |     logger    | ==> |   ( * )   |
+              |---------------|     |___________|
+(message) ==> | -> log item   |      ___________
+( level )     [_______________| ==> | handler 2 |
+                                    |   ...     |
 v}
 
 
@@ -61,6 +61,7 @@ The predefined levels are, in increasing order of precedence :
  + Warning : used for warnings.
  + Error   : used for errors.
  + Flash   : used for one-shot debugging: displays an easy to spot message.
+ + NoLevel : used to filter out all messages.
 
 {4 Log items }
 
@@ -93,19 +94,21 @@ See complete class documentation at {! Easy_logging.Logging.logger}
 
 {4 Creation}
 A logger object can be created directly :
-{[ let logger1 = new Logging.logger "my_logger1" (Some Warning) [Cli Debug] ]}
+{[ let logger1 = new Logging.logger "my_logger1" Warning [Cli Debug] ]}
 or through the make_logger function :
-{[ let logger2 = Logging.make_logger "my_logger2" (Some Debug) [Cli Debug] ]}
+{[ let logger2 = Logging.make_logger "my_logger2" Debug [Cli Debug] ]}
 
 The [make_logger] function will register the logger instance internaly so that it will be possible to access and modify it from anywhere in the program.
 
 
 {4 Usage}
 
-A logger object has two methods for each of the log levels: one that takes a [string], and one that takes a [string lazy_t].
+A logger object has three methods for each of the log levels: one that takes a formatting string and parameters (printf like), one that takes a [string lazy_t], and one that takes a [string].
 
-{[logger1#debug "x is alive";
-logger1#ldebug (lazy (heavy_calculation ())); ]}
+{[logger1#debug "Myvar : %s" (to_string myvar);
+logger1#ldebug (lazy (heavy_calculation ()));
+logger1#sdebug (to_string myvar);
+]}
 
 {3:logging The Logging module}
 
@@ -113,9 +116,9 @@ The {! Easy_logging.Logging} module is that application of [MakeLogging] over [D
 It provides three functions :
 
  - {[ val make_logger :
-    string -> log_level option -> Default_handlers.desc list ]}
+    string -> log_level -> Default_handlers.desc list ]}
     to instantiate and register a logger
- - {[val set_level : string -> log_level option -> unit]}
+ - {[val set_level : string -> log_level -> unit]}
     [set_level prefix level] sets the level of all 
       registered loggers whose name begins by [prefix]
       to [level].
@@ -149,7 +152,7 @@ module MyHandlers =
 module MyLogging = MakeLogging(MyHandlers)
 
 let l = ref [];;
-let mylogger = MyLogging.make_logger "mylogger" (Some Debug) [l];;
+let mylogger = MyLogging.make_logger "mylogger" Debug [l];;
 mylogger#info "this is a message";
 
 ]}

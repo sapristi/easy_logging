@@ -54,7 +54,7 @@ sig
   val set_level : string -> log_level  -> unit
   val get_logger : string -> logger
   val make_logger : string -> log_level  -> H.desc list -> logger
-  val dummy : logger
+  val dummy : unit -> logger
 
 end
 
@@ -77,7 +77,7 @@ sig
 
             (** Value used to filter log messages.*)
             val mutable level : log_level 
-            (** {[type log_level = | Debug | Info | Warning | Error | Flash ]} *)
+            (** {[type log_level = | Debug | Info | Warning | Error | Flash | NoLevel ]} *)
 
             
             val mutable handlers : Default_handlers.t list
@@ -85,7 +85,7 @@ sig
               
               
 {3 Classic logging Methods}
-Each of these methods takes an optional [tag list] and a [string] as an input. If the log level of the instance is low enough, a log item will be created theb passed to the handlers.
+Each of these methods takes an optional [tag list], then a set of parameters the way a printf function does. If the log level of the instance is low enough, a log item will be created theb passed to the handlers.
 
 Example : 
 {[logger#warning "Something wrong happened"]}
@@ -98,12 +98,6 @@ Example :
             method debug : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
                  
                  
-            method sdebug : ?tags:Default_handlers.tag list -> string -> unit
-            method serror : ?tags:Default_handlers.tag list -> string -> unit
-            method sflash : ?tags:Default_handlers.tag list -> string -> unit
-            method sinfo : ?tags:Default_handlers.tag list -> string -> unit
-            method swarning : ?tags:Default_handlers.tag list -> string -> unit
-
 
                  
             (** {3 Lazy logging methods} 
@@ -119,6 +113,15 @@ Example:
             method lwarning : ?tags:Default_handlers.tag list -> string lazy_t -> unit
             method lerror : ?tags:Default_handlers.tag list -> string lazy_t -> unit
             method lflash : ?tags:Default_handlers.tag list -> string lazy_t -> unit
+
+
+                 (** {3 String logging methods}
+These methods take a simple string as input.*)
+            method sdebug : ?tags:Default_handlers.tag list -> string -> unit
+            method serror : ?tags:Default_handlers.tag list -> string -> unit
+            method sflash : ?tags:Default_handlers.tag list -> string -> unit
+            method sinfo : ?tags:Default_handlers.tag list -> string -> unit
+            method swarning : ?tags:Default_handlers.tag list -> string -> unit
 
                  
             (** {3 Other methods} *)
@@ -150,11 +153,10 @@ Example:
   val set_level : string -> log_level  -> unit
 
 
-    
-  (** Returns a registered logger. *)
+  (** Returns a registered logger by name. *)
   val get_logger : string -> logger
 
 
   (** dummy logger : does nothing. *)
-  val dummy : logger
+  val dummy : unit -> logger
 end

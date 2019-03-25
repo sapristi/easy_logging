@@ -119,7 +119,7 @@ module MakeLogging (H : HandlersT) =
       l
       
       
-    let dummy = make_logger "dummy" NoLevel []
+    let dummy () = make_logger "dummy" NoLevel []
     
                     
   end
