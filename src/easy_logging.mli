@@ -37,6 +37,8 @@ sig
             method lwarning : ?tags:H.tag list -> string lazy_t -> unit
             method set_level : log_level option -> unit
             method warning : ?tags:H.tag list -> string -> unit
+                 
+            method flog : log_level -> (('a, unit, string, unit) format4) -> 'a
           end
   val _loggers : (string, logger) Hashtbl.t
   val set_level : string -> log_level option -> unit
@@ -98,6 +100,8 @@ Example:
             method lflash : ?tags:Default_handlers.tag list -> string lazy_t -> unit
             (** {3 Other methods} *)
 
+            method flog : log_level -> (('a, unit, string, unit) format4) -> 'a
+              
             (** Adds a handler to the logger instance. *)
             method add_handler : Default_handlers.t -> unit
             

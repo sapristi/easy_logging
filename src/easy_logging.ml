@@ -68,6 +68,10 @@ module MakeLogging (H : HandlersT) =
       method add_handler h = handlers <- h::handlers
       method set_level new_levelo =
         levelo <- new_levelo
+
+      method flog : 'a. log_level -> (('a, unit, string, unit) format4) -> 'a = 
+        fun lvl x -> 
+        Printf.ksprintf (self#log_msg [] lvl) x
         
       method flash ?tags:(tags=[]) = self#log_msg tags Flash
       method error ?tags:(tags=[]) = self#log_msg tags Error
