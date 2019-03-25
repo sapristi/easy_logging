@@ -52,8 +52,8 @@ module MakeLogging (H : HandlersT) =
              ()                           
           
 
-      method private _flog_msg : 'a. H.tag list -> log_level -> ('a, unit, string, unit) format4 -> 'a
-        =  fun tags msg_level  ->
+      method private _flog_msg : 'a. log_level -> ('a, unit, string, unit) format4 -> 'a
+        =  fun msg_level  ->
 
         match levelo with
         | None ->  Printf.ifprintf () 
@@ -66,23 +66,23 @@ module MakeLogging (H : HandlersT) =
                        level = msg_level;
                        logger_name = name;
                        msg = msg;
-                       tags= tags} in 
+                       tags= []} in 
                    List.iter (fun handler ->
                        H.apply handler item)
                      handlers)
            else Printf.ifprintf () 
 
           
-      method flash : 'a. ?tags:(H.tag list) -> ('a, unit, string, unit) format4 -> 'a
-        = fun ?tags:(tags=[]) -> self#_flog_msg tags Flash
-      method error : 'a. ?tags:(H.tag list) -> ('a, unit, string, unit) format4 -> 'a
-        = fun ?tags:(tags=[]) -> self#_flog_msg tags Error
-      method warning : 'a. ?tags:(H.tag list) -> ('a, unit, string, unit) format4 -> 'a
-        = fun ?tags:(tags=[]) -> self#_flog_msg tags Warning
-      method info : 'a. ?tags:(H.tag list) -> ('a, unit, string, unit) format4 -> 'a
-        = fun ?tags:(tags=[]) -> self#_flog_msg tags Info
-      method debug : 'a. ?tags:(H.tag list) -> ('a, unit, string, unit) format4 -> 'a
-        = fun ?tags:(tags=[]) -> self#_flog_msg tags Debug
+      method flash : 'a. ('a, unit, string, unit) format4 -> 'a
+        = self#_flog_msg Flash
+      method error : 'a. ('a, unit, string, unit) format4 -> 'a
+        = self#_flog_msg Error
+      method warning : 'a. ('a, unit, string, unit) format4 -> 'a
+        = self#_flog_msg Warning
+      method info : 'a. ('a, unit, string, unit) format4 -> 'a
+        = self#_flog_msg Info
+      method debug : 'a. ('a, unit, string, unit) format4 -> 'a
+        = self#_flog_msg Debug
 
                                
       method sflash ?tags:(tags=[]) = self#_log_msg (fun x->x) tags Flash

@@ -108,11 +108,11 @@ Example:
 *)
 
                  
-            method ldebug : ?tags:Default_handlers.tag list -> string lazy_t -> unit
-            method linfo : ?tags:Default_handlers.tag list -> string lazy_t -> unit
-            method lwarning : ?tags:Default_handlers.tag list -> string lazy_t -> unit
-            method lerror : ?tags:Default_handlers.tag list -> string lazy_t -> unit
-            method lflash : ?tags:Default_handlers.tag list -> string lazy_t -> unit
+            method ldebug : string lazy_t -> unit
+            method linfo : string lazy_t -> unit
+            method lwarning : string lazy_t -> unit
+            method lerror : string lazy_t -> unit
+            method lflash : string lazy_t -> unit
 
                  
             (** {3 Other methods} *)
