@@ -21,10 +21,10 @@ of level at least info will be printed on the terminal.
 
 {[open Easy_logging
 
-let loggerA = Logging.make_logger "A" (Some Debug)
+let loggerA = Logging.make_logger "A" Debug
                 [Cli Info;File ("A.log", Debug);
                  File ("problems.log", Warning)]
-and loggerB = Logging.make_logger "B" (Some Debug)
+and loggerB = Logging.make_logger "B" Debug
                 [Cli Info;File ("B.log", Debug);
                  File ("problems.log", Warning)] 
 
@@ -39,21 +39,24 @@ and loggerB = Logging.make_logger "B" (Some Debug)
 {3:dyn_logger Of a Logging module}
 file [a.ml]:
 {[ open Easy_logging
-logger = Logging.make_logger "MyApp.A" (Some Warning) (Cli Debug) ]}
+let loggerA = Logging.make_logger "MyApp.A" Warning (Cli Debug) ]}
 
 file [main.ml]:
 {[
 open Easy_logging
 if Sys.argv.(1) = "debug"
 then
-   Logging.set_level "MyApp" (Some Debug);
+   Logging.set_level "MyApp" Debug;
 ]}
+
+At the call to [Logging.set_level], the level of [loggerA] is set to [Debug] (because it's name begins with [MyApp]).
+
 
 {3:dyn_handler Of a handler}
 {[
 
 let h = Default_handlers.make (Cli Debug) in
-let logger = Logging.make_logger "handlerTest" (Some Debug) [] in
+let logger = Logging.make_logger "handlerTest" Debug [] in
 logger#add_handler h;
 logger#debug "this message is displayed";
 Default_handlers.set_level h Info;
@@ -87,7 +90,7 @@ This handler add messages to a [list ref] given at handler creation.
 
 
 let l = ref [];;
-let mylogger = MyLogging.make_logger "mylogger" (Some Debug) [l];;
+let mylogger = MyLogging.make_logger "mylogger" Debug [l];;
 mylogger#info "this is a message";
 l;;]}
 
@@ -151,7 +154,7 @@ module TaggedHandlers =
 
 module TagsLogging = MakeLogging(TaggedHandlers);;
 
-let logger = TagsLogging.make_logger "tagged" (Some Debug) [()];;
+let logger = TagsLogging.make_logger "tagged" Debug [()];;
 logger#info ~tags:[Time; Value 4] "log message with tags";
 ]}
 
@@ -170,5 +173,5 @@ let defaults : H.file_handler_defaults_t = {
 H.set_file_handler_defaults defaults;;
 module TestLogging = MakeLogging(H)
 let logger = TestLogging.make_logger
-               "test" (Some Debug) [File ("test", Debug)];; 
+               "test" Debug [File ("test", Debug)];; 
 logger#info "this is a message";]}
