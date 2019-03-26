@@ -38,6 +38,7 @@ let format_color (item : log_item) =
     | Warning -> Colorize.LYellow
     | Info -> Colorize.LBlue
     | Debug -> Colorize.Green
+    | NoLevel -> Colorize.Default
   in
   
   let item_level_fmt = Colorize.format [ Fg (level_to_color item.level)]  (show_level item.level)
