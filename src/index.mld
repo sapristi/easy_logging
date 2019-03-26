@@ -33,7 +33,7 @@ will output to the stdout a message of the form
 {2:description Overall description }
 
 {4 Infrastructure }
-Like in the python logging module, this logging infrastructure is based on three concepts:
+The logging infrastructure is based on three concepts:
  
 {e loggers,  handlers} and {e log items }.
 
@@ -45,7 +45,7 @@ A call to {e logger} will create a {e log item}, which it will pass to its {e ha
               |     logger    | ==> |   ( * )   |
               |---------------|     |___________|
 (message) ==> | -> log item   |      ___________
-( level )     [_______________| ==> | handler 2 |
+              [_______________| ==> | handler 2 |
                                     |   ...     |
 v}
 
@@ -73,7 +73,7 @@ A log item has type
         msg : string;
         tags : tag list
       } ]}
-      where the [tag] type if defined by the [Handlers] module.
+      where the [tag] type is defined by the [Handlers] module.
 
 {2 Defaults}
 
@@ -103,12 +103,14 @@ The [make_logger] function will register the logger instance internaly so that i
 
 {4 Usage}
 
-A logger object has three methods for each of the log levels: one that takes a formatting string and parameters (printf like), one that takes a [string lazy_t], and one that takes a [string].
+A logger object has three methods for each of the log levels:
 
-{[logger1#debug "Myvar : %s" (to_string myvar);
-logger1#ldebug (lazy (heavy_calculation ()));
-logger1#sdebug (to_string myvar);
-]}
+ - one that takes a formatting string and parameters (printf like)
+  {[logger1#debug "Myvar : %s" (to_string myvar); ]}
+ - one that takes a [string lazy_t]
+  {[logger1#ldebug (lazy (heavy_calculation ())); ]}
+ - one that takes a [string]
+  {[ logger1#sdebug (to_string myvar);]}
 
 {3:logging The Logging module}
 

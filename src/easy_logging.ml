@@ -6,26 +6,22 @@ type log_level = Easy_logging_types.level
 module type HandlersT = Easy_logging_types.HandlersT
                      
                       
-(** Makes a logging module from a Handlers module *)
+                      
 module MakeLogging (H : HandlersT) =
   struct
 
-    (** logger class *)
+  
     class logger
             (name: string)
             (level: log_level)
             (handlers_desc : H.desc list)  =
     object(self)
 
-      (** Handlers associated to the logger *)
       val mutable handlers = List.map H.make handlers_desc
 
-      (** optional level of the logger *)
       val mutable level = level
 
-      (** Name of the logger *)
       val name = name
-
  
       method add_handler h = handlers <- h::handlers
       method set_level new_level =
@@ -118,15 +114,12 @@ module MakeLogging (H : HandlersT) =
       Hashtbl.add _loggers name l;
       l
       
-      
     let dummy () = make_logger "dummy" NoLevel []
     
-                    
-  end
+   end
 
 module Default_handlers = Default_handlers
                 
-(** Instantiation of [MakeLogging] over [Default_handlers] *)
 module Logging = MakeLogging(Default_handlers)
 
 

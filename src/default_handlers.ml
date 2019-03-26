@@ -1,10 +1,22 @@
+(** 
+In the [DefaultHandlers] module, handlers have level of their own. Their are two kinds of logger : 
+
+ - Cli handler: outputs colored messages to stdout 
+   {[ let h = Default_handlers.make (Cli Debug) ]}
+ - File handler : outputs messages to a given file
+   {[ let h = Default_handlers.make (File ("filename", Debug)) ]}
+
+ *)
 
 
 open Easy_logging_types
 
-
+(** {1 Type definitions } *)
+   
+(** we don't use tags here *)
 type tag = unit
-         
+
+             
 type log_item = {
     level : Easy_logging_types.level;
     logger_name : string;
@@ -14,6 +26,8 @@ type log_item = {
               
 type log_formatter = log_item -> string
 
+
+(** type of a handler *)
 type t =
   {
     mutable fmt : log_formatter;
@@ -21,7 +35,9 @@ type t =
     output : out_channel;
   }
 
+(** {1 Formatting functions} *)
 
+  
 let format_default (item : log_item) =
   Printf.sprintf "%-6.3f %-10s %-20s %s" (Sys.time ())
     (show_level item.level)
@@ -53,15 +69,8 @@ let format_color (item : log_item) =
      logger_name_fmt
      item_msg_fmt)
 
+(** {1 Handlers creation and setup utility functions } *)
   
-  
-let apply (h : t) (item: log_item) =
-  if item.level >= h.level
-  then
-    (
-      output_string h.output (Printf.sprintf "%s\n" (h.fmt item));
-      flush h.output;
-    )
   
 let make_cli_handler level =
   {fmt = format_color;
@@ -105,23 +114,25 @@ let make_file_handler level filename  =
    output = oc;
   }
   
+  
+type desc = | Cli of level | File of string * level 
+
+let make d = match d with
+  | Cli lvl -> make_cli_handler lvl
+  | File (f, lvl) -> make_file_handler lvl f
+                  
+(** {1 Handlers usage } *)
+                   
 let set_level h lvl =
   h.level <- lvl
 let set_formatter h fmt =
   h.fmt <- fmt
 
-  (*
-let handlers : (string, t) Hashtbl.t = Hashtbl.create 10
-let register_handler name handler =
-  Hashtbl.replace handlers name handler
-   *)
-  
-type desc = | Cli of level | File of string * level (* | Reg of string *)
 
-let make d = match d with
-  | Cli lvl -> make_cli_handler lvl
-  | File (f, lvl) -> make_file_handler lvl f
-                   (*
-  | Reg n ->
-     Hashtbl.find handlers n*)
-    
+let apply (h : t) (item: log_item) =
+  if item.level >= h.level
+  then
+    (
+      output_string h.output (Printf.sprintf "%s\n" (h.fmt item));
+      flush h.output;
+    )

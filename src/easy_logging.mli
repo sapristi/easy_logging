@@ -1,4 +1,6 @@
 
+
+
 (** Type for log levels. *)
 type log_level = Easy_logging__.Easy_logging_types.level
 [@@deriving show { with_path = false }]
@@ -13,7 +15,8 @@ module type HandlersT = Easy_logging__.Easy_logging_types.HandlersT
 module MakeLogging :
 functor (H : Easy_logging__Easy_logging_types.HandlersT) ->
 sig
-  
+
+  (** See {! Easy_logging.Logging.logger} for documentation *)
   class logger :
           string ->
           log_level  ->
@@ -79,16 +82,15 @@ sig
             val mutable level : log_level 
             (** {[type log_level = | Debug | Info | Warning | Error | Flash | NoLevel ]} *)
 
-            
+            (** Registered handlers for this logger *)
             val mutable handlers : Default_handlers.t list
-            (** Registered handlers for this logger 
+                                     
               
-              
-{3 Classic logging Methods}
+            (** {3 Classic logging Methods}
 Each of these methods takes an optional [tag list], then a set of parameters the way a printf function does. If the log level of the instance is low enough, a log item will be created theb passed to the handlers.
 
 Example : 
-{[logger#warning "Something wrong happened"]}
+{[logger#warning "Unexpected value: %s" (to_string my_value)]}
  *)
               
             method flash : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
@@ -117,6 +119,7 @@ Example:
 
                  (** {3 String logging methods}
 These methods take a simple string as input.*)
+                 
             method sdebug : ?tags:Default_handlers.tag list -> string -> unit
             method serror : ?tags:Default_handlers.tag list -> string -> unit
             method sflash : ?tags:Default_handlers.tag list -> string -> unit
