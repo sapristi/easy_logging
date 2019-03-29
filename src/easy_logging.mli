@@ -6,8 +6,6 @@ type log_level = Easy_logging__.Easy_logging_types.level
 [@@deriving show { with_path = false }]
 
 
-
-               
 (** Signature of Handlers modules. *)
 module type HandlersT = Easy_logging__.Easy_logging_types.HandlersT
 
@@ -18,17 +16,23 @@ sig
 
   (** See {! Easy_logging.Logging.logger} for documentation *)
   class logger :
+          ?parent:logger option ->
           string ->
-          log_level  ->
-          H.desc list ->
           object
-            val mutable handlers : H.t list
-            val mutable level : log_level 
             val name : string
+            val mutable level : log_level option
+            val mutable handlers : H.t list 
+            val parent : logger option
+            val propagate : bool
+            
+              
             method add_handler : H.t -> unit
             method set_level : log_level  -> unit
+            method get_handlers : H.t list
+            method set_propagate : bool -> unit         
 
-                 
+            method effective_level : log_level
+            
                  
             method flash :   'a. ?tags:H.tag list ->
                              ('a, unit, string, unit) format4 -> 'a
@@ -53,11 +57,10 @@ sig
             method linfo : ?tags:H.tag list -> string lazy_t -> unit
             method lwarning : ?tags:H.tag list -> string lazy_t -> unit
           end
-  val _loggers : (string, logger) Hashtbl.t
-  val set_level : string -> log_level  -> unit
+      
   val get_logger : string -> logger
-  val make_logger : string -> log_level  -> H.desc list -> logger
-  val dummy : unit -> logger
+  val make_logger : ?propagate:bool -> string -> log_level  -> H.desc list -> logger
+
 
 end
 
@@ -70,21 +73,25 @@ module Logging :
 sig
   (** {3 Attributes} *)
   class logger :
+          ?parent:logger option ->
           string ->
-          log_level  ->
-          Default_handlers.desc list ->
           object
 
-            (** Name of the logger, displayed in log messages *)
+            (** {3 Attributes} *)
+            
+            (** Name of the logger:
+ - displayed in log messages
+ - defines the logger place in the logging tree *)
             val name : string
 
             (** Value used to filter log messages.*)
-            val mutable level : log_level 
-            (** {[type log_level = | Debug | Info | Warning | Error | Flash | NoLevel ]} *)
-
+            val mutable level : log_level option
             (** Registered handlers for this logger *)
-            val mutable handlers : Default_handlers.t list
-                                     
+            val mutable handlers : Default_handlers.t list 
+            val parent : logger option
+            val propagate : bool
+            
+              
               
             (** {3 Classic logging Methods}
 Each of these methods takes an optional [tag list], then a set of parameters the way a printf function does. If the log level of the instance is low enough, a log item will be created theb passed to the handlers.
@@ -129,37 +136,30 @@ These methods take a simple string as input.*)
                  
             (** {3 Other methods} *)
 
+                 
+            (** Sets the log level of the logger instance. *)    
+            method set_level : log_level  -> unit
+                 
             (** Adds a handler to the logger instance. *)
             method add_handler : Default_handlers.t -> unit
-            
-            (** Sets the log level of the logger instance. *)                 
-            method set_level : log_level  -> unit
 
-                                                     (*
-            method log_msg : log_level -> string -> unit
-            method log_msg_lazy : log_level -> string lazy_t -> unit *)
+                 
+            method get_handlers : Default_handlers.t list
+
+            (** Returs this logger level if it is not [None], else searches amongst ancestors for the first defined level; returns [NoLevel] if no level can be found. *) 
+            method effective_level : log_level
+
+                 
+            method set_propagate : bool -> unit
           end
 
   (** [make_logger name level handlers_descs] 
       creates a new logger instance from the given arguments,
       then register it internally, and returns it.  *)
   val make_logger :
-    string -> log_level  -> Default_handlers.desc list -> logger
-
-  (** Internally registered loggers. *)
-  val _loggers : (string, logger) Hashtbl.t
-
-
-  (** [set_level prefix level] sets the level of all 
-      registered loggers whose name begins by [prefix]
-      to [level]. *)
-  val set_level : string -> log_level  -> unit
-
+     ?propagate:bool -> string -> log_level  -> Default_handlers.desc list -> logger
 
   (** Returns a registered logger by name. *)
   val get_logger : string -> logger
 
-
-  (** dummy logger : does nothing. *)
-  val dummy : unit -> logger
 end

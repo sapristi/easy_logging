@@ -5,7 +5,7 @@ open Easy_logging
 (* ************* *)
 (* Basic example *)
 let logger = Logging.make_logger
-               "test" Debug
+               "test_preview" Debug
                [Cli Debug];;
                
 logger#debug "This is a debug message";
@@ -15,10 +15,9 @@ logger#error "This is an error message";
 logger#flash "This is a FLASH message";
 
 (* another logger *)
-let sublogger = Logging.make_logger
-                  "test.sub" Info
-                  [Cli Debug]
+let sublogger = Logging.get_logger "test_preview.sub"
 in
+sublogger#set_level Info;
 
 (* ***************** *)
 (* log lazy messages *)
@@ -34,7 +33,6 @@ sublogger#warning "This is %s" "format !!";
 (* Globally modifying logger level :
  * sets the level of all loggers whose
  * name begins with "test"            *)
-Logging.set_level "test" Warning;
 
 
 (* ***************************** *)
@@ -70,9 +68,6 @@ assert (!l = ["this is a message"]);
 mylogger#set_level Warning;
 mylogger#debug "this message will not be passed to the handler";
 assert (!l = ["this is a message"]);
-
-
-
 
 
 
@@ -129,15 +124,19 @@ module TaggedHandlers =
 
 module TagsLogging = MakeLogging(TaggedHandlers);;
 
-let logger = TagsLogging.make_logger "tagged" Debug [()];;
-logger#info ~tags:[Time; Value 4] "log message with tags";
+let tagged_logger = TagsLogging.make_logger "tagged" Debug [()];;
+tagged_logger#info ~tags:[Time; Value 4] "log message with tags";
 
 
 
 (* ******************************** *)
 (* modifying the level of a handler *)
+let rootlogger = Logging.get_logger "" in
+rootlogger#error "WTF1";
+
 let h = Default_handlers.make (Cli Debug) in
 let logger = Logging.make_logger "handlerTest" Debug [] in
+logger#error "WTF2";
 logger#add_handler h;
 logger#debug "this message is displayed";
 Default_handlers.set_level h Info;
@@ -158,3 +157,24 @@ let logger = TestLogging.make_logger
                "test" Debug [File ("test", Debug)];;
 logger#info "this is a message";
 assert (Sys.file_exists "test/test");
+
+
+
+
+let lA = Logging.get_logger "A"
+and lAB = Logging.get_logger "A.B"
+and lAC = Logging.get_logger "A.C" in
+let h = Default_handlers.make (Cli Debug) in
+lA#add_handler h; lAC#add_handler h;
+lA#set_level Debug; 
+lA#info "one line";
+lAB#info "another line";
+lAC#warning "two lines";
+
+
+
+
+let llla = Logging.get_logger "test5.la" in
+let la = Logging.make_logger "test5" Debug [Cli Debug] in
+llla#debug "is this ok";
+la#info "i bet it isn't"
