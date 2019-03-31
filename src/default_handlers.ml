@@ -79,34 +79,48 @@ let make_cli_handler level =
 
 
   
-type file_handler_defaults_t = {
+type file_handlers_config = {
     logs_folder: string;
     truncate: bool;
     file_perms: int}
-let file_handler_defaults = ref {
+                                  [@@deriving yojson]
+let file_handlers_defaults = {
     logs_folder = "logs/";
     truncate = true;
     file_perms = 0o660;
   }
 
-let set_file_handler_defaults d =
-  file_handler_defaults := d
+                           
+type config = {
+    mutable file_handlers : file_handlers_config; 
+  }
+                [@@deriving yojson]
+
+let config = {
+    file_handlers = file_handlers_defaults;
+  }
+            
+let default_config = {
+    file_handlers = file_handlers_defaults;
+  }
+let set_config d =
+  config.file_handlers <- d.file_handlers
                           
 let make_file_handler level filename  =
   
-  if not (Sys.file_exists !file_handler_defaults.logs_folder)
+  if not (Sys.file_exists config.file_handlers.logs_folder)
   then  
-    Unix.mkdir !file_handler_defaults.logs_folder 0o775;
+    Unix.mkdir config.file_handlers.logs_folder 0o775;
 
   let open_flags =
-    if !file_handler_defaults.truncate
+    if config.file_handlers.truncate
     then [Open_wronly; Open_creat;Open_trunc]
     else [Open_wronly; Open_creat]
   in
   let oc = 
     open_out_gen open_flags
-      !file_handler_defaults.file_perms
-      (!file_handler_defaults.logs_folder^filename)
+      config.file_handlers.file_perms
+      (config.file_handlers.logs_folder^filename)
       
   in
   {fmt = format_default;
