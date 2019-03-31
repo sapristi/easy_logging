@@ -115,7 +115,34 @@ let make_file_handler level filename  =
   }
   
   
-type desc = | Cli of level | File of string * level 
+type desc = | Cli of level | File of string * level
+
+type cli_json_desc =
+  {cli : level}
+    [@@deriving yojson]
+type file_json_desc_aux =
+  {filename : string;level: level}
+    [@@deriving yojson]
+type file_json_desc =
+  {file : file_json_desc_aux}
+    [@@deriving yojson] 
+                                   
+let desc_of_yojson json =
+  match cli_json_desc_of_yojson json with
+  | Ok {cli=level} -> Ok (Cli level)
+  | Error _ ->
+     match file_json_desc_of_yojson json with
+     | Ok {file={filename=fname;level=level}} ->
+        Ok (File (fname, level))
+     | Error r -> Error "desc_of yojson"
+
+let desc_to_yojson d =
+  match d with
+  | Cli lvl -> cli_json_desc_to_yojson {cli=lvl}
+  | File (fname, lvl) ->
+     file_json_desc_to_yojson
+       {file= {filename=fname;level=lvl}}
+  
 [@@deriving yojson]
 let make d = match d with
   | Cli lvl -> make_cli_handler lvl
@@ -123,7 +150,7 @@ let make d = match d with
                   
 (** {1 Handlers usage } *)
                    
-let set_level h lvl =
+let set_level (h:t) lvl =
   h.level <- lvl
 let set_formatter h fmt =
   h.fmt <- fmt
