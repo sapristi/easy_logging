@@ -1,5 +1,8 @@
 
 (test
  (name logging_examples)
- (libraries easy_logging)
+ (preprocess
+  (pps ppx_deriving_yojson))
+ (libraries easy_logging
+  ppx_deriving_yojson)
  )

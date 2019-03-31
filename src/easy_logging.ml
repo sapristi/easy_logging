@@ -118,15 +118,24 @@ module MakeLogging (H : HandlersT) =
         name: string;
         level : log_level;
         handlers : H.desc list;
-      } [@@deriving yojson]
+        propagate : bool; [@default true]
+      } [@@deriving of_yojson]
       
-    type config = config_logger list [@@deriving yojson]
-
-    let load_config config_json =
-      match config_of_yojson config_json with
-      | Ok config -> 
-         List.iter (fun {name=name; level=level;handlers=handlers} ->
-             ignore (make_logger name level handlers)) config
+    type config = {
+        handlers : H.config; [@default H.default_config]
+        loggers : config_logger list
+      } [@@deriving of_yojson]
+                
+    let load_config config_str =
+      match config_of_yojson (Yojson.Safe.from_string config_str) with
+      | Ok {handlers;loggers} ->
+         H.set_config handlers;
+         List.iter (fun {name=name;
+                         level=level;
+                         handlers=handlers;
+                         propagate=propagate} ->
+             let l = make_logger name level handlers in
+             l#set_propagate propagate) loggers
       | Error r ->
          failwith @@ "Error loading log config : "^r
    end

@@ -49,8 +49,12 @@ module type HandlersT =
 
     (** Type used to instantiate a handler*)
     type desc
-       [@@deriving yojson]
+       [@@deriving of_yojson]
     (** Instantiates a handler *)
     val make : desc -> t
 
+    type config
+       [@@deriving of_yojson]
+    val default_config : config
+    val set_config : config -> unit
   end                   
