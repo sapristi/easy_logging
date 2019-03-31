@@ -5,9 +5,10 @@
  (public_name easy_logging)
  (flags -w)
  (preprocess
-  (pps ppx_deriving.show))
+  (pps ppx_deriving.show ppx_deriving_yojson))
  (libraries
   ppx_deriving.show
+  ppx_deriving_yojson
   unix
   )
  )
