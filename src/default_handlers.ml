@@ -116,7 +116,7 @@ let make_file_handler level filename  =
   
   
 type desc = | Cli of level | File of string * level 
-
+[@@deriving yojson]
 let make d = match d with
   | Cli lvl -> make_cli_handler lvl
   | File (f, lvl) -> make_file_handler lvl f
