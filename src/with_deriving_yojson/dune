@@ -1,0 +1,13 @@
+(library
+ (name easy_logging_with_conf)
+ (public_name easy_logging_with_conf)
+
+ (preprocess
+  (pps ppx_deriving.show ppx_deriving_yojson))
+ (libraries
+  easy_logging
+  ppx_deriving.show
+  ppx_deriving_yojson
+  unix
+  )
+ )
