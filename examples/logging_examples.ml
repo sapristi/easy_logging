@@ -176,5 +176,5 @@ lAC#warning "two lines";
 
 let llla = Logging.get_logger "test5.la" in
 let la = Logging.make_logger "test5" Debug [Cli Debug] in
-llla#debug "is this ok";
-la#info "i bet it isn't"
+llla#debug "is this ok?";
+la#info "you bet it is!"
