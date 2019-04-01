@@ -192,3 +192,4 @@ let llla = Logging.get_logger "test_6.la" in
 let la = Logging.make_logger "test_6" Debug [Cli Debug] in
 llla#debug "is this ok?";
 la#info "you bet it is!"
+
