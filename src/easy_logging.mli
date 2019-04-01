@@ -71,7 +71,6 @@ module Default_handlers = Default_handlers
 (** Default implementation of a Logging module. *)
 module Logging :
 sig
-  (** {3 Attributes} *)
   class logger :
           ?parent:logger option ->
           string ->
@@ -80,15 +79,20 @@ sig
             (** {3 Attributes} *)
             
             (** Name of the logger:
- - displayed in log messages
- - defines the logger place in the logging tree *)
+ - can be displayed in log messages.
+ - defines the logger place in the logging tree. *)
             val name : string
 
             (** Value used to filter log messages.*)
             val mutable level : log_level option
-            (** Registered handlers for this logger *)
+              
+            (** Registered handlers for this logger. *)
             val mutable handlers : Default_handlers.t list 
+
+            (** The optional parent of this logger⋅ *)
             val parent : logger option
+
+            (** Whether messages to this logger are propagated to its ancestors' handlers.*)
             val propagate : bool
             
               
