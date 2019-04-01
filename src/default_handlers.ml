@@ -40,7 +40,7 @@ type t =
   
 let format_default (item : log_item) =
   Printf.sprintf "%-6.3f %-10s %-20s %s" (Sys.time ())
-    (show_level item.level)
+    (level_to_string item.level)
     item.logger_name
     item.msg
   
@@ -57,7 +57,7 @@ let format_color (item : log_item) =
     | NoLevel -> Colorize.Default
   in
   
-  let item_level_fmt = Colorize.format [ Fg (level_to_color item.level)]  (show_level item.level)
+  let item_level_fmt = Colorize.format [ Fg (level_to_color item.level)]  (level_to_string item.level)
   and logger_name_fmt = Colorize.format [ Underline] item.logger_name
   and item_msg_fmt =
     match item.level with
@@ -83,29 +83,18 @@ type file_handlers_config = {
     logs_folder: string;
     truncate: bool;
     file_perms: int}
-                                  [@@deriving yojson]
+
 let file_handlers_defaults = {
     logs_folder = "logs/";
     truncate = true;
     file_perms = 0o660;
   }
 
-                           
-type config = {
-    mutable file_handlers : file_handlers_config; 
-  }
-                [@@deriving yojson]
+type config =
+  {mutable file_handlers: file_handlers_config}
+let config = {file_handlers = file_handlers_defaults}
 
-let config = {
-    file_handlers = file_handlers_defaults;
-  }
-            
-let default_config = {
-    file_handlers = file_handlers_defaults;
-  }
-let set_config d =
-  config.file_handlers <- d.file_handlers
-                          
+let set_config c = config.file_handlers <- c.file_handlers
 let make_file_handler level filename  =
   
   if not (Sys.file_exists config.file_handlers.logs_folder)
@@ -130,34 +119,7 @@ let make_file_handler level filename  =
   
   
 type desc = | Cli of level | File of string * level
-
-type cli_json_desc =
-  {cli : level}
-    [@@deriving yojson]
-type file_json_desc_aux =
-  {filename : string;level: level}
-    [@@deriving yojson]
-type file_json_desc =
-  {file : file_json_desc_aux}
-    [@@deriving yojson] 
-                                   
-let desc_of_yojson json =
-  match cli_json_desc_of_yojson json with
-  | Ok {cli=level} -> Ok (Cli level)
-  | Error _ ->
-     match file_json_desc_of_yojson json with
-     | Ok {file={filename=fname;level=level}} ->
-        Ok (File (fname, level))
-     | Error r -> Error "desc_of yojson"
-
-let desc_to_yojson d =
-  match d with
-  | Cli lvl -> cli_json_desc_to_yojson {cli=lvl}
-  | File (fname, lvl) ->
-     file_json_desc_to_yojson
-       {file= {filename=fname;level=lvl}}
-  
-[@@deriving yojson]
+   
 let make d = match d with
   | Cli lvl -> make_cli_handler lvl
   | File (f, lvl) -> make_file_handler lvl f

@@ -2,7 +2,8 @@
 
 (* Type for log levels *)
 type log_level = Easy_logging_types.level
-               [@@deriving show { with_path = false }, yojson]
+                   [@@deriving show { with_path = false }]
+let log_level_to_string = Easy_logging_types.level_to_string
 module type HandlersT = Easy_logging_types.HandlersT
                      
                       
@@ -114,31 +115,7 @@ module MakeLogging (H : HandlersT) =
       List.iter (fun hdesc -> l#add_handler (H.make hdesc)) hdescs;
       l
 
-    type config_logger = {
-        name: string;
-        level : log_level;
-        handlers : H.desc list;
-        propagate : bool; [@default true]
-      } [@@deriving of_yojson]
-
-  
-    type config = {
-        handlers : H.config; [@default H.default_config]
-        loggers : config_logger list
-      } [@@deriving of_yojson]
-                
-    let load_config config_str =
-      match config_of_yojson (Yojson.Safe.from_string config_str) with
-      | Ok {handlers;loggers} ->
-         H.set_config handlers;
-         List.iter (fun {name=name;
-                         level=level;
-                         handlers=handlers;
-                         propagate=propagate} ->
-             let l = make_logger name level handlers in
-             l#set_propagate propagate) loggers
-      | Error r ->
-         failwith @@ "Error loading log config : "^r
+ 
    end
 
 module Default_handlers = Default_handlers
