@@ -35,38 +35,25 @@ module type HandlersT =
 module Default_handlers =
   struct
     
-
-    type file_handlers_config = {
-        logs_folder: string;
+    include E.Default_handlers
+          
+    type file_handlers_config_ = file_handlers_config =
+      { logs_folder: string;
         truncate: bool;
         file_perms: int}
-                                  [@@deriving yojson]
+        [@@deriving yojson]
 
-    type config =  {mutable file_handlers: file_handlers_config}
-                     [@@deriving yojson]
+    let file_handlers_config_to_yojson = file_handlers_config__to_yojson
+    let file_handlers_config_of_yojson = file_handlers_config__of_yojson
+      
+    type config_ = E.Default_handlers.config
+      ={mutable file_handlers: file_handlers_config}
+         [@@deriving yojson]
 
-    include (E.Default_handlers :
-             module type of E.Default_handlers
-                            with type file_handlers_config := E.Default_handlers.file_handlers_config and
-                                 type config := E.Default_handlers.config)
-          
-    
-    let file_handlers_defaults = {
-        logs_folder = "logs/";
-        truncate = true;
-        file_perms = 0o660;
-      }
+    let config_to_yojson = config__to_yojson
+    let config_of_yojson = config__of_yojson                         
                                
-    let default_config = {file_handlers = {
-        logs_folder = "logs/";
-        truncate = true;
-        file_perms = 0o660;
-      }}
-    let config = {file_handlers = {
-        logs_folder = "logs/";
-        truncate = true;
-        file_perms = 0o660;
-      }}
+    let default_config = {file_handlers = file_handlers_defaults}
                               
       
     let set_config c = config.file_handlers <- c.file_handlers
@@ -132,13 +119,3 @@ module MakeLogging (H : HandlersT) =
 
 module Logging = MakeLogging(Default_handlers)
      
-let config = {| 
-{loggers: 
-    [{"name" : "test_7", "level" : "debug", 
-      "handlers": [{"cli" : "info"}]}]
-}
-|};;
-Logging.load_config config;
-let logger = Logging.get_logger "test_7" in
-logger#info "this message";
-logger#debug "but not this one";

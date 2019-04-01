@@ -2,7 +2,6 @@
 
 (* Type for log levels *)
 type log_level = Easy_logging_types.level
-                   [@@deriving show { with_path = false }]
 let log_level_to_string = Easy_logging_types.level_to_string
 module type HandlersT = Easy_logging_types.HandlersT
                      

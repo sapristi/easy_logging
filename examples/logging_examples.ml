@@ -1,6 +1,6 @@
 (** Is this doc *)
 
-open Easy_logging
+open Easy_logging_json
 
 (* ************* *)
 (* Basic example *)
@@ -43,7 +43,7 @@ module MyHandlers =
     type t = string -> unit
     type tag = unit
     type log_item = {
-        level : Easy_logging__.Easy_logging_types.level;
+        level : Easy_logging_json__.Easy_logging_types.level;
         logger_name : string;
         msg : string;
         tags : tag list
@@ -86,7 +86,7 @@ module TaggedHandlers =
       | Value of int
 
     type log_item = {
-        level : Easy_logging__.Easy_logging_types.level;
+        level : Easy_logging_json__.Easy_logging_types.level;
         logger_name : string;
         msg : string;
         tags : tag list
@@ -193,3 +193,14 @@ let la = Logging.make_logger "test_6" Debug [Cli Debug] in
 llla#debug "is this ok?";
 la#info "you bet it is!"
 
+
+let config = {| 
+{loggers: 
+    [{"name" : "test_7", "level" : "debug", 
+      "handlers": [{"cli" : "info"}]}]
+}
+|} in
+Logging.load_config config;
+let logger = Logging.get_logger "test_7" in
+logger#info "this message";
+logger#debug "but not this one";

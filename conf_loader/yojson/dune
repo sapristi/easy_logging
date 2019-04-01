@@ -1,13 +1,14 @@
 
-(executable
- (name json_loader)
-       
+(library
+ (name easy_logging_yojson)
+ (public_name easy_logging_yojson)
+ (flags -w)
  (preprocess
   (pps ppx_deriving.show ppx_deriving_yojson))
  (libraries
-  easy_logging
-  ppx_deriving.show
-  ppx_deriving_yojson
   unix
+  easy_logging
+  ppx_deriving_yojson
   )
  )
+
