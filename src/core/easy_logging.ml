@@ -120,7 +120,8 @@ module MakeLogging (H : HandlersT) =
         handlers : H.desc list;
         propagate : bool; [@default true]
       } [@@deriving of_yojson]
-      
+
+  
     type config = {
         handlers : H.config; [@default H.default_config]
         loggers : config_logger list
