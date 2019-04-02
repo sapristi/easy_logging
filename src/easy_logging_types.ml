@@ -9,7 +9,7 @@ type level =
   | Flash
   | NoLevel
 
-let level_to_string lvl = match lvl with
+let show_level lvl = match lvl with
   | Debug    -> "Debug"
   | Info     -> "Info"
   | Warning  -> "Warning"

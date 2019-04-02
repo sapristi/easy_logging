@@ -43,7 +43,7 @@ module MyHandlers =
     type t = string -> unit
     type tag = unit
     type log_item = {
-        level : Easy_logging_json__.Easy_logging_types.level;
+        level : Easy_logging__.Easy_logging_types.level;
         logger_name : string;
         msg : string;
         tags : tag list
@@ -86,7 +86,7 @@ module TaggedHandlers =
       | Value of int
 
     type log_item = {
-        level : Easy_logging_json__.Easy_logging_types.level;
+        level : Easy_logging__.Easy_logging_types.level;
         logger_name : string;
         msg : string;
         tags : tag list
