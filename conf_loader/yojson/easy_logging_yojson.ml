@@ -38,9 +38,10 @@ module Default_handlers =
     include E.Default_handlers
           
     type file_handlers_config_ = file_handlers_config =
-      { logs_folder: string;
-        truncate: bool;
-        file_perms: int}
+      { logs_folder: string; [@default file_handlers_defaults.logs_folder]
+        truncate: bool; [@default file_handlers_defaults.truncate]
+        file_perms: int [@default file_handlers_defaults.file_perms]
+      }
         [@@deriving yojson]
 
     let file_handlers_config_to_yojson = file_handlers_config__to_yojson
@@ -92,8 +93,8 @@ module MakeLogging (H : HandlersT) =
 
     type config_logger = {
         name: string;
-        level : log_level;
-        handlers : H.desc list;
+        level : log_level; [@default NoLevel]
+        handlers : H.desc list; [@default [] ]
         propagate : bool; [@default true]
       } [@@deriving of_yojson]
 
