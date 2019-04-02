@@ -1,6 +1,6 @@
 (** Is this doc *)
 
-open Easy_logging_json
+open Easy_logging
 
 (* ************* *)
 (* Basic example *)
@@ -193,14 +193,3 @@ let la = Logging.make_logger "test_6" Debug [Cli Debug] in
 llla#debug "is this ok?";
 la#info "you bet it is!"
 
-
-let config = {| 
-{loggers: 
-    [{"name" : "test_7", "level" : "debug", 
-      "handlers": [{"cli" : "info"}]}]
-}
-|} in
-Logging.load_config config;
-let logger = Logging.get_logger "test_7" in
-logger#info "this message";
-logger#debug "but not this one";

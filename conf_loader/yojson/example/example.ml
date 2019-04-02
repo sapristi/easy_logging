@@ -2,7 +2,7 @@ open Easy_logging_yojson
 let config = {| 
 {loggers: 
     [{"name" : "test_7", "level" : "debug", 
-      "handlers": [{"cli" : "info"}]}]
+      "handlers": [{"cli" : {"level" :"info"}}]}]
 }
 |};;
 Logging.load_config_str config;

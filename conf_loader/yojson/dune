@@ -1,4 +1,6 @@
-
+(documentation
+ (package easy_logging_yojson)
+ (mld_files :standard))
 (library
  (name easy_logging_yojson)
  (public_name easy_logging_yojson)
