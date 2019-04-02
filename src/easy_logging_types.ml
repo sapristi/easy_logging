@@ -8,10 +8,16 @@ type level =
   | Error
   | Flash
   | NoLevel
-[@@deriving show { with_path = false }]
 
- 
+let show_level lvl = match lvl with
+  | Debug    -> "Debug"
+  | Info     -> "Info"
+  | Warning  -> "Warning"
+  | Error    -> "Error"
+  | Flash    -> "Flash"
+  | NoLevel  -> "NoLevel"
 
+       
 module type HandlersT =
   sig
     
@@ -33,7 +39,6 @@ module type HandlersT =
 
     (** Type used to instantiate a handler*)
     type desc
-
     (** Instantiates a handler *)
     val make : desc -> t
 

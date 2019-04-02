@@ -2,63 +2,70 @@
 
 (* Type for log levels *)
 type log_level = Easy_logging_types.level
-               [@@deriving show { with_path = false }]
+let show_log_level = Easy_logging_types.show_level
+let pp_log_level fmt lvl = Format.pp_print_string fmt (show_log_level lvl)
+
 module type HandlersT = Easy_logging_types.HandlersT
                      
-                      
                       
 module MakeLogging (H : HandlersT) =
   struct
 
   
     class logger
+            ?parent:(parent=None)
             (name: string)
-            (level: log_level)
-            (handlers_desc : H.desc list)  =
+      =
     object(self)
-
-      val mutable handlers = List.map H.make handlers_desc
-
-      val mutable level = level
-
+             
       val name = name
- 
-      method add_handler h = handlers <- h::handlers
-      method set_level new_level =
-        level <- new_level
+      val mutable level : log_level option = None              
+      val mutable handlers : H.t list = []
+      val parent : logger option = parent
+      val mutable propagate = true
 
+      method set_level new_level =
+        level <- Some new_level
+      method add_handler h = handlers <- h::handlers
+      method set_propagate p = propagate <- p
+           
+      method effective_level : log_level =
+        match level, parent  with
+        | None, None  -> NoLevel
+        | None, Some p -> p#effective_level
+        | Some l,_ -> l
+                          
+      method get_handlers =
+        match propagate, parent with
+        | true, Some p -> handlers @ p#get_handlers
+        | _ -> handlers
+
+      method private treat_msg : 'a. ('a -> string) -> H.tag list -> log_level -> 'a -> unit
+        = fun unwrap_fun tags msg_level msg ->
+        
+        let item : H.log_item= {
+            level = msg_level;
+            logger_name = name;
+            msg = unwrap_fun msg;
+            tags=tags} in 
+        List.iter (fun handler ->
+            H.apply handler item)
+          self#get_handlers
+        
       method private _log_msg : 'a. ('a -> string) -> H.tag list -> log_level -> 'a -> unit
         = fun unwrap_fun tags msg_level msg ->
-           if msg_level >= level
+           if msg_level >= self#effective_level
            then
-             begin
-               let item : H.log_item= {
-                   level = msg_level;
-                   logger_name = name;
-                   msg = unwrap_fun msg;
-                   tags=tags} in 
-               List.iter (fun handler ->
-                   H.apply handler item)
-                 handlers
-             end
+             self#treat_msg unwrap_fun tags msg_level msg
            else
              ()                           
           
-
       method private _flog_msg : 'a. H.tag list -> log_level -> ('a, unit, string, unit) format4 -> 'a
         =  fun tags msg_level -> 
-        if msg_level >= level
+        if msg_level >= self#effective_level
         then
           Printf.ksprintf (
-              fun msg -> 
-              let item : H.log_item = {
-                  level = msg_level;
-                  logger_name = name;
-                  msg = msg;
-                  tags= []} in 
-              List.iter (fun handler ->
-                  H.apply handler item)
-                handlers)
+              self#treat_msg (fun x -> x) tags msg_level)
         else Printf.ifprintf () 
         
 
@@ -88,34 +95,28 @@ module MakeLogging (H : HandlersT) =
       method ldebug ?tags:(tags=[]) = self#_log_msg Lazy.force tags Debug
     end
 
-  
-    let _loggers : (string, logger) Hashtbl.t =  Hashtbl.create 10
-                                               
-    let set_level p lvlo =
-      Hashtbl.iter
-        (fun n l  ->
-          
-          if String.sub n 0 (String.length p) = p
-          then
-            l#set_level lvlo;)
-        _loggers
+    let root_logger = new logger "root"
+      
+    module Infra =
+      Logging_infra.MakeTree(
+          struct
+            type t = logger
+            let make (n:string) parent = new logger ~parent n
+            let root = root_logger
+          end)
+                        
       
     let get_logger name =
-      if Hashtbl.mem _loggers name
-      then
-        Hashtbl.find _loggers name
-      else
-        let l = new logger name NoLevel [] in
-        Hashtbl.add _loggers name l;
-        l
+      Infra.get name
         
-    let make_logger name lvl hdescs  =
-      let l = new logger name lvl hdescs in
-      Hashtbl.add _loggers name l;
+    let make_logger ?propagate:(propagate=true) name lvl hdescs  =
+      let l = Infra.get name in
+      l#set_level lvl;
+      l#set_propagate propagate;
+      List.iter (fun hdesc -> l#add_handler (H.make hdesc)) hdescs;
       l
-      
-    let dummy () = make_logger "dummy" NoLevel []
-    
+
+ 
    end
 
 module Default_handlers = Default_handlers

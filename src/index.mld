@@ -7,7 +7,7 @@
 It has the following features :
    - one line logger creation
    - log messages printf style, or provide [string] or [string lazy_t] message
-   - log level adaptable at runtime from anywhere in the program
+   - tree architecture for easy configuration
    - handlers associated to each logger will format and treat the message independantly
    - use the infrastructure with your own handlers with the [MakeLogging] functor.
 
@@ -32,10 +32,9 @@ will output to the stdout a message of the form
 
 {2:description Overall description }
 
-{4 Infrastructure }
-The logging infrastructure is based on three concepts:
+The logging infrastructure is based on four concepts:
  
-{e loggers,  handlers} and {e log items }.
+{e loggers,  handlers, log items } and {e logging tree}.
 
 A call to {e logger} will create a {e log item}, which it will pass to its {e handlers}. Each {e handler} will treats the {e item} (e.g. transform it to a string, and then outputs to stdout or to a file).
 {v
@@ -49,8 +48,28 @@ A call to {e logger} will create a {e log item}, which it will pass to its {e ha
                                     |   ...     |
 v}
 
+{3 Logging tree}
 
-{4 Levels}
+Loggers are stored in a tree structure, with the following properties :
+
+ - messages handled by a logger (after level filtering) are passed to its ancestor's handlers (this can be overriden with the [set_propagate] method).
+ - if not set, the level of a logger is that of its closest ancestor whose level is set (or NoLevel if there is no such ancestor)
+
+{4 Example}
+{v
+                       A (Info, Cli Debug)
+                     /    \
+                  A.B      A.C
+                 /            \
+            A.B.D (Warning)    A.C.E (Debug, (File "f", Debug),
+                                                propagate=false)
+v}
+For example, with the above logging tree
+ - logs made to [A], [A.B] or [A.C] of level Info or more are written to the stdout.
+ - logs made to [A.B.D] of level [Warning] or above are written the stdout.
+ - logs made to [A.C.E] are only written to the file ["f"]
+
+{3 Levels}
 
 To each logger and log message are associated a level, which will
 be used to filter the messages going through the logging infrastructure.
@@ -63,7 +82,7 @@ The predefined levels are, in increasing order of precedence :
  + Flash   : used for one-shot debugging: displays an easy to spot message.
  + NoLevel : used to filter out all messages.
 
-{4 Log items }
+{3 Log items }
 
 A log item has type
 {[
@@ -93,12 +112,10 @@ See more about default handlers at {!module:Easy_logging__Default_handlers}.
 See complete class documentation at {! Easy_logging.Logging.logger}
 
 {4 Creation}
-A logger object can be created directly :
-{[ let logger1 = new Logging.logger "my_logger1" Warning [Cli Debug] ]}
-or through the make_logger function :
-{[ let logger2 = Logging.make_logger "my_logger2" Debug [Cli Debug] ]}
 
-The [make_logger] function will register the logger instance internaly so that it will be possible to access and modify it from anywhere in the program.
+A logger object can be created directly (in which case it will not be part of the logging tree)
+{[ let logger1 = new Logging.logger "my_logger1" ]}
+or through helper functions of the {!logging} module.
 
 
 {4 Usage}
@@ -115,24 +132,21 @@ A logger object has three methods for each of the log levels:
 {3:logging The Logging module}
 
 The {! Easy_logging.Logging} module is that application of [MakeLogging] over [DefaultHandlers].
-It provides three functions :
+It provides two functions :
 
  - {[ val make_logger :
-    string -> log_level -> Default_handlers.desc list ]}
-    to instantiate and register a logger
- - {[val set_level : string -> log_level -> unit]}
-    [set_level prefix level] sets the level of all 
-      registered loggers whose name begins by [prefix]
-      to [level].
+    ?propagate:bool -> string -> log_level -> Default_handlers.desc list ]}
+    Instantiates a logger with some paramters, and adds it to the logging tree.
+
  - {[ val get_logger : string -> logger ]}
- Returns a registered logger.
+ Returns a registered logger, or creates a new one if it doesn't exist.
 
 {2:makelogging The MakeLogging functor }
 
 The MakeLogging functor takes a {!Easy_logging__.Easy_logging_types.HandlersT} typed module, and creates a Logging module.
 
 {3 WARNING}
-When declaring your Handlers module, do not give it the type [HandlersT], because then  its internal types [t] and [desc] won't be accessible.
+When declaring your Handlers module, do not coerce it the type [HandlersT], because then  its internal types [t] and [desc] won't be accessible.
 
 {3 Example}
 
@@ -147,7 +161,6 @@ module MyHandlers =
     let set_level _ _ = ()
     let apply h (item : log_item) = h item.msg
     let make (_internal : desc) =
-
       fun s -> _internal := s::!_internal
   end
 
