@@ -1,4 +1,6 @@
-;;(documentation (mld_files :standard))
+(documentation
+ (package easy_logging)
+ (mld_files :standard))
 
 (library
  (name easy_logging)

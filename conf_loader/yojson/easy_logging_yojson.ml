@@ -1,3 +1,5 @@
+
+
 module E = Easy_logging
    
 type log_level = E.log_level
@@ -48,7 +50,7 @@ module Default_handlers =
     let file_handlers_config_of_yojson = file_handlers_config__of_yojson
       
     type config_ = E.Default_handlers.config
-      ={mutable file_handlers: file_handlers_config}
+      = {mutable file_handlers: file_handlers_config}
          [@@deriving yojson]
 
     let config_to_yojson = config__to_yojson
@@ -58,28 +60,27 @@ module Default_handlers =
                               
       
     let set_config c = config.file_handlers <- c.file_handlers
-    type cli_json_desc =
-      {cli : log_level}
+    type cli_json_params = {level : log_level}
         [@@deriving yojson]
-    type file_json_desc_aux =
-      {filename : string;level: log_level}
+    type cli_json_desc =  {cli : cli_json_params}
         [@@deriving yojson]
-    type file_json_desc =
-      {file : file_json_desc_aux}
+    type file_json_desc_params = {filename : string;level: log_level}
+        [@@deriving yojson]
+    type file_json_desc = {file : file_json_desc_params}
         [@@deriving yojson] 
       
     let desc_of_yojson json =
       match cli_json_desc_of_yojson json with
-      | Ok {cli=level} -> Ok (Cli level)
+      | Ok {cli={level}} -> Ok (Cli level)
       | Error _ ->
          match file_json_desc_of_yojson json with
-         | Ok {file={filename=fname;level=level}} ->
-            Ok (File (fname, level))
+         | Ok {file={filename;level}} ->
+            Ok (File (filename, level))
          | Error r -> Error ("desc_of yojson: "^r)
                     
     let desc_to_yojson d =
       match d with
-      | Cli lvl -> cli_json_desc_to_yojson {cli=lvl}
+      | Cli level -> cli_json_desc_to_yojson {cli={level}}
       | File (fname, lvl) ->
          file_json_desc_to_yojson
            {file= {filename=fname;level=lvl}}
