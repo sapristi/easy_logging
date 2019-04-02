@@ -1,7 +1,7 @@
 module E = Easy_logging
    
 type log_level = E.log_level
-
+               [@@deriving show]
 let log_level_to_yojson lvl : Yojson.Safe.json =
   `String (E.log_level_to_string lvl)
 let log_level_of_yojson lvl_json =
