@@ -40,7 +40,7 @@ type t =
   
 let format_default (item : log_item) =
   Printf.sprintf "%-6.3f %-10s %-20s %s" (Sys.time ())
-    (level_to_string item.level)
+    (show_level item.level)
     item.logger_name
     item.msg
   
@@ -57,7 +57,7 @@ let format_color (item : log_item) =
     | NoLevel -> Colorize.Default
   in
   
-  let item_level_fmt = Colorize.format [ Fg (level_to_color item.level)]  (level_to_string item.level)
+  let item_level_fmt = Colorize.format [ Fg (level_to_color item.level)]  (show_level item.level)
   and logger_name_fmt = Colorize.format [ Underline] item.logger_name
   and item_msg_fmt =
     match item.level with

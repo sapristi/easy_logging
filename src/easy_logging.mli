@@ -3,8 +3,8 @@
 
 (** Type for log levels. *)
 type log_level = Easy_logging__.Easy_logging_types.level
-[@@deriving show { with_path = false }]
-
+val show_log_level : log_level -> string
+val pp_log_level : Format.formatter -> log_level -> unit
 
 (** Signature of Handlers modules. *)
 module type HandlersT = Easy_logging__.Easy_logging_types.HandlersT
