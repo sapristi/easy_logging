@@ -102,9 +102,9 @@ module MakeLogging (H : HandlersT) =
         handlers : H.config; [@default H.default_config]
         loggers : config_logger list
       } [@@deriving of_yojson]
-                
-    let load_config config_str =
-      match config_of_yojson (Yojson.Safe.from_string config_str) with
+
+    let load_config config_json =
+      match config_of_yojson config_json with
       | Ok {handlers;loggers} ->
          H.set_config handlers;
          List.iter (fun {name=name;
@@ -115,6 +115,12 @@ module MakeLogging (H : HandlersT) =
              l#set_propagate propagate) loggers
       | Error r ->
          failwith @@ "Error loading log config : "^r
+        
+    let load_config_str config_str =
+      load_config (Yojson.Safe.from_string config_str)
+
+    let load_config_file config_file =
+      load_config (Yojson.Safe.from_file config_file)
   end
 
 module Logging = MakeLogging(Default_handlers)
