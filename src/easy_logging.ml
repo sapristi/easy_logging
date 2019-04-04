@@ -4,7 +4,7 @@
 type log_level = Easy_logging_types.level
 let show_log_level = Easy_logging_types.show_level
 let pp_log_level fmt lvl = Format.pp_print_string fmt (show_log_level lvl)
-
+let log_level_of_string = Easy_logging_types.level_of_string
 module type HandlersT = Easy_logging_types.HandlersT
                      
                       

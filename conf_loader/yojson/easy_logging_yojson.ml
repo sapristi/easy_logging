@@ -3,23 +3,25 @@
 module E = Easy_logging
    
 type log_level = E.log_level
-               [@@deriving show]
+                   [@@deriving show]
+
+let log_level_of_string lvl_string = 
+  match String.lowercase_ascii lvl_string with
+  | "debug" -> Ok (Debug :  log_level)
+  | "trace" -> Ok Trace
+  | "info" -> Ok Info
+  | "warning" -> Ok Warning
+  | "error" -> Ok Error
+  | "flash" -> Ok Flash
+  | "nolevel" -> Ok NoLevel
+  | _ -> Error (lvl_string ^ " does not represent a valid log level")
+       
 let log_level_to_yojson lvl : Yojson.Safe.json =
   `String (E.show_log_level lvl)
 let log_level_of_yojson lvl_json =
   match lvl_json with
   | `String lvl_str ->
-     (
-       match String.lowercase_ascii lvl_str with
-       | "debug" -> Ok (Debug :  log_level)
-       | "trace" -> Ok Trace
-       | "info" -> Ok Info
-       | "warning" -> Ok Warning
-       | "error" -> Ok Error
-       | "flash" -> Ok Flash
-       | "nolevel" -> Ok NoLevel
-       | _ -> Error (lvl_str ^ " does not represent a valid log level")
-     )
+     log_level_of_string lvl_str
   | _ -> Error ("Cannot decode "^ (Yojson.Safe.to_string lvl_json) ^" to log level")
 
 module type HandlersT =
