@@ -2,6 +2,8 @@
 
 open Easy_logging
 
+let _ = Logging.debug := true;;
+   
 (* ************* *)
 (* Basic example *)
 let logger = Logging.make_logger
