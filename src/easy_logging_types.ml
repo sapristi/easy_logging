@@ -3,6 +3,7 @@
 (** Possible level of a log item. *)
 type level =
   | Debug
+  | Trace
   | Info
   | Warning
   | Error
@@ -11,6 +12,7 @@ type level =
 
 let show_level lvl = match lvl with
   | Debug    -> "Debug"
+  | Trace    -> "Trace"
   | Info     -> "Info"
   | Warning  -> "Warning"
   | Error    -> "Error"

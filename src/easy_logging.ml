@@ -77,21 +77,17 @@ module MakeLogging (H : HandlersT) =
         = fun ?tags:(tags=[]) -> self#_flog_msg tags Warning
       method info : 'a. ?tags:H.tag list -> ('a, unit, string, unit) format4 -> 'a
         = fun ?tags:(tags=[]) -> self#_flog_msg tags Info        
+      method trace : 'a. ?tags:H.tag list -> ('a, unit, string, unit) format4 -> 'a
+        = fun ?tags:(tags=[]) -> self#_flog_msg tags Trace
       method debug : 'a. ?tags:H.tag list -> ('a, unit, string, unit) format4 -> 'a
         = fun ?tags:(tags=[]) -> self#_flog_msg tags Debug
-
-                               
-      method sflash ?tags:(tags=[]) = self#_log_msg (fun x->x) tags Flash
-      method serror ?tags:(tags=[]) = self#_log_msg (fun x->x) tags Error
-      method swarning ?tags:(tags=[]) = self#_log_msg (fun x->x) tags Warning
-      method sinfo ?tags:(tags=[]) =  self#_log_msg (fun x->x) tags Info
-      method sdebug ?tags:(tags=[]) = self#_log_msg (fun x->x) tags Debug
-
+      
                                     
       method lflash ?tags:(tags=[]) = self#_log_msg Lazy.force tags Flash
       method lerror ?tags:(tags=[]) = self#_log_msg Lazy.force tags Error
       method lwarning ?tags:(tags=[]) = self#_log_msg Lazy.force tags Warning
       method linfo ?tags:(tags=[]) =  self#_log_msg Lazy.force tags Info
+      method ltrace ?tags:(tags=[]) =  self#_log_msg Lazy.force tags Trace
       method ldebug ?tags:(tags=[]) = self#_log_msg Lazy.force tags Debug
     end
 

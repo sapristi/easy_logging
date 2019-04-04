@@ -12,6 +12,7 @@ let log_level_of_yojson lvl_json =
      (
        match String.lowercase_ascii lvl_str with
        | "debug" -> Ok (Debug :  log_level)
+       | "trace" -> Ok Trace
        | "info" -> Ok Info
        | "warning" -> Ok Warning
        | "error" -> Ok Error

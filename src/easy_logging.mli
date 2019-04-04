@@ -42,16 +42,13 @@ sig
                              ('a, unit, string, unit) format4 -> 'a
             method info :    'a. ?tags:H.tag list ->
                              ('a, unit, string, unit) format4 -> 'a
+            method trace :    'a. ?tags:H.tag list ->
+                             ('a, unit, string, unit) format4 -> 'a
             method debug :   'a. ?tags:H.tag list ->
                              ('a, unit, string, unit) format4 -> 'a
-              
-            method sdebug : ?tags:H.tag list -> string -> unit
-            method serror : ?tags:H.tag list -> string -> unit
-            method sflash : ?tags:H.tag list -> string -> unit
-            method sinfo : ?tags:H.tag list -> string -> unit
-            method swarning : ?tags:H.tag list -> string -> unit
 
             method ldebug : ?tags:H.tag list -> string lazy_t -> unit
+            method ltrace : ?tags:H.tag list -> string lazy_t -> unit
             method lerror : ?tags:H.tag list -> string lazy_t -> unit
             method lflash : ?tags:H.tag list -> string lazy_t -> unit
             method linfo : ?tags:H.tag list -> string lazy_t -> unit
@@ -108,6 +105,7 @@ Example :
             method error : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
             method warning : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
             method info : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
+            method trace : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
             method debug : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
                  
                  
@@ -122,20 +120,11 @@ Example:
 
           
             method ldebug : ?tags:Default_handlers.tag list -> string lazy_t -> unit
+            method ltrace : ?tags:Default_handlers.tag list -> string lazy_t -> unit
             method linfo : ?tags:Default_handlers.tag list -> string lazy_t -> unit
             method lwarning : ?tags:Default_handlers.tag list -> string lazy_t -> unit
             method lerror : ?tags:Default_handlers.tag list -> string lazy_t -> unit
             method lflash : ?tags:Default_handlers.tag list -> string lazy_t -> unit
-
-
-                 (** {3 String logging methods}
-These methods take a simple string as input.*)
-                 
-            method sdebug : ?tags:Default_handlers.tag list -> string -> unit
-            method serror : ?tags:Default_handlers.tag list -> string -> unit
-            method sflash : ?tags:Default_handlers.tag list -> string -> unit
-            method sinfo : ?tags:Default_handlers.tag list -> string -> unit
-            method swarning : ?tags:Default_handlers.tag list -> string -> unit
 
                  
             (** {3 Other methods} *)

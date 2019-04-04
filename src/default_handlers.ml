@@ -53,6 +53,7 @@ let format_color (item : log_item) =
     | Error -> Colorize.LRed
     | Warning -> Colorize.LYellow
     | Info -> Colorize.LBlue
+    | Trace -> Colorize.Cyan
     | Debug -> Colorize.Green
     | NoLevel -> Colorize.Default
   in
