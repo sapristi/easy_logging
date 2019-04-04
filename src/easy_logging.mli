@@ -5,7 +5,7 @@
 type log_level = Easy_logging__.Easy_logging_types.level
 val show_log_level : log_level -> string
 val pp_log_level : Format.formatter -> log_level -> unit
-val log_level_of_string : string -> log_level
+val log_level_of_string : string -> (log_level,string) result
 
 (** Signature of Handlers modules. *)
 module type HandlersT = Easy_logging__.Easy_logging_types.HandlersT
