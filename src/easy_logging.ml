@@ -10,7 +10,7 @@ module type HandlersT = Easy_logging_types.HandlersT
                       
 module MakeLogging (H : HandlersT) =
   struct
-
+    let debug = ref false
   
     class logger
             ?parent:(parent=None)
@@ -19,7 +19,7 @@ module MakeLogging (H : HandlersT) =
     object(self)
              
       val name = name
-      val mutable level : log_level option = None              
+      val mutable level : log_level option = None
       val mutable handlers : H.t list = []
       val parent : logger option = parent
       val mutable propagate = true
@@ -36,13 +36,26 @@ module MakeLogging (H : HandlersT) =
         | Some l,_ -> l
                           
       method get_handlers =
+        if !debug
+        then
+          print_endline (Printf.sprintf "[%s] returning (%i) handlers" name
+            (List.length handlers));
         match propagate, parent with
         | true, Some p -> handlers @ p#get_handlers
         | _ -> handlers
 
       method private treat_msg : 'a. ('a -> string) -> H.tag list -> log_level -> 'a -> unit
         = fun unwrap_fun tags msg_level msg ->
+
+        if !debug
+        then
+          print_endline ( Printf.sprintf "[%s]/%s \nTreating msg %s at level %s"
+                            name (match level with
+                                  | None -> "None"
+                                  | Some lvl -> (show_log_level lvl))
+                            (unwrap_fun msg) (show_log_level msg_level));
         
+          
         let item : H.log_item= {
             level = msg_level;
             logger_name = name;
@@ -111,8 +124,8 @@ module MakeLogging (H : HandlersT) =
       l#set_propagate propagate;
       List.iter (fun hdesc -> l#add_handler (H.make hdesc)) hdescs;
       l
-
- 
+    let set_debug v =
+      debug := v
    end
 
 module Default_handlers = Default_handlers
