@@ -15,6 +15,7 @@ module MakeLogging :
 functor (H : Easy_logging__Easy_logging_types.HandlersT) ->
 sig
 
+  val debug : bool ref
   (** See {! Easy_logging.Logging.logger} for documentation *)
   class logger :
           ?parent:logger option ->
@@ -69,6 +70,7 @@ module Default_handlers = Default_handlers
 (** Default implementation of a Logging module. *)
 module Logging :
 sig
+  val debug : bool ref
   class logger :
           ?parent:logger option ->
           string ->

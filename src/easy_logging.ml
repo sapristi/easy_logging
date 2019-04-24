@@ -49,7 +49,7 @@ module MakeLogging (H : HandlersT) =
 
         if !debug
         then
-          print_endline ( Printf.sprintf "[%s]/%s \nTreating msg %s at level %s"
+          print_endline ( Printf.sprintf "[%s]/%s -- Treating msg \"%s\" at level %s"
                             name (match level with
                                   | None -> "None"
                                   | Some lvl -> (show_log_level lvl))
@@ -124,8 +124,6 @@ module MakeLogging (H : HandlersT) =
       l#set_propagate propagate;
       List.iter (fun hdesc -> l#add_handler (H.make hdesc)) hdescs;
       l
-    let set_debug v =
-      debug := v
    end
 
 module Default_handlers = Default_handlers
