@@ -11,13 +11,13 @@ module type HandlersT = Easy_logging_types.HandlersT
 module MakeLogging (H : HandlersT) =
   struct
     let debug = ref false
-  
+              
     class logger
             ?parent:(parent=None)
             (name: string)
       =
     object(self)
-             
+        
       val name = name
       val mutable level : log_level option = None
       val mutable handlers : H.t list = []
@@ -72,7 +72,7 @@ module MakeLogging (H : HandlersT) =
              self#treat_msg unwrap_fun tags msg_level msg
            else
              ()                           
-          
+         
       method private _flog_msg : 'a. H.tag list -> log_level -> ('a, unit, string, unit) format4 -> 'a
         =  fun tags msg_level -> 
         if msg_level >= self#effective_level
@@ -81,7 +81,7 @@ module MakeLogging (H : HandlersT) =
               self#treat_msg (fun x -> x) tags msg_level)
         else Printf.ifprintf () 
         
-
+        
       method flash : 'a. ?tags:H.tag list -> ('a, unit, string, unit) format4 -> 'a
         = fun ?tags:(tags=[]) -> self#_flog_msg tags Flash
       method error : 'a. ?tags:H.tag list -> ('a, unit, string, unit) format4 -> 'a
@@ -94,8 +94,8 @@ module MakeLogging (H : HandlersT) =
         = fun ?tags:(tags=[]) -> self#_flog_msg tags Trace
       method debug : 'a. ?tags:H.tag list -> ('a, unit, string, unit) format4 -> 'a
         = fun ?tags:(tags=[]) -> self#_flog_msg tags Debug
-      
-                                    
+                               
+                               
       method lflash ?tags:(tags=[]) = self#_log_msg Lazy.force tags Flash
       method lerror ?tags:(tags=[]) = self#_log_msg Lazy.force tags Error
       method lwarning ?tags:(tags=[]) = self#_log_msg Lazy.force tags Warning
@@ -113,11 +113,11 @@ module MakeLogging (H : HandlersT) =
             let make (n:string) parent = new logger ~parent n
             let root = root_logger
           end)
-                        
+      
       
     let get_logger name =
       Infra.get name
-        
+      
     let make_logger ?propagate:(propagate=true) name lvl hdescs  =
       let l = Infra.get name in
       l#set_level lvl;
