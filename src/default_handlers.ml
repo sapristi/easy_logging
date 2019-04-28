@@ -25,7 +25,7 @@ type log_item = {
   }
               
 type log_formatter = log_item -> string
-
+let tags_formatter = fun _ -> ""
 
 (** type of a handler *)
 type t =
@@ -39,9 +39,10 @@ type t =
 
   
 let format_default (item : log_item) =
-  Printf.sprintf "%-6.3f %-10s %-20s %s" (Sys.time ())
+  Printf.sprintf "%-6.3f %-10s %-20s %s%s" (Sys.time ())
     (show_level item.level)
     item.logger_name
+    (tags_formatter item.tags)
     item.msg
   
       
@@ -64,10 +65,10 @@ let format_color (item : log_item) =
     match item.level with
     | Flash -> Colorize.format [ Fg Black; Bg LMagenta] item.msg
     | _ -> item.msg in
-  
-  (Printf.sprintf "%-6.3f %-20s %-30s %s" (Sys.time ())
+  (Printf.sprintf "%-6.3f %-20s %-30s %s%s" (Sys.time ())
      item_level_fmt
-     logger_name_fmt
+     logger_name_fmt 
+     (tags_formatter item.tags)
      item_msg_fmt)
 
 (** {1 Handlers creation and setup utility functions } *)
