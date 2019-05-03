@@ -126,8 +126,11 @@ module MakeLogging (H : HandlersT) =
       l
    end
 
-module Default_handlers = Default_handlers
-                
-module Logging = MakeLogging(Default_handlers)
+module Handlers = Default_handlers.MakeDefaultHandlers(
+                              struct
+                                type tag = unit
+                                let tags_formatter = fun _ -> ""
+                              end)
+module Logging = MakeLogging(Handlers)
 
 

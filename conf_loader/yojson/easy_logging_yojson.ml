@@ -29,7 +29,7 @@ module type HandlersT =
 module Default_handlers =
   struct
     
-    include E.Default_handlers
+    include E.Handlers
           
     type file_handlers_config_ = file_handlers_config =
       { logs_folder: string; [@default file_handlers_defaults.logs_folder]
@@ -41,7 +41,7 @@ module Default_handlers =
     let file_handlers_config_to_yojson = file_handlers_config__to_yojson
     let file_handlers_config_of_yojson = file_handlers_config__of_yojson
       
-    type config_ = E.Default_handlers.config
+    type config_ = E.Handlers.config
       = {mutable file_handlers: file_handlers_config}
          [@@deriving yojson]
 

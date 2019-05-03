@@ -65,7 +65,45 @@ end
 
 
 (** Default implementation of a Handlers module. *)
-module Default_handlers = Default_handlers
+
+module Handlers :(
+sig
+  type tag = unit
+  type log_item = {
+    level : Easy_logging__.Easy_logging_types.level;
+    logger_name : string;
+    msg : string;
+    tags : unit list;
+  }
+  type log_formatter = log_item -> string
+  type t = {
+    mutable fmt : log_formatter;
+    mutable level : Easy_logging__.Easy_logging_types.level;
+    output : out_channel;
+  }
+  val format_default : log_item -> string
+  val format_color : log_item -> string
+  val make_cli_handler : Easy_logging__.Easy_logging_types.level -> t
+  type file_handlers_config = {
+    logs_folder : string;
+    truncate : bool;
+    file_perms : int;
+  }
+  val file_handlers_defaults : file_handlers_config
+  type config = { mutable file_handlers : file_handlers_config; }
+  val config : config
+  val set_config : config -> unit
+  val make_file_handler :
+    Easy_logging__.Easy_logging_types.level -> string -> t
+  type desc =
+      Cli of Easy_logging__.Easy_logging_types.level
+    | File of string * Easy_logging__.Easy_logging_types.level
+  val make : desc -> t
+  val set_level : t -> Easy_logging__.Easy_logging_types.level -> unit
+  val set_formatter : t -> log_formatter -> unit
+  val apply : t -> log_item -> unit
+end)
+
 
 (** Default implementation of a Logging module. *)
 module Logging :
@@ -87,7 +125,7 @@ sig
             val mutable level : log_level option
               
             (** Registered handlers for this logger. *)
-            val mutable handlers : Default_handlers.t list 
+            val mutable handlers : Handlers.t list 
 
             (** The optional parent of this logger⋅ *)
             val parent : logger option
@@ -104,12 +142,12 @@ Example :
 {[logger#warning "Unexpected value: %s" (to_string my_value)]}
  *)
               
-            method flash : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
-            method error : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
-            method warning : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
-            method info : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
-            method trace : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
-            method debug : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
+            method flash : 'a. ?tags:Handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
+            method error : 'a. ?tags:Handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
+            method warning : 'a. ?tags:Handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
+            method info : 'a. ?tags:Handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
+            method trace : 'a. ?tags:Handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
+            method debug : 'a. ?tags:Handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
                  
                  
 
@@ -122,12 +160,12 @@ Example:
 *)
 
           
-            method ldebug : ?tags:Default_handlers.tag list -> string lazy_t -> unit
-            method ltrace : ?tags:Default_handlers.tag list -> string lazy_t -> unit
-            method linfo : ?tags:Default_handlers.tag list -> string lazy_t -> unit
-            method lwarning : ?tags:Default_handlers.tag list -> string lazy_t -> unit
-            method lerror : ?tags:Default_handlers.tag list -> string lazy_t -> unit
-            method lflash : ?tags:Default_handlers.tag list -> string lazy_t -> unit
+            method ldebug : ?tags:Handlers.tag list -> string lazy_t -> unit
+            method ltrace : ?tags:Handlers.tag list -> string lazy_t -> unit
+            method linfo : ?tags:Handlers.tag list -> string lazy_t -> unit
+            method lwarning : ?tags:Handlers.tag list -> string lazy_t -> unit
+            method lerror : ?tags:Handlers.tag list -> string lazy_t -> unit
+            method lflash : ?tags:Handlers.tag list -> string lazy_t -> unit
 
                  
             (** {3 Other methods} *)
@@ -137,10 +175,10 @@ Example:
             method set_level : log_level  -> unit
                  
             (** Adds a handler to the logger instance. *)
-            method add_handler : Default_handlers.t -> unit
+            method add_handler : Handlers.t -> unit
 
                  
-            method get_handlers : Default_handlers.t list
+            method get_handlers : Handlers.t list
 
             (** Returs this logger level if it is not [None], else searches amongst ancestors for the first defined level; returns [NoLevel] if no level can be found. *) 
             method effective_level : log_level
@@ -153,7 +191,7 @@ Example:
       creates a new logger instance from the given arguments,
       then register it internally, and returns it.  *)
   val make_logger :
-     ?propagate:bool -> string -> log_level  -> Default_handlers.desc list -> logger
+     ?propagate:bool -> string -> log_level  -> Handlers.desc list -> logger
 
   (** Returns a registered logger by name. *)
   val get_logger : string -> logger
