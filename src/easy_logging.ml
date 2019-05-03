@@ -5,10 +5,10 @@ type log_level = Easy_logging_types.level
 let show_log_level = Easy_logging_types.show_level
 let pp_log_level fmt lvl = Format.pp_print_string fmt (show_log_level lvl)
 let log_level_of_string = Easy_logging_types.level_of_string
-module type HandlersT = Easy_logging_types.HandlersT
-                     
+
+module Types = Easy_logging_types
                       
-module MakeLogging (H : HandlersT) =
+module MakeLogging (H : Types.HandlersT) =
   struct
     let debug = ref false
               
@@ -126,11 +126,13 @@ module MakeLogging (H : HandlersT) =
       l
    end
 
-module Handlers = Default_handlers.MakeDefaultHandlers(
-                              struct
-                                type tag = unit
-                                let tags_formatter = fun _ -> ""
+module MakeDefaultHandlers = Default_handlers.MakeDefaultHandlers
+
+module DefaultHandlers = MakeDefaultHandlers(
+                             struct
+                               type tag = unit
+                               let tags_formatter = fun _ -> ""
                               end)
-module Logging = MakeLogging(Handlers)
+module Logging = MakeLogging(DefaultHandlers)
 
 

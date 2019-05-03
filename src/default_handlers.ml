@@ -12,14 +12,7 @@ In the [DefaultHandlers] module, handlers have level of their own. Their are two
 open Easy_logging_types
 
 (** {1 Type definitions } *)
-   
-(** we don't use tags here *)
 
-module type TagsT =
-  sig
-    type tag
-    val tags_formatter : tag list -> string
-  end
   
 module MakeDefaultHandlers (T : TagsT) =
   struct
