@@ -12,16 +12,13 @@ In the [DefaultHandlers] module, handlers have level of their own. Their are two
 open Easy_logging_types
 
 (** {1 Type definitions } *)
-   
-(** we don't use tags here *)
-type tag = unit
 
-             
+type tag = string
 type log_item = {
     level : Easy_logging_types.level;
     logger_name : string;
     msg : string;
-    tags : tag list
+    tags : string list
   }
               
 type log_formatter = log_item -> string
@@ -35,13 +32,21 @@ type t =
     output : out_channel;
   }
 
+  
 (** {1 Formatting functions} *)
 
-  
+let format_tags (tags : string list) =
+  match tags with
+  | [] -> ""
+  | _ -> 
+     let elems_str = List.fold_left (fun s e -> s ^ "," ^ e) "" tags
+     in "[" ^ elems_str ^ "] "
+   
 let format_default (item : log_item) =
-  Printf.sprintf "%-6.3f %-10s %-20s %s" (Sys.time ())
+  Printf.sprintf "%-6.3f %-10s %-20s %s%s" (Sys.time ())
     (show_level item.level)
     item.logger_name
+    (format_tags item.tags)
     item.msg
   
       
@@ -65,9 +70,10 @@ let format_color (item : log_item) =
     | Flash -> Colorize.format [ Fg Black; Bg LMagenta] item.msg
     | _ -> item.msg in
   
-  (Printf.sprintf "%-6.3f %-20s %-30s %s" (Sys.time ())
+  (Printf.sprintf "%-6.3f %-20s %-30s %s%s" (Sys.time ())
      item_level_fmt
      logger_name_fmt
+     (format_tags item.tags)
      item_msg_fmt)
 
 (** {1 Handlers creation and setup utility functions } *)
