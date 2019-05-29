@@ -39,7 +39,7 @@ let reduce (f: 'a -> 'a -> 'a) (l: 'a list) (d: 'a) =
     match l with
     | [] -> res
     | h::t ->
-       let res' = f h res in
+       let res' = f res h in
        aux t res'
   in
   match l with
