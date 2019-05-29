@@ -39,9 +39,8 @@ module type HandlersT =
     
     (** Type of a handler *) 
     type t
-       
+
     type tag
-       
     type log_item = {
         level : level;
         logger_name : string;

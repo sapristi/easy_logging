@@ -104,12 +104,12 @@ Example :
 {[logger#warning "Unexpected value: %s" (to_string my_value)]}
  *)
               
-            method flash : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
-            method error : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
-            method warning : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
-            method info : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
-            method trace : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
-            method debug : 'a. ?tags:Default_handlers.tag list -> ('a, unit, string, unit) format4 -> 'a
+            method flash : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
+            method error : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
+            method warning : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
+            method info : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
+            method trace : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
+            method debug : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
                  
                  
 
@@ -122,12 +122,12 @@ Example:
 *)
 
           
-            method ldebug : ?tags:Default_handlers.tag list -> string lazy_t -> unit
-            method ltrace : ?tags:Default_handlers.tag list -> string lazy_t -> unit
-            method linfo : ?tags:Default_handlers.tag list -> string lazy_t -> unit
-            method lwarning : ?tags:Default_handlers.tag list -> string lazy_t -> unit
-            method lerror : ?tags:Default_handlers.tag list -> string lazy_t -> unit
-            method lflash : ?tags:Default_handlers.tag list -> string lazy_t -> unit
+            method ldebug : ?tags:string list -> string lazy_t -> unit
+            method ltrace : ?tags:string list -> string lazy_t -> unit
+            method linfo : ?tags:string list -> string lazy_t -> unit
+            method lwarning : ?tags:string list -> string lazy_t -> unit
+            method lerror : ?tags:string list -> string lazy_t -> unit
+            method lflash : ?tags:string list -> string lazy_t -> unit
 
                  
             (** {3 Other methods} *)
