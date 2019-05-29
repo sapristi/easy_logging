@@ -34,12 +34,23 @@ type t =
 
   
 (** {1 Formatting functions} *)
-
+let reduce (f: 'a -> 'a -> 'a) (l: 'a list) (d: 'a) =
+  let rec aux l res =
+    match l with
+    | [] -> res
+    | h::t ->
+       let res' = f h res in
+       aux t res'
+  in
+  match l with
+  | [] -> d
+  | h::t -> aux t h 
+  
 let format_tags (tags : string list) =
   match tags with
   | [] -> ""
   | _ -> 
-     let elems_str = List.fold_left (fun s e -> s ^ "," ^ e) "" tags
+     let elems_str = reduce (fun s e -> s ^ " | " ^ e) tags ""
      in "[" ^ elems_str ^ "] "
    
 let format_default (item : log_item) =
