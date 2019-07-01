@@ -24,17 +24,17 @@ module Default_format (T: sig
     | h::t -> aux t h 
             
 
-  type msg_format =
+  type item_format =
     | C of (unit -> string)
     | Level
     | Timestamp
     | Msg
     | Tags of (string*string*string)
     | Logger_name
-    | F of string * msg_format
+    | F of string * item_format
     | S of string
-    | W of (string*string)*msg_format
-    | L of string*(msg_format list)
+    | W of (string*string)*item_format
+    | L of string*(item_format list)
       
   let format_tags format (tags : T.tag list) =
     let (start, stop, sep) = format in
@@ -46,6 +46,26 @@ module Default_format (T: sig
        in start ^ elems_str ^ stop
         
   let rec format_item item_format (item: T.log_item) =
+    match item_format with
+    | C f -> f ()
+    | Level -> show_level item.level
+    | Timestamp -> string_of_float (Sys.time ())
+    | Msg -> item.msg
+    | Tags tag_format -> format_tags tag_format item.tags
+    | Logger_name -> item.logger_name
+    | F (f_string, format') ->
+       let format_str = Scanf.format_from_string f_string "%s" in
+       Printf.sprintf format_str (format_item format' item)
+    | S s -> s
+    | W ((start,stop), format') ->
+       start ^ (format_item format' item) ^ stop
+    | L (sep, format_l) ->
+       let formatted = List.map (fun f -> format_item f item) format_l
+       in
+       reduce (fun s e -> e ^ sep ^ s)
+         formatted ""
+       
+  let rec format_item_pp item_format (item: T.log_item) =
     match item_format with
     | C f -> f ()
     | Level -> show_level item.level

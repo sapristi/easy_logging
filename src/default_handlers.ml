@@ -10,7 +10,7 @@ In the [DefaultHandlers] module, handlers have level of their own. Their are two
 
 
 open Easy_logging_types
-
+open Default_format
 (** {1 Type definitions } *)
 
 type tag = string
@@ -21,7 +21,20 @@ type log_item = {
     tags : string list
   }
               
-type log_formatter = log_item -> string
+module T = 
+  struct
+    type tag = string
+    type log_item  = {
+        level : level;
+        logger_name : string;
+        msg : string;
+        tags : string list
+      }
+    let show_tag = fun x -> x end
+module Formatter = Default_format (T)
+
+                 
+type log_formatter = level -> Formatter.item_format
 
 
 (** type of a handler *)
