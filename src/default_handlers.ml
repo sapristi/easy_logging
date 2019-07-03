@@ -49,39 +49,25 @@ type t =
    
 let format_default _ : Formatter.item_format =
   L (" ", [Timestamp; F("%-10s", Level); F("%-20s", Logger_name); Tags ("[", "|","]"); Msg])
-  
-      (*
-let format_color (item : log_item) =
-  
-  let level_to_color lvl =
-    match lvl with
-    | Flash -> Colorize.LMagenta
-    | Error -> Colorize.LRed
-    | Warning -> Colorize.LYellow
-    | Info -> Colorize.LBlue
-    | Trace -> Colorize.Cyan
-    | Debug -> Colorize.Green
-    | NoLevel -> Colorize.Default
-  in
-  
-  let item_level_fmt = Colorize.format [ Fg (level_to_color item.level)]  (show_level item.level)
-  and logger_name_fmt = Colorize.format [ Underline] item.logger_name
-  and item_msg_fmt =
-    match item.level with
-    | Flash -> Colorize.format [ Fg Black; Bg LMagenta] item.msg
-    | _ -> item.msg in
-  
-  (Printf.sprintf "%-6.3f %-20s %-30s %s%s" (Sys.time ())
-     item_level_fmt
-     logger_name_fmt
-     (format_tags item.tags)
-     item_msg_fmt)
-       *)
+
+let format_color level : Formatter.item_format =
+  let level_style, msg_style = 
+    match level with
+    | Flash -> [Colorize.Fg Colorize.LMagenta], [Colorize.Fg Black; Bg LMagenta]
+    | Error -> [Fg Colorize.LRed], []
+    | Warning -> [Fg Colorize.LYellow], []
+    | Info -> [Fg Colorize.LBlue], []
+    | Trace -> [Fg Colorize.Cyan], []
+    | Debug -> [Fg Colorize.Green], []
+    | NoLevel -> [Fg Colorize.Default], []
+  in L (" ", [Timestamp; F("%-10s", C (level_style, Level)); F("%-20s", Logger_name); Tags ("[", "|","]"); C (msg_style, Msg)])
+
+   
 (** {1 Handlers creation and setup utility functions } *)
   
   
 let make_cli_handler level =
-  {fmt = format_default;
+  {fmt = format_color;
    level = level;
    output = stdout}
 
@@ -144,7 +130,7 @@ let apply (h : t) (item: log_item) =
   if item.level >= h.level
   then
     (
-      let prefix = Formatter.format_item_prefix (h.fmt item.level) item.level item.logger_name item.tags item.msg in 
-      output_string h.output (Format.sprintf "@[%s@%s@]\n" prefix  item.msg);
+      let full_log_msg = Formatter.format_item (h.fmt item.level) item.level item.logger_name item.tags item.msg in 
+      output_string h.output (full_log_msg ^ "\n");
       flush h.output;
     )

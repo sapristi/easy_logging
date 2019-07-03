@@ -25,6 +25,7 @@ module Default_format (T: sig
     | Msg
     | Tags of (string*string*string)
     | Logger_name
+    | C of (Colorize.format list) * item_format
     | F of string * item_format
     | S of string
     | W of (string*string)*item_format
@@ -39,7 +40,7 @@ module Default_format (T: sig
        let elems_str = reduce (fun s e -> e ^ sep ^ s) tags_str "" 
        in start ^ elems_str ^ stop
         
-  let rec format_item_prefix item_format level logger_name tags msg =
+  let rec format_item item_format level logger_name tags msg =
     match item_format with
     | FC f -> f ()
     | Level -> show_level level
@@ -47,16 +48,18 @@ module Default_format (T: sig
     | Msg -> msg
     | Tags tag_format -> format_tags tag_format tags
     | Logger_name -> logger_name
+    | C (cl, format') ->
+       Colorize.format cl (format_item format' level logger_name tags msg)
     | F (f_string, format') ->
        let format_str = Scanf.format_from_string f_string "%s" in
-       Printf.sprintf format_str (format_item_prefix format' level logger_name tags msg)
+       Printf.sprintf format_str (format_item format' level logger_name tags msg)
     | S s -> s
     | W ((start,stop), format') ->
-       start ^ (format_item_prefix format' level logger_name tags msg) ^ stop
+       start ^ (format_item format' level logger_name tags msg) ^ stop
     | L (sep, format_l) ->
-       let formatted = List.map (fun f -> format_item_prefix f level logger_name tags msg) format_l
+       let formatted = List.map (fun f -> format_item f level logger_name tags msg) format_l
        in
-       reduce (fun s e -> e ^ sep ^ s)
+       reduce (fun s e -> s ^ sep ^ e)
          formatted ""
        
 end

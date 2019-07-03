@@ -49,7 +49,7 @@ module type HandlersT =
         msg : string;
         tags : tag list
       }
-    type log_formatter = log_item -> string
+    
 
     (** Applies the handler to a [log_item] *)
     val apply : t -> log_item -> unit
