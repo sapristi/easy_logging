@@ -20,21 +20,9 @@ type log_item = {
     msg : string;
     tags : string list
   }
-              
-module T = 
-  struct
-    type tag = string
-    type log_item  = {
-        level : level;
-        logger_name : string;
-        msg : string;
-        tags : string list
-      }
-    let show_tag = fun x -> x end
-module Formatter = Default_format (T)
-
+   
                  
-type log_formatter = level -> Formatter.item_format
+type log_formatter = log_item -> string
 
 
 (** type of a handler *)
@@ -46,11 +34,34 @@ type t =
   }
 
   
-   
-let format_default _ : Formatter.item_format =
-  L (" ", [Timestamp; F("%-10s", Level); F("%-20s", Logger_name); Tags ("[", "|","]"); Msg])
+(** {1 Formatting functions} *)
+let reduce (f: 'a -> 'a -> 'a) (l: 'a list) (d: 'a) =
+  let rec aux l res =
+    match l with
+    | [] -> res
+    | h::t ->
+       let res' = f res h in
+       aux t res'
+  in
+  match l with
+  | [] -> d
+  | h::t -> aux t h 
   
-      (*
+let format_tags (tags : string list) =
+  match tags with
+  | [] -> ""
+  | _ -> 
+     let elems_str = reduce (fun s e -> s ^ " | " ^ e) tags ""
+     in "[" ^ elems_str ^ "] "
+   
+let format_default (item : log_item) =
+  Printf.sprintf "%-6.3f %-10s %-20s %s%s" (Sys.time ())
+    (show_level item.level)
+    item.logger_name
+    (format_tags item.tags)
+    item.msg
+  
+      
 let format_color (item : log_item) =
   
   let level_to_color lvl =
@@ -76,12 +87,12 @@ let format_color (item : log_item) =
      logger_name_fmt
      (format_tags item.tags)
      item_msg_fmt)
-       *)
+
 (** {1 Handlers creation and setup utility functions } *)
   
   
 let make_cli_handler level =
-  {fmt = format_default;
+  {fmt = format_color;
    level = level;
    output = stdout}
 
@@ -144,7 +155,6 @@ let apply (h : t) (item: log_item) =
   if item.level >= h.level
   then
     (
-      let prefix = Formatter.format_item_prefix (h.fmt item.level) item.level item.logger_name item.tags item.msg in 
-      output_string h.output (Format.sprintf "@[%s@%s@]\n" prefix  item.msg);
+      output_string h.output (Printf.sprintf "%s\n" (h.fmt item));
       flush h.output;
     )

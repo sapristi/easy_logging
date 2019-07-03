@@ -2,12 +2,6 @@ open Easy_logging_types
    
 module Default_format (T: sig
                            type tag
-                           type log_item  = {
-                               level : level;
-                               logger_name : string;
-                               msg : string;
-                               tags : tag list
-                             }
                            val show_tag: tag -> string end)
   = struct
    
@@ -25,7 +19,7 @@ module Default_format (T: sig
             
 
   type item_format =
-    | C of (unit -> string)
+    | FC of (unit -> string)
     | Level
     | Timestamp
     | Msg
@@ -45,43 +39,24 @@ module Default_format (T: sig
        let elems_str = reduce (fun s e -> e ^ sep ^ s) tags_str "" 
        in start ^ elems_str ^ stop
         
-  let rec format_item item_format (item: T.log_item) =
+  let rec format_item_prefix item_format level logger_name tags msg =
     match item_format with
-    | C f -> f ()
-    | Level -> show_level item.level
+    | FC f -> f ()
+    | Level -> show_level level
     | Timestamp -> string_of_float (Sys.time ())
-    | Msg -> item.msg
-    | Tags tag_format -> format_tags tag_format item.tags
-    | Logger_name -> item.logger_name
+    | Msg -> msg
+    | Tags tag_format -> format_tags tag_format tags
+    | Logger_name -> logger_name
     | F (f_string, format') ->
        let format_str = Scanf.format_from_string f_string "%s" in
-       Printf.sprintf format_str (format_item format' item)
+       Printf.sprintf format_str (format_item_prefix format' level logger_name tags msg)
     | S s -> s
     | W ((start,stop), format') ->
-       start ^ (format_item format' item) ^ stop
+       start ^ (format_item_prefix format' level logger_name tags msg) ^ stop
     | L (sep, format_l) ->
-       let formatted = List.map (fun f -> format_item f item) format_l
+       let formatted = List.map (fun f -> format_item_prefix f level logger_name tags msg) format_l
        in
        reduce (fun s e -> e ^ sep ^ s)
          formatted ""
        
-  let rec format_item_pp item_format (item: T.log_item) =
-    match item_format with
-    | C f -> f ()
-    | Level -> show_level item.level
-    | Timestamp -> string_of_float (Sys.time ())
-    | Msg -> item.msg
-    | Tags tag_format -> format_tags tag_format item.tags
-    | Logger_name -> item.logger_name
-    | F (f_string, format') ->
-       let format_str = Scanf.format_from_string f_string "%s" in
-       Printf.sprintf format_str (format_item format' item)
-    | S s -> s
-    | W ((start,stop), format') ->
-       start ^ (format_item format' item) ^ stop
-    | L (sep, format_l) ->
-       let formatted = List.map (fun f -> format_item f item) format_l
-       in
-       reduce (fun s e -> e ^ sep ^ s)
-         formatted ""
 end
