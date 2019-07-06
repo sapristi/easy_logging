@@ -12,36 +12,53 @@ In the [DefaultHandlers] module, handlers have level of their own. Their are two
 open Easy_logging_types
 
 (** {1 Type definitions } *)
-   
-(** we don't use tags here *)
-type tag = unit
 
-             
+type tag = string
 type log_item = {
     level : Easy_logging_types.level;
     logger_name : string;
     msg : string;
-    tags : tag list
+    tags : string list
   }
               
 type log_formatter = log_item -> string
-
+type filter= log_item -> bool
 
 (** type of a handler *)
 type t =
   {
     mutable fmt : log_formatter;
     mutable level : Easy_logging_types.level;
+    mutable filters: filter list;
     output : out_channel;
   }
 
-(** {1 Formatting functions} *)
-
   
+(** {1 Formatting functions} *)
+let reduce (f: 'a -> 'a -> 'a) (l: 'a list) (d: 'a) =
+  let rec aux l res =
+    match l with
+    | [] -> res
+    | h::t ->
+       let res' = f res h in
+       aux t res'
+  in
+  match l with
+  | [] -> d
+  | h::t -> aux t h 
+  
+let format_tags (tags : string list) =
+  match tags with
+  | [] -> ""
+  | _ -> 
+     let elems_str = reduce (fun s e -> s ^ " | " ^ e) tags ""
+     in "[" ^ elems_str ^ "] "
+   
 let format_default (item : log_item) =
-  Printf.sprintf "%-6.3f %-10s %-20s %s" (Sys.time ())
+  Printf.sprintf "%-6.3f %-10s %-20s %s%s" (Sys.time ())
     (show_level item.level)
     item.logger_name
+    (format_tags item.tags)
     item.msg
   
       
@@ -53,6 +70,7 @@ let format_color (item : log_item) =
     | Error -> Colorize.LRed
     | Warning -> Colorize.LYellow
     | Info -> Colorize.LBlue
+    | Trace -> Colorize.Cyan
     | Debug -> Colorize.Green
     | NoLevel -> Colorize.Default
   in
@@ -63,19 +81,39 @@ let format_color (item : log_item) =
     match item.level with
     | Flash -> Colorize.format [ Fg Black; Bg LMagenta] item.msg
     | _ -> item.msg in
+
+  Format.sprintf "@[<hov 2>[%-6.3f %-20s %-30s] %s @ %s@]"
+    (Sys.time ())
+    item_level_fmt
+    logger_name_fmt
+    (format_tags item.tags)
+    item_msg_fmt
   
-  (Printf.sprintf "%-6.3f %-20s %-30s %s" (Sys.time ())
-     item_level_fmt
-     logger_name_fmt
-     item_msg_fmt)
+let format_json (item: log_item) =
+  let format_tags tags =
+    match tags with
+    | [] -> "[]"
+    | _ -> 
+       let elems_str = reduce (fun s e ->
+                           s^", \""^(String.escaped e)^"\"") tags ""
+       in "[" ^ elems_str ^ "] "
+                              
+  in
+  
+  Printf.sprintf
+    "{\"level\": \"%s\", \"logger_name\": \"%s\", \"message\": \"%s\", \"tags\": %s}" 
+    (show_level item.level)
+    (String.escaped item.logger_name)
+    (String.escaped item.msg)
+    (format_tags item.tags)
+      
 
 (** {1 Handlers creation and setup utility functions } *)
-  
-  
 let make_cli_handler level =
   {fmt = format_color;
    level = level;
-   output = stdout}
+   output = stdout;
+   filters = []}
 
 
   
@@ -115,6 +153,7 @@ let make_file_handler level filename  =
   {fmt = format_default;
    level = level;
    output = oc;
+   filters = [];
   }
   
   
@@ -130,10 +169,12 @@ let set_level (h:t) lvl =
   h.level <- lvl
 let set_formatter h fmt =
   h.fmt <- fmt
-
+let add_filter h filter =
+  h.filters <- filter::h.filters
 
 let apply (h : t) (item: log_item) =
-  if item.level >= h.level
+  
+  if item.level >= h.level && (reduce (&&) (List.map (fun f -> f item) h.filters) true)
   then
     (
       output_string h.output (Printf.sprintf "%s\n" (h.fmt item));
