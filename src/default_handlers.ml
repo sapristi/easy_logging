@@ -22,13 +22,14 @@ type log_item = {
   }
               
 type log_formatter = log_item -> string
-
+type filter= log_item -> bool
 
 (** type of a handler *)
 type t =
   {
     mutable fmt : log_formatter;
     mutable level : Easy_logging_types.level;
+    mutable filters: filter list;
     output : out_channel;
   }
 
@@ -87,13 +88,32 @@ let format_color (item : log_item) =
     logger_name_fmt
     (format_tags item.tags)
     item_msg_fmt
-
+  
+let format_json (item: log_item) =
+  let format_tags tags =
+    match tags with
+    | [] -> "[]"
+    | _ -> 
+       let elems_str = reduce (fun s e ->
+                           s^", \""^(String.escaped e)^"\"") tags ""
+       in "[" ^ elems_str ^ "] "
+                              
+  in
+  
+  Printf.sprintf
+    "{\"level\": \"%s\", \"logger_name\": \"%s\", \"message\": \"%s\", \"tags\": %s}" 
+    (show_level item.level)
+    (String.escaped item.logger_name)
+    (String.escaped item.msg)
+    (format_tags item.tags)
+      
 
 (** {1 Handlers creation and setup utility functions } *)
 let make_cli_handler level =
   {fmt = format_color;
    level = level;
-   output = stdout}
+   output = stdout;
+   filters = []}
 
 
   
@@ -133,6 +153,7 @@ let make_file_handler level filename  =
   {fmt = format_default;
    level = level;
    output = oc;
+   filters = [];
   }
   
   
@@ -148,10 +169,12 @@ let set_level (h:t) lvl =
   h.level <- lvl
 let set_formatter h fmt =
   h.fmt <- fmt
-
+let add_filter h filter =
+  h.filters <- filter::h.filters
 
 let apply (h : t) (item: log_item) =
-  if item.level >= h.level
+  
+  if item.level >= h.level && (reduce (&&) (List.map (fun f -> f item) h.filters) true)
   then
     (
       output_string h.output (Printf.sprintf "%s\n" (h.fmt item));
