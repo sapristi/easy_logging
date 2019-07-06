@@ -80,16 +80,16 @@ let format_color (item : log_item) =
     match item.level with
     | Flash -> Colorize.format [ Fg Black; Bg LMagenta] item.msg
     | _ -> item.msg in
-  
-  (Printf.sprintf "%-6.3f %-20s %-30s %s%s" (Sys.time ())
-     item_level_fmt
-     logger_name_fmt
-     (format_tags item.tags)
-     item_msg_fmt)
+
+  Format.sprintf "@[<hov 2>[%-6.3f %-20s %-30s] %s @ %s@]"
+    (Sys.time ())
+    item_level_fmt
+    logger_name_fmt
+    (format_tags item.tags)
+    item_msg_fmt
+
 
 (** {1 Handlers creation and setup utility functions } *)
-  
-  
 let make_cli_handler level =
   {fmt = format_color;
    level = level;

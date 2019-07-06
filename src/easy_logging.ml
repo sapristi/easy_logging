@@ -102,6 +102,13 @@ module MakeLogging (H : HandlersT) =
       method linfo ?tags:(tags=[]) =  self#_log_msg Lazy.force tags Info
       method ltrace ?tags:(tags=[]) =  self#_log_msg Lazy.force tags Trace
       method ldebug ?tags:(tags=[]) = self#_log_msg Lazy.force tags Debug
+                                    
+      method sflash ?tags:(tags=[]) = self#_log_msg (fun x -> x) tags Flash
+      method serror ?tags:(tags=[]) = self#_log_msg (fun x -> x) tags Error
+      method swarning ?tags:(tags=[]) = self#_log_msg (fun x -> x) tags Warning
+      method sinfo ?tags:(tags=[]) =  self#_log_msg (fun x -> x) tags Info
+      method strace ?tags:(tags=[]) =  self#_log_msg (fun x -> x) tags Trace
+      method sdebug ?tags:(tags=[]) = self#_log_msg (fun x -> x) tags Debug
     end
 
     let root_logger = new logger "root"

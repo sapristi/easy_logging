@@ -193,5 +193,9 @@ lAC#warning "two lines";
 let llla = Logging.get_logger "test_6.la" in
 let la = Logging.make_logger "test_6" Debug [Cli Debug] in
 llla#debug "is this ok?";
-la#info "you bet it is!"
+la#info "you bet it is!";
 
+let message = "this is not a short message; is it going to get longer ?" in
+    let long_message = message ^ message ^ message ^ message ^ message in 
+    
+    la#info "%s" long_message
