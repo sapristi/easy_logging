@@ -55,6 +55,14 @@ sig
             method lflash : ?tags:H.tag list -> string lazy_t -> unit
             method linfo : ?tags:H.tag list -> string lazy_t -> unit
             method lwarning : ?tags:H.tag list -> string lazy_t -> unit
+
+                 
+            method sdebug : ?tags:H.tag list -> string -> unit
+            method strace : ?tags:H.tag list -> string -> unit
+            method sinfo : ?tags:H.tag list -> string -> unit
+            method swarning : ?tags:H.tag list -> string -> unit
+            method serror : ?tags:H.tag list -> string -> unit
+            method sflash : ?tags:H.tag list -> string -> unit
           end
       
   val get_logger : string -> logger
@@ -128,6 +136,21 @@ Example:
             method lwarning : ?tags:string list -> string lazy_t -> unit
             method lerror : ?tags:string list -> string lazy_t -> unit
             method lflash : ?tags:string list -> string lazy_t -> unit
+
+                  (** {4 String logging methods} 
+Each of these methods takes a [string] as an input (as well as the optional [tag list]. 
+
+Example:
+{[logger#sdebug string_variable))]}
+*)
+
+          
+            method sdebug : ?tags:string list -> string -> unit
+            method strace : ?tags:string list -> string -> unit
+            method sinfo : ?tags:string list -> string -> unit
+            method swarning : ?tags:string list -> string -> unit
+            method serror : ?tags:string list -> string -> unit
+            method sflash : ?tags:string list -> string -> unit
 
                  
             (** {3 Other methods} *)
