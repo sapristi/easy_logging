@@ -28,8 +28,8 @@ will output to the stdout a message of the form
    + {!section:logger} ( {! Easy_logging.Logging.logger} )
    + {!section:logging}  ({! Easy_logging.Logging}) }
 {- {!section:makelogging} ( {! Easy_logging.MakeLogging} )} 
-{- {{:examples.html} Examples}}}
-
+{- {{:examples.html} More examples}}
+}
 {2:description Overall description }
 
 The logging infrastructure is based on four concepts:
