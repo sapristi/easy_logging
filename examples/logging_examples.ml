@@ -196,6 +196,19 @@ llla#debug "is this ok?";
 la#info "you bet it is!";
 
 let message = "this is not a short message; is it going to get longer ?" in
-    let long_message = message ^ message ^ message ^ message ^ message in 
-    
-    la#info "%s" long_message
+let long_message = message ^ message ^ message ^ message ^ message in 
+
+la#info "%s" long_message;
+
+let jsonl = Logging.get_logger "test_json" in
+jsonl#set_level Debug;
+
+let h = Default_handlers.make (Cli Debug) in
+Default_handlers.set_formatter h Default_handlers.format_json;
+jsonl#add_handler h;
+jsonl#info "it is ok";
+jsonl#warning "is it json\"\nis it";
+
+  
+Default_handlers.add_filter h (fun _ -> false);
+jsonl#warning "this is not printed"
