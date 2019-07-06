@@ -6,7 +6,7 @@ synopsis: "Module to easily log messages"
 maintainer: "mathiasmillet@gmail.com"
 authors: "Mathias Millet"
 license: "GPL"
-homepage: "https://sapristi.github.io/easy_logging/easy_logging/"
+homepage: "https://sapristi.github.io/easy_logging/"
 bug-reports: "https://github.com/sapristi/easy_logging/issues"
 dev-repo: "git+https://github.com/sapristi/easy_logging.git"
 depends: [
@@ -15,7 +15,7 @@ depends: [
 ]
 build: [
   ["dune" "build" "-p" name "-j" jobs]
-  ["dune" "runtest" "-p" name] {with-test}
+  ["dune" "runtest" "-p" name "examples"] {with-test}
 ]
 
 description: """
