@@ -210,4 +210,3 @@ logger_8#set_level Debug;
 let h = Default_handlers.make (Cli Debug) in
 Default_handlers.add_filter h (fun _ -> false);
 logger_9#warning "this is not printed"
-
