@@ -34,7 +34,7 @@ sig
             method set_propagate : bool -> unit         
 
             method effective_level : log_level
-            
+            method add_tag_generator : (unit -> H.tag) -> unit
                  
             method flash :   'a. ?tags:H.tag list ->
                              ('a, unit, string, unit) format4 -> 'a
@@ -170,6 +170,8 @@ Example:
 
                  
             method set_propagate : bool -> unit
+
+            method add_tag_generator: (unit -> Default_handlers.tag) -> unit
           end
 
   (** [make_logger name level handlers_descs] 
