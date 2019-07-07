@@ -82,7 +82,8 @@ let format_color (item : log_item) =
     | Flash -> Colorize.format [ Fg Black; Bg LMagenta] item.msg
     | _ -> item.msg in
 
-  Format.sprintf "@[<hov 2>[%-6.3f %-20s %-30s] %s @ %s@]"
+  Format.pp_set_max_indent Format.str_formatter 200;
+  Format.sprintf "@[<hov 2>[%-6.3f %-20s %-30s] %s %s@]"
     (Sys.time ())
     item_level_fmt
     logger_name_fmt
