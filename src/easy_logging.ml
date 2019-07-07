@@ -24,7 +24,6 @@ module MakeLogging (H : HandlersT) =
       val mutable handlers : H.t list = []
       val parent : logger option = parent
       val mutable propagate = true
-
       val mutable tag_generators : (unit -> H.tag) list = []
                             
       method set_level new_level =
@@ -47,9 +46,8 @@ module MakeLogging (H : HandlersT) =
         | true, Some p -> handlers @ p#get_handlers
         | _ -> handlers
 
-      method add_tag_generator t  =
+      method add_tag_generator t =
         tag_generators <- t :: tag_generators
-             
              
       method private treat_msg : 'a. ('a -> string) -> H.tag list -> log_level -> 'a -> unit
         = fun unwrap_fun tags msg_level msg ->
@@ -75,12 +73,12 @@ module MakeLogging (H : HandlersT) =
         
       method private _log_msg : 'a. ('a -> string) -> H.tag list -> log_level -> 'a -> unit
         = fun unwrap_fun tags msg_level msg ->
-           if msg_level >= self#effective_level
-           then
-             self#treat_msg unwrap_fun tags msg_level msg
-           else
-             ()                           
-         
+        if msg_level >= self#effective_level
+        then
+          self#treat_msg unwrap_fun tags msg_level msg
+        else
+          ()                           
+        
       method private _flog_msg : 'a. H.tag list -> log_level -> ('a, unit, string, unit) format4 -> 'a
         =  fun tags msg_level -> 
         if msg_level >= self#effective_level
@@ -144,8 +142,8 @@ module MakeLogging (H : HandlersT) =
 
    end
 
-module Default_handlers = Default_handlers
+module Handlers = Handlers
                 
-module Logging = MakeLogging(Default_handlers)
+module Logging = MakeLogging(Handlers)
 
 

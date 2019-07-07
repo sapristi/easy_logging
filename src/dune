@@ -4,8 +4,6 @@
 
 (rule
  (targets examples.mld)
-;; (deps examples/logging_examples.ml)
-;; (action (copy examples/logging_examples.ml more_examples.ml))
  (action (with-stdout-to examples.mld
                          (progn
                            (echo "{1 Examples}\n{[")
@@ -14,12 +12,6 @@
                            )))
  )
          
-
-;; (alias
-;;  (name all_test)
-;;  (deps more_examples.mld)
-;;  (package easy_logging))
- 
 (library
  (name easy_logging)
  (public_name easy_logging)

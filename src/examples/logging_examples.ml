@@ -13,11 +13,12 @@ let logger_1 = Logging.make_logger
                "_1_ Demo" Debug
                [Cli Debug];;
 
-logger_1#debug "This is a debug message";
-logger_1#info "This is an info message";
+logger_1#debug   "This is a debug message";
+logger_1#trace   "This is a trace message";
+logger_1#info    "This is an info message";
 logger_1#warning "This is a warning message";
-logger_1#error "This is an error message";
-logger_1#flash "This is a FLASH message";
+logger_1#error   "This is an error message";
+logger_1#flash   "This is a FLASH message";
 
 (* logger_1 sublogger: will use logger_1 handlers *)
 let logger_1_sublogger = Logging.get_logger "_1_ Demo.sublogger"
@@ -51,28 +52,23 @@ logger_1#info "third message";
 (* you can also add tags by hand *)
 
 logger_1#info ~tags:["OOO"] "another message";
-
-
 (* ]}
 {2 Modifying the level of a handler} 
 {[ *)
 let logger_4_root = Logging.get_logger "" in
 logger_4_root#error "WTF1";
 
-let h = Default_handlers.make (Cli Debug) in
+let h = Handlers.make (Cli Debug) in
 let logger_4_sub = Logging.make_logger "_4_ handlerLevelTest" Debug [] in
 logger_4_sub#error "WTF2";
 logger_4_sub#add_handler h;
 logger_4_sub#debug "this message is displayed";
-Default_handlers.set_level h Info;
+Handlers.set_level h Info;
 logger_4_sub#debug "this message is not displayed";
-
-
-
 (* ]}
 {2 Modifying the file handler defaults} 
 {[ *)
-module H = Default_handlers
+module H = Handlers
 let config : H.config =
   {file_handlers = {
      logs_folder= "test/";
@@ -84,61 +80,35 @@ let logger_5 = TestLogging.make_logger
                "_4_ File logger demo" Debug [File ("test", Debug)];;
 logger_5#info "this is a message";
 assert (Sys.file_exists "test/test");
-
-
-
-
 (* ]}
 {2 Subloggers}
 {[ *)
 let logger_6_A = Logging.get_logger "_6_ SubLoggers.A"
 and logger_6_AB = Logging.get_logger "_6_ SubLoggers.A.B"
 and logger_6_AC = Logging.get_logger "_6_ SubLoggers.A.C" in
-let h = Default_handlers.make (Cli Debug) in
+let h = Handlers.make (Cli Debug) in
 logger_6_A#add_handler h; logger_6_AC#add_handler h;
 logger_6_A#set_level Debug; 
 logger_6_A#info "one line";
 logger_6_AB#info "another line";
 logger_6_AC#warning "two lines";
-
-
-
-
-
-(* ]}
-{2 Message auto wrap demo}
-{[ *)
-let logger_7 = Logging.make_logger "_7_ AutoWrap" Debug [Cli Debug] in
-let message = "this is not a short message; is it going to get longer ?" in
-let long_message = message ^ message ^ message ^ message ^ message in 
-logger_7#info "%s" long_message;
-
-let logger_8 = Logging.get_logger "_8_ Json Formatting" in
-logger_8#set_level Debug;
-
-
 (* ]}
 {2 Json formatter}
 {[ *)
-let h = Default_handlers.make (Cli Debug) in
-Default_handlers.set_formatter h Default_handlers.format_json;
+let logger_8 = Logging.get_logger "_8_ Json Formatter"
+and h = Handlers.make (Cli Debug) in
+Handlers.set_formatter h Handlers.format_json;
 logger_8#add_handler h;
 logger_8#info "it is ok";
 logger_8#warning "is it json\"\nis it";
-
-
 (* ]}
 {2 Filters}
 {[ *)
 let logger_9 = Logging.get_logger "_9_ Handler filter" in
 logger_8#set_level Debug;
-let h = Default_handlers.make (Cli Debug) in
-Default_handlers.add_filter h (fun _ -> false);
+let h = Handlers.make (Cli Debug) in
+Handlers.add_filter h (fun _ -> false);
 logger_9#warning "this is not printed"
-
-
-
-  
 (* ]}
 {2 Custom handlers module example }
 
@@ -183,8 +153,6 @@ assert (!l = ["this is a message"]);
 logger_2#set_level Warning;
 logger_2#debug "this message will not be passed to the handler";
 assert (!l = ["this is a message"]);
-
-
 (* ]}
 {2 Another Handlers module: custom tags }
 
