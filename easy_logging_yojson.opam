@@ -21,8 +21,7 @@ build: [
   ["dune" "runtest" "-p" name "conf_loader/yojson"] {with-test}
 ]
 
-description: """
-     Provides deserialisation of logging configuration 
+description: """Provides deserialisation of logging configuration 
 (loggers instantation and handlers parameters) from json,
 using ppx_deriving_yojson.
 

@@ -18,8 +18,7 @@ build: [
   ["dune" "runtest" "-p" name "examples"] {with-test}
 ]
 
-description: """
-     Logging infrastructure inspired by the Python logging module.
+description: """Logging infrastructure inspired by the Python logging module.
 The aim of this module is to provide a quick and easy to use logging
 infrastructure.
 
