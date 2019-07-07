@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "easy_logging"
-version: "0.4"
+version: "0.5"
 synopsis: "Module to easily log messages"
 
 maintainer: "mathiasmillet@gmail.com"
@@ -28,5 +28,5 @@ It has the following features :
    * log messages printf style, or [string] or [string lazy_t]
    * tree logging architecture for light configuration
    * handlers associated to each logger will format and treat the message independantly.
-   * annotage log messages with tags
+   * annotate log messages with tags
 """
