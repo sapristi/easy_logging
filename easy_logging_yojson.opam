@@ -33,8 +33,9 @@ infrastructure.
 
 It has the following features :
    * one line logger creation
-   * log messages are either [string] or [string lazy_t]
-   * log level adaptable at runtime from anywhere in the program
-   * handlers associated to each logger will format and treat the message independantly.
-   * annotage log messages with tags
+   * log messages printf style, or [string] or [string lazy_t]
+   * tree logging architecture for light configuration
+   * handlers associated to each logger will format, filter and treat the message independantly.
+   * use the infrastructure with your own handlers with the [MakeLogging] functor.
+   * use tags to add contextual information to log messages
 """
