@@ -8,3 +8,6 @@ logger#info "log_message";;
 ```
 
 See documentation at https://sapristi.github.io/easy_logging/easy_logging
+
+
+# Changelog:
