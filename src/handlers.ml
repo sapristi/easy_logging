@@ -1,10 +1,5 @@
 (** 
-In the [DefaultHandlers] module, handlers have level of their own. Their are two kinds of logger : 
-
- - Cli handler: outputs colored messages to stdout 
-   {[ let h = Default_handlers.make (Cli Debug) ]}
- - File handler : outputs messages to a given file
-   {[ let h = Default_handlers.make (File ("filename", Debug)) ]}
+This is the [Handlers] module. It provides simple yet adaptable handlers implementation.
 
  *)
 
@@ -33,8 +28,18 @@ type t =
     output : out_channel;
   }
 
+(**
+A handler is made of:
+ - a formatter that transforms a log item into a string.
+ - a level used to filter out items.
+ - an array of possible additional custom filters.
+ - an [out_channel], where log strings are outputed by the function [Pervasives.output_string].
+
+ *)
+  
   
 (** {1 Formatting functions} *)
+
 let reduce (f: 'a -> 'a -> 'a) (l: 'a list) (d: 'a) =
   let rec aux l res =
     match l with
@@ -53,14 +58,17 @@ let format_tags (tags : string list) =
   | _ -> 
      let elems_str = reduce (fun s e -> s ^ " | " ^ e) tags ""
      in "[" ^ elems_str ^ "] "
-   
+
+(** Auxiliary functions. *)
+
+
 let format_default (item : log_item) =
   Printf.sprintf "%-6.3f %-10s %-20s %s%s" (Sys.time ())
     (show_level item.level)
     item.logger_name
     (format_tags item.tags)
     item.msg
-  
+(** Human readable log messages. *)
       
 let format_color (item : log_item) =
   
@@ -89,6 +97,7 @@ let format_color (item : log_item) =
     logger_name_fmt
     (format_tags item.tags)
     item_msg_fmt
+(** Human readable log messages, with level depending colors.*)
   
 let format_json (item: log_item) =
   let format_tags tags =
@@ -109,12 +118,9 @@ let format_json (item: log_item) =
     (format_tags item.tags)
       
 
-(** {1 Handlers creation and setup utility functions } *)
-let make_cli_handler level =
-  {fmt = format_color;
-   level = level;
-   output = stdout;
-   filters = []}
+(** JSON logs for software interoperability. *)
+
+(** {1 Handlers creation helpers } *)
 
 
   
@@ -134,6 +140,14 @@ type config =
 let config = {file_handlers = file_handlers_defaults}
 
 let set_config c = config.file_handlers <- c.file_handlers
+(** Sets how log files are created when using make_file_handler *)
+
+         
+let make_cli_handler level =
+  {fmt = format_color;
+   level = level;
+   output = stdout;
+   filters = []}        
 let make_file_handler level filename  =
   
   if not (Sys.file_exists config.file_handlers.logs_folder)
@@ -163,16 +177,34 @@ type desc = | Cli of level | File of string * level
 let make d = match d with
   | Cli lvl -> make_cli_handler lvl
   | File (f, lvl) -> make_file_handler lvl f
-                  
-(** {1 Handlers usage } *)
+(** Used for quick handler creation, e.g.
+
+
+ - Cli handler: outputs colored messages to stdout 
+   {[ let h = Handlers.make (Cli Debug) ]}
+ - File handler : outputs messages to a given file
+   {[ let h = Handlers.make (File ("filename", Debug)) ]}
+ *)
+
+
                    
+(** {1 Handlers setup } *)
+                   
+
+(** Sets the level of a handler. *)
 let set_level (h:t) lvl =
   h.level <- lvl
+
+(** Sets the formatter of a handler. *)
 let set_formatter h fmt =
   h.fmt <- fmt
+
+(** Adds a filter to a handler. *)
 let add_filter h filter =
   h.filters <- filter::h.filters
 
+
+(** Auxiliary function.*)
 let apply (h : t) (item: log_item) =
   
   if item.level >= h.level && (reduce (&&) (List.map (fun f -> f item) h.filters) true)

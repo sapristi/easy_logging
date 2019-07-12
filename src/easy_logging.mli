@@ -26,7 +26,7 @@ sig
             val mutable handlers : H.t list 
             val parent : logger option
             val propagate : bool
-            
+            val mutable tag_generators : (unit -> H.tag) list
               
             method add_handler : H.t -> unit
             method set_level : log_level  -> unit
@@ -73,7 +73,7 @@ end
 
 
 (** Default implementation of a Handlers module. *)
-module Default_handlers = Default_handlers
+module Handlers = Handlers
 
 (** Default implementation of a Logging module. *)
 module Logging :
@@ -95,14 +95,16 @@ sig
             val mutable level : log_level option
               
             (** Registered handlers for this logger. *)
-            val mutable handlers : Default_handlers.t list 
+            val mutable handlers : Handlers.t list 
 
-            (** The optional parent of this logger⋅ *)
+            (** The optional parent of this logger. *)
             val parent : logger option
 
-            (** Whether messages to this logger are propagated to its ancestors' handlers.*)
+            (** Whether messages passed to this logger are propagated to its ancestors' handlers.*)
             val propagate : bool
-            
+
+            (** The list of functions used for dynamic tagging of messages *)
+            val mutable tag_generators : (unit -> Handlers.tag) list
               
               
             (** {3 Classic logging Methods}
@@ -118,7 +120,6 @@ Example :
             method info : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
             method trace : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
             method debug : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
-                 
                  
 
                  
@@ -137,11 +138,11 @@ Example:
             method lerror : ?tags:string list -> string lazy_t -> unit
             method lflash : ?tags:string list -> string lazy_t -> unit
 
-                  (** {4 String logging methods} 
+            (** {4 String logging methods} 
 Each of these methods takes a [string] as an input (as well as the optional [tag list]. 
 
 Example:
-{[logger#sdebug string_variable))]}
+{[logger#sdebug string_variable]}
 *)
 
           
@@ -160,25 +161,29 @@ Example:
             method set_level : log_level  -> unit
                  
             (** Adds a handler to the logger instance. *)
-            method add_handler : Default_handlers.t -> unit
+            method add_handler : Handlers.t -> unit
 
-                 
-            method get_handlers : Default_handlers.t list
+            (** Will add a tag to each log message, resulting from the call of the supplied fonction (called each time a message is logged)*)
+            method add_tag_generator: (unit -> Handlers.tag) -> unit
 
-            (** Returs this logger level if it is not [None], else searches amongst ancestors for the first defined level; returns [NoLevel] if no level can be found. *) 
-            method effective_level : log_level
-
-                 
+            (** Sets the propagate attribute, which decides whether messages passed to this logger are propagated to its ancestors' handlers. *)
             method set_propagate : bool -> unit
 
-            method add_tag_generator: (unit -> Default_handlers.tag) -> unit
+            (** {4 Internal methods} *)
+
+            (** Returns the list of handlers of the logger *)
+            method get_handlers : Handlers.t list
+
+            (** Returns this logger level if it is not [None], else searches amongst ancestors for the first defined level; returns [NoLevel] if no level can be found. *) 
+            method effective_level : log_level
+
           end
 
   (** [make_logger name level handlers_descs] 
       creates a new logger instance from the given arguments,
       then register it internally, and returns it.  *)
   val make_logger :
-     ?propagate:bool -> string -> log_level  -> Default_handlers.desc list -> logger
+     ?propagate:bool -> string -> log_level  -> Handlers.desc list -> logger
 
   (** Returns a registered logger by name. *)
   val get_logger : string -> logger
