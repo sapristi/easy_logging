@@ -46,9 +46,9 @@ module MakeLogging (H : HandlersT) =
         | true, Some p -> handlers @ p#get_handlers
         | _ -> handlers
 
-      method add_tag_generator t =
+      method add_tag_generator t  =
         tag_generators <- t :: tag_generators
-             
+
       method private treat_msg : 'a. ('a -> string) -> H.tag list -> log_level -> 'a -> unit
         = fun unwrap_fun tags msg_level msg ->
         

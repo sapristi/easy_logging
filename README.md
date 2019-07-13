@@ -25,4 +25,5 @@ See documentation at https://sapristi.github.io/easy_logging/easy_logging
 
  * Renamed the Default_handlers module to handlers
  * tag type in Handlers is now string (was unit)
+ * added the possibility to add filters to handlers
  * added tag_generator feature to loggers, to automatically add tags to all messages passed to a logger

@@ -58,8 +58,9 @@ let format_tags (tags : string list) =
   | _ -> 
      let elems_str = reduce (fun s e -> s ^ " | " ^ e) tags ""
      in "[" ^ elems_str ^ "] "
+
 (** Auxiliary functions. *)
-   
+
 let format_default (item : log_item) =
   Printf.sprintf "%-6.3f %-10s %-20s %s%s" (Sys.time ())
     (show_level item.level)

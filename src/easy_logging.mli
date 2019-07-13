@@ -131,7 +131,6 @@ Example:
 *)
 
           
-
             method ldebug : ?tags:string list -> string lazy_t -> unit
             method ltrace : ?tags:string list -> string lazy_t -> unit
             method linfo : ?tags:string list -> string lazy_t -> unit
@@ -139,7 +138,7 @@ Example:
             method lerror : ?tags:string list -> string lazy_t -> unit
             method lflash : ?tags:string list -> string lazy_t -> unit
 
-                  (** {4 String logging methods} 
+            (** {4 String logging methods} 
 Each of these methods takes a [string] as an input (as well as the optional [tag list]. 
 
 Example:
@@ -178,7 +177,6 @@ Example:
             (** Returns this logger level if it is not [None], else searches amongst ancestors for the first defined level; returns [NoLevel] if no level can be found. *) 
             method effective_level : log_level
 
-                 
             method set_propagate : bool -> unit
 
             method add_tag_generator: (unit -> Handlers.tag) -> unit
