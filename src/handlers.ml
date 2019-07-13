@@ -19,7 +19,7 @@ type log_item = {
 type log_formatter = log_item -> string
 type filter= log_item -> bool
 
-           
+(** type of a handler *)
 type t =
   {
     mutable fmt : log_formatter;
@@ -117,6 +117,12 @@ let format_json (item: log_item) =
 (** JSON logs for software interoperability. *)
 
 (** {1 Handlers creation helpers } *)
+      
+let make_cli_handler level =
+  {fmt = format_color;
+   level = level;
+   output = stdout;
+   filters = []}
 
 
   

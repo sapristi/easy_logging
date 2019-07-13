@@ -7,7 +7,6 @@ val show_log_level : log_level -> string
 val pp_log_level : Format.formatter -> log_level -> unit
 val log_level_of_string : string -> (log_level,string) result
 
-
 (** Signature of Handlers modules. *)
 module type HandlersT = Easy_logging__.Easy_logging_types.HandlersT
 
@@ -121,7 +120,6 @@ Example :
             method info : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
             method trace : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
             method debug : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
-
                  
 
                  
@@ -180,8 +178,10 @@ Example:
             (** Returns this logger level if it is not [None], else searches amongst ancestors for the first defined level; returns [NoLevel] if no level can be found. *) 
             method effective_level : log_level
 
+                 
+            method set_propagate : bool -> unit
 
-
+            method add_tag_generator: (unit -> Handlers.tag) -> unit
           end
 
   (** [make_logger name level handlers_descs] 
