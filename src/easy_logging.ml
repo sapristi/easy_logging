@@ -11,6 +11,7 @@ module type HandlersT = Easy_logging_types.HandlersT
 module MakeLogging (H : HandlersT) =
   struct
     let debug = ref false
+
     class logger
             ?parent:(parent=None)
             (name: string)
@@ -76,7 +77,7 @@ module MakeLogging (H : HandlersT) =
             self#treat_msg unwrap_fun tags msg_level msg
           else
             ()                           
-
+            
       method private _flog_msg : 'a. H.tag list -> log_level -> ('a, unit, string, unit) format4 -> 'a
         =  fun tags msg_level -> 
         if msg_level >= self#effective_level
@@ -99,7 +100,7 @@ module MakeLogging (H : HandlersT) =
       method debug : 'a. ?tags:H.tag list -> ('a, unit, string, unit) format4 -> 'a
         = fun ?tags:(tags=[]) -> self#_flog_msg tags Debug
                                
-
+                               
       method lflash ?tags:(tags=[]) = self#_log_msg Lazy.force tags Flash
       method lerror ?tags:(tags=[]) = self#_log_msg Lazy.force tags Error
       method lwarning ?tags:(tags=[]) = self#_log_msg Lazy.force tags Warning

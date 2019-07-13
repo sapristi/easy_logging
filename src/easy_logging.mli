@@ -177,6 +177,9 @@ Example:
             (** Returns this logger level if it is not [None], else searches amongst ancestors for the first defined level; returns [NoLevel] if no level can be found. *) 
             method effective_level : log_level
 
+            method set_propagate : bool -> unit
+
+            method add_tag_generator: (unit -> Handlers.tag) -> unit
           end
 
   (** [make_logger name level handlers_descs] 

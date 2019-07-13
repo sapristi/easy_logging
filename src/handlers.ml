@@ -61,7 +61,6 @@ let format_tags (tags : string list) =
 
 (** Auxiliary functions. *)
 
-
 let format_default (item : log_item) =
   Printf.sprintf "%-6.3f %-10s %-20s %s%s" (Sys.time ())
     (show_level item.level)
@@ -116,11 +115,15 @@ let format_json (item: log_item) =
     (String.escaped item.logger_name)
     (String.escaped item.msg)
     (format_tags item.tags)
-      
-
 (** JSON logs for software interoperability. *)
 
 (** {1 Handlers creation helpers } *)
+      
+let make_cli_handler level =
+  {fmt = format_color;
+   level = level;
+   output = stdout;
+   filters = []}
 
 
   
