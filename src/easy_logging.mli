@@ -13,18 +13,18 @@ sig
           string ->
           object
             val name : string
-            val mutable level : log_level option
+            val mutable level : level option
             val mutable handlers : H.t list 
             val parent : logger option
             val propagate : bool
             val mutable tag_generators : (unit -> H.tag) list
               
             method add_handler : H.t -> unit
-            method set_level : log_level  -> unit
+            method set_level : level  -> unit
             method get_handlers : H.t list
             method set_propagate : bool -> unit         
 
-            method effective_level : log_level
+            method effective_level : level
             method add_tag_generator : (unit -> H.tag) -> unit
                  
             method flash :   'a. ?tags:H.tag list ->
@@ -57,7 +57,7 @@ sig
           end
       
   val get_logger : string -> logger
-  val make_logger : ?propagate:bool -> string -> log_level  -> H.desc list -> logger
+  val make_logger : ?propagate:bool -> string -> level  -> H.desc list -> logger
 
 
 end
@@ -84,7 +84,7 @@ sig
             val name : string
 
             (** Value used to filter log messages.*)
-            val mutable level : log_level option
+            val mutable level : level option
               
             (** Registered handlers for this logger. *)
             val mutable handlers : Handlers.t list 
@@ -150,7 +150,7 @@ Example:
 
                  
             (** Sets the log level of the logger instance. *)    
-            method set_level : log_level  -> unit
+            method set_level : level  -> unit
                  
             (** Adds a handler to the logger instance. *)
             method add_handler : Handlers.t -> unit
@@ -167,7 +167,7 @@ Example:
             method get_handlers : Handlers.t list
 
             (** Returns this logger level if it is not [None], else searches amongst ancestors for the first defined level; returns [NoLevel] if no level can be found. *) 
-            method effective_level : log_level
+            method effective_level : level
 
             method set_propagate : bool -> unit
 
@@ -178,7 +178,7 @@ Example:
       creates a new logger instance from the given arguments,
       then register it internally, and returns it.  *)
   val make_logger :
-     ?propagate:bool -> string -> log_level  -> Handlers.desc list -> logger
+     ?propagate:bool -> string -> level  -> Handlers.desc list -> logger
 
   (** Returns a registered logger by name. *)
   val get_logger : string -> logger

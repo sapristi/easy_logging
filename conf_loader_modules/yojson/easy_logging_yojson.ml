@@ -6,12 +6,12 @@ module E = Easy_logging
 open Easy_logging__.Easy_logging_types
 
 
-let log_level_to_yojson lvl : Yojson.Safe.json =
-  `String (show_log_level lvl)
-let log_level_of_yojson lvl_json =
+let level_to_yojson lvl : Yojson.Safe.json =
+  `String (show_level lvl)
+let level_of_yojson lvl_json =
   match lvl_json with
   | `String lvl_str ->
-     log_level_of_string lvl_str
+     level_of_string lvl_str
   | _ -> Error ("Cannot decode "^ (Yojson.Safe.to_string lvl_json) ^" to log level")
 
 module type HandlersT =
@@ -53,11 +53,11 @@ module Handlers =
                               
       
     let set_config c = config.file_handlers <- c.file_handlers
-    type cli_json_params = {level : log_level}
+    type cli_json_params = {level : level}
         [@@deriving yojson]
     type cli_json_desc =  {cli : cli_json_params}
         [@@deriving yojson]
-    type file_json_desc_params = {filename : string;level: log_level}
+    type file_json_desc_params = {filename : string;level: level}
         [@@deriving yojson]
     type file_json_desc = {file : file_json_desc_params}
         [@@deriving yojson] 
@@ -87,7 +87,7 @@ module MakeLogging (H : HandlersT) =
 
     type config_logger = {
         name: string;
-        level : log_level; [@default NoLevel]
+        level : level; [@default NoLevel]
         handlers : H.desc list; [@default [] ]
         propagate : bool; [@default true]
       } [@@deriving of_yojson]
