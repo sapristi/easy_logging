@@ -2,12 +2,20 @@
 
 module E = Easy_logging
    
-type log_level = E.log_level
-                   [@@deriving show]
-let log_level_of_string = E.log_level_of_string
+
+open Easy_logging__.Easy_logging_types
+type log_level =  Easy_logging__.Easy_logging_types.log_level = 
+  | Debug
+  | Trace
+  | Info
+  | Warning
+  | Error
+  | Flash
+  | NoLevel
+
 
 let log_level_to_yojson lvl : Yojson.Safe.json =
-  `String (E.show_log_level lvl)
+  `String (show_log_level lvl)
 let log_level_of_yojson lvl_json =
   match lvl_json with
   | `String lvl_str ->

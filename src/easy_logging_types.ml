@@ -1,7 +1,7 @@
 
 
 (** Possible level of a log item. *)
-type level =
+type log_level =
   | Debug
   | Trace
   | Info
@@ -11,7 +11,7 @@ type level =
   | NoLevel
 
 
-let level_of_string lvl_string = 
+let log_level_of_string lvl_string = 
   match String.lowercase_ascii lvl_string with
   | "debug" -> Ok Debug
   | "trace" -> Ok Trace
@@ -23,7 +23,7 @@ let level_of_string lvl_string =
   | _ -> Error (lvl_string ^ " does not represent a valid log level")
        
   
-let show_level lvl = match lvl with
+let show_log_level lvl = match lvl with
   | Debug    -> "Debug"
   | Trace    -> "Trace"
   | Info     -> "Info"
@@ -32,7 +32,7 @@ let show_level lvl = match lvl with
   | Flash    -> "Flash"
   | NoLevel  -> "NoLevel"
 
-let pp_level fmt lvl = Format.pp_print_string fmt (show_level lvl)
+let pp_log_level fmt lvl = Format.pp_print_string fmt (show_log_level lvl)
        
 module type HandlersT =
   sig
@@ -42,7 +42,7 @@ module type HandlersT =
 
     type tag
     type log_item = {
-        level : level;
+        level : log_level;
         logger_name : string;
         msg : string;
         tags : tag list
