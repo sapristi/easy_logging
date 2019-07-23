@@ -10,7 +10,7 @@ open Easy_logging_types
 
 type tag = string
 type log_item = {
-    level : Easy_logging_types.level;
+    level : Easy_logging_types.log_level;
     logger_name : string;
     msg : string;
     tags : string list
@@ -23,7 +23,7 @@ type filter= log_item -> bool
 type t =
   {
     mutable fmt : log_formatter;
-    mutable level : Easy_logging_types.level;
+    mutable level : Easy_logging_types.log_level;
     mutable filters: filter list;
     output : out_channel;
   }
@@ -63,7 +63,7 @@ let format_tags (tags : string list) =
 
 let format_default (item : log_item) =
   Printf.sprintf "%-6.3f %-10s %-20s %s%s" (Sys.time ())
-    (show_level item.level)
+    (show_log_level item.level)
     item.logger_name
     (format_tags item.tags)
     item.msg
@@ -82,7 +82,7 @@ let format_color (item : log_item) =
     | NoLevel -> Colorize.Default
   in
   
-  let item_level_fmt = Colorize.format [ Fg (level_to_color item.level)]  (show_level item.level)
+  let item_level_fmt = Colorize.format [ Fg (level_to_color item.level)]  (show_log_level item.level)
   and logger_name_fmt = Colorize.format [ Underline] item.logger_name
   and item_msg_fmt =
     match item.level with
@@ -111,7 +111,7 @@ let format_json (item: log_item) =
   
   Printf.sprintf
     "{\"level\": \"%s\", \"logger_name\": \"%s\", \"message\": \"%s\", \"tags\": %s}" 
-    (show_level item.level)
+    (show_log_level item.level)
     (String.escaped item.logger_name)
     (String.escaped item.msg)
     (format_tags item.tags)
@@ -175,7 +175,7 @@ let make_file_handler level filename  =
   }
   
   
-type desc = | Cli of level | File of string * level
+type desc = | Cli of log_level | File of string * log_level
    
 let make d = match d with
   | Cli lvl -> make_cli_handler lvl
