@@ -4,14 +4,6 @@ module E = Easy_logging
    
 
 open Easy_logging__.Easy_logging_types
-type log_level =  Easy_logging__.Easy_logging_types.log_level = 
-  | Debug
-  | Trace
-  | Info
-  | Warning
-  | Error
-  | Flash
-  | NoLevel
 
 
 let log_level_to_yojson lvl : Yojson.Safe.json =
@@ -24,7 +16,7 @@ let log_level_of_yojson lvl_json =
 
 module type HandlersT =
   sig
-    include E.HandlersT
+    include HandlersT
 
     val desc_of_yojson :  Yojson.Safe.json -> (desc,string) result
     val desc_to_yojson : desc -> Yojson.Safe.json

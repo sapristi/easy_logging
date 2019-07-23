@@ -1,16 +1,18 @@
 
-include Easy_logging_types
                       
-module MakeLogging (H : HandlersT) =
-  struct
-    let debug = ref false
+module MakeLogging (H : Easy_logging_types.HandlersT) =
+struct
 
-    class logger
-            ?parent:(parent=None)
-            (name: string)
-      =
+  include Easy_logging_types
+  
+  let debug = ref false
+      
+  class logger
+      ?parent:(parent=None)
+      (name: string)
+    =
     object(self)
-        
+          
       val name = name
       val mutable level : log_level option = None
       val mutable handlers : H.t list = []
