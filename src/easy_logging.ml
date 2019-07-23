@@ -1,18 +1,20 @@
 
-include Easy_logging_types
                       
-module MakeLogging (H : HandlersT) =
-  struct
-    let debug = ref false
+module MakeLogging (H : Easy_logging_types.HandlersT) =
+struct
 
-    class logger
-            ?parent:(parent=None)
-            (name: string)
-      =
+  include Easy_logging_types
+  
+  let debug = ref false
+      
+  class logger
+      ?parent:(parent=None)
+      (name: string)
+    =
     object(self)
-        
+          
       val name = name
-      val mutable level : log_level option = None
+      val mutable level : level option = None
       val mutable handlers : H.t list = []
       val parent : logger option = parent
       val mutable propagate = true
@@ -24,7 +26,7 @@ module MakeLogging (H : HandlersT) =
       method add_handler h = handlers <- h::handlers
       method set_propagate p = propagate <- p
            
-      method effective_level : log_level =
+      method effective_level : level =
         match level, parent  with
         | None, None  -> NoLevel
         | None, Some p -> p#effective_level
@@ -42,7 +44,7 @@ module MakeLogging (H : HandlersT) =
       method add_tag_generator t  =
         tag_generators <- t :: tag_generators
 
-      method private treat_msg : 'a. ('a -> string) -> H.tag list -> log_level -> 'a -> unit
+      method private treat_msg : 'a. ('a -> string) -> H.tag list -> level -> 'a -> unit
         = fun unwrap_fun tags msg_level msg ->
         
         if !debug
@@ -50,8 +52,8 @@ module MakeLogging (H : HandlersT) =
           print_endline ( Printf.sprintf "[%s]/%s -- Treating msg \"%s\" at level %s"
                             name (match level with
                                   | None -> "None"
-                                  | Some lvl -> (show_log_level lvl))
-                            (unwrap_fun msg) (show_log_level msg_level));
+                                  | Some lvl -> (show_level lvl))
+                            (unwrap_fun msg) (show_level msg_level));
         
         let generated_tags = List.map (fun x -> x ()) tag_generators in 
         let item : H.log_item= {
@@ -63,7 +65,7 @@ module MakeLogging (H : HandlersT) =
             H.apply handler item)
           self#get_handlers
         
-      method private _log_msg : 'a. ('a -> string) -> H.tag list -> log_level -> 'a -> unit
+      method private _log_msg : 'a. ('a -> string) -> H.tag list -> level -> 'a -> unit
         = fun unwrap_fun tags msg_level msg ->
           if msg_level >= self#effective_level
           then
@@ -71,7 +73,7 @@ module MakeLogging (H : HandlersT) =
           else
             ()                           
             
-      method private _flog_msg : 'a. H.tag list -> log_level -> ('a, unit, string, unit) format4 -> 'a
+      method private _flog_msg : 'a. H.tag list -> level -> ('a, unit, string, unit) format4 -> 'a
         =  fun tags msg_level -> 
         if msg_level >= self#effective_level
         then
