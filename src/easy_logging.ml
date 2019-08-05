@@ -24,6 +24,10 @@ struct
       method set_level new_level =
         level <- Some new_level
       method add_handler h = handlers <- h::handlers
+
+      method get_handlers = handlers
+      method set_handlers hs = handlers <- hs
+
       method set_propagate p = propagate <- p
            
       method effective_level : level =
@@ -32,13 +36,13 @@ struct
         | None, Some p -> p#effective_level
         | Some l,_ -> l
                           
-      method get_handlers =
+      method get_handlers_propagate =
         if !debug
         then
           print_endline (Printf.sprintf "[%s] returning (%i) handlers" name
             (List.length handlers));
         match propagate, parent with
-        | true, Some p -> handlers @ p#get_handlers
+        | true, Some p -> handlers @ p#get_handlers_propagate
         | _ -> handlers
 
       method add_tag_generator t  =
@@ -63,7 +67,7 @@ struct
             tags=generated_tags @ tags} in 
         List.iter (fun handler ->
             H.apply handler item)
-          self#get_handlers
+          self#get_handlers_propagate
         
       method private _log_msg : 'a. ('a -> string) -> H.tag list -> level -> 'a -> unit
         = fun unwrap_fun tags msg_level msg ->

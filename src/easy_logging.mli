@@ -20,8 +20,11 @@ sig
             val mutable tag_generators : (unit -> H.tag) list
               
             method add_handler : H.t -> unit
-            method set_level : level  -> unit
             method get_handlers : H.t list
+            method set_handlers : H.t list -> unit
+
+            method set_level : level  -> unit
+            method get_handlers_propagate : H.t list
             method set_propagate : bool -> unit         
 
             method effective_level : level
@@ -155,6 +158,9 @@ Example:
             (** Adds a handler to the logger instance. *)
             method add_handler : Handlers.t -> unit
 
+            method get_handlers : Handlers.t list
+            method set_handlers : Handlers.t list -> unit
+
             (** Will add a tag to each log message, resulting from the call of the supplied fonction (called each time a message is logged)*)
             method add_tag_generator: (unit -> Handlers.tag) -> unit
 
@@ -163,8 +169,9 @@ Example:
 
             (** {4 Internal methods} *)
 
-            (** Returns the list of handlers of the logger *)
-            method get_handlers : Handlers.t list
+            (** Returns the list of handlers of the logger, recursing with parents handlers
+            if propagate is true*)
+            method get_handlers_propagate : Handlers.t list
 
             (** Returns this logger level if it is not [None], else searches amongst ancestors for the first defined level; returns [NoLevel] if no level can be found. *) 
             method effective_level : level
