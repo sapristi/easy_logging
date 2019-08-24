@@ -6,7 +6,7 @@ module E = Easy_logging
 open Easy_logging__.Easy_logging_types
 
 
-let level_to_yojson lvl : Yojson.Safe.json =
+let level_to_yojson lvl : Yojson.Safe.t =
   `String (show_level lvl)
 let level_of_yojson lvl_json =
   match lvl_json with
@@ -18,8 +18,8 @@ module type HandlersT =
   sig
     include HandlersT
 
-    val desc_of_yojson :  Yojson.Safe.json -> (desc,string) result
-    val desc_to_yojson : desc -> Yojson.Safe.json
+    val desc_of_yojson :  Yojson.Safe.t -> (desc,string) result
+    val desc_to_yojson : desc -> Yojson.Safe.t
     type config
        [@@deriving of_yojson]
     val default_config : config
@@ -35,7 +35,10 @@ module Handlers =
     type file_handlers_config_ = file_handlers_config =
       { logs_folder: string; [@default file_handlers_defaults.logs_folder]
         truncate: bool; [@default file_handlers_defaults.truncate]
-        file_perms: int [@default file_handlers_defaults.file_perms]
+        file_perms: int; [@default file_handlers_defaults.file_perms]
+        date_prefix: string option; [@default file_handlers_defaults.date_prefix]
+        versioning: int option; [@default file_handlers_defaults.versioning]
+        suffix: string; [@default file_handlers_defaults.suffix]
       }
         [@@deriving yojson]
 

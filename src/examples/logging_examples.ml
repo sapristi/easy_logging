@@ -73,13 +73,17 @@ let config : H.config =
   {file_handlers = {
      logs_folder= "test/";
      truncate= false;
-     file_perms=0o664;}};;
+     file_perms=0o664;
+     date_prefix=None;
+     versioning=Some 2;
+     suffix=".log";
+   }};;
 H.set_config config;;
 module TestLogging = MakeLogging(H)
 let logger_5 = TestLogging.make_logger
                "_4_ File logger demo" Debug [File ("test", Debug)];;
 logger_5#info "this is a message";
-assert (Sys.file_exists "test/test");
+assert (Sys.file_exists "test/test_00.log");
 (* ]}
 {2 Subloggers}
 {[ *)
