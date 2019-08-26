@@ -31,3 +31,7 @@ See documentation at https://sapristi.github.io/easy_logging/easy_logging
 #### version 0.5.1
 
  * log_level type is direcly accessible from Easy_logging and Easy_logging_yojson modules
+ 
+#### version 0.5.2
+
+ - more file_handler options (timestamp, versioning)
