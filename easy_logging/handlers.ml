@@ -4,7 +4,7 @@
 *)
 
 
-open Easy_logging_types
+open Logging_types
 open Formatters
 (** {1 Type definitions } *)
 type log_formatter = log_item -> string
@@ -14,7 +14,7 @@ type filter= log_item -> bool
 type t =
   {
     mutable fmt : log_formatter;
-    mutable level : Easy_logging_types.level;
+    mutable level : level;
     mutable filters: filter list;
     output : string -> unit;
   }

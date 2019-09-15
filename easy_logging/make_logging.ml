@@ -1,9 +1,9 @@
+open Logging_types
 
-
-module MakeLogging (H : Easy_logging_types.HandlersT) =
+module MakeLogging (H : HandlersT) =
 struct
 
-  include Easy_logging_types
+  include Logging_types
 
   let debug = ref false
 

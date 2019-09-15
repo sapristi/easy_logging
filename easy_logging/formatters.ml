@@ -1,5 +1,5 @@
 
-open Easy_logging_types
+open Logging_types
 
 (** {1 Formatting functions} *)
 
@@ -53,7 +53,7 @@ let format_color (item : log_item) =
     | _ -> item.msg in
 
   Format.pp_set_max_indent Format.str_formatter 200;
-  Format.sprintf "@[<hov 2>[%-6.3f %-20s %-30s] %s %s@]"
+  Format.sprintf "@[<hov 2>[%-6.3f %-20s %-30s] %s%s@]"
     (Sys.time ())
     item_level_fmt
     logger_name_fmt

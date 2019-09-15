@@ -45,13 +45,7 @@ type log_item = {
 module type HandlersT =
 sig
   (** Type of a handler *)
-  type t =  {
-    mutable fmt : log_item -> string;
-    mutable level : level;
-    mutable filters: (log_item -> bool) list;
-    output : string -> unit;
-  }
-
+  type t
   (** Applies the handler to a [log_item] *)
   val apply : t -> log_item -> unit
 

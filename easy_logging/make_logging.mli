@@ -1,11 +1,11 @@
-
+open Logging_types
 
 (** Makes a Logging module from a Handlers module. *)
 module MakeLogging :
-  functor (H : Easy_logging__Easy_logging_types.HandlersT) ->
+  functor (H : HandlersT) ->
   sig
 
-    include (module type of Easy_logging_types)
+    include (module type of Logging_types)
     val debug : bool ref
     (** See {! Easy_logging.Logging.logger} for documentation *)
     class logger :
@@ -72,7 +72,7 @@ module Handlers = Handlers
 (** Default implementation of a Logging module. *)
 module Logging :
 sig
-  include (module type of Easy_logging_types)
+  include (module type of Logging_types)
   val debug : bool ref
   class logger :
     ?parent:logger option ->
