@@ -34,7 +34,7 @@ type t =
 let make_cli_handler level =
   {fmt = format_color;
    level = level;
-   output = output_string stdout;
+   output = (fun s -> output_string stdout s; flush stdout);
    filters = []}
 
 type file_handlers_config = {
@@ -115,7 +115,7 @@ let make_file_handler level filename_base =
   in
   {fmt = format_default;
    level = level;
-   output = output_string oc;
+   output = (fun s -> output_string oc s; flush oc);
    filters = [];
   }
 
