@@ -11,7 +11,7 @@ type level =
   | NoLevel
 
 
-let level_of_string lvl_string = 
+let level_of_string lvl_string =
   match String.lowercase_ascii lvl_string with
   | "debug" -> Ok Debug
   | "trace" -> Ok Trace
@@ -21,8 +21,8 @@ let level_of_string lvl_string =
   | "flash" -> Ok Flash
   | "nolevel" -> Ok NoLevel
   | _ -> Error (lvl_string ^ " does not represent a valid log level")
-       
-  
+
+
 let show_level lvl = match lvl with
   | Debug    -> "Debug"
   | Trace    -> "Trace"
@@ -33,28 +33,32 @@ let show_level lvl = match lvl with
   | NoLevel  -> "NoLevel"
 
 let pp_level fmt lvl = Format.pp_print_string fmt (show_level lvl)
-       
+
+type log_item = {
+  level : level;
+  logger_name : string;
+  msg : string;
+  tags : string list
+}
+
+
 module type HandlersT =
-  sig
-    
-    (** Type of a handler *) 
-    type t
+sig
+  (** Type of a handler *)
+  type t =  {
+    mutable fmt : log_item -> string;
+    mutable level : level;
+    mutable filters: (log_item -> bool) list;
+    output : string -> unit;
+  }
 
-    type tag
-    type log_item = {
-        level : level;
-        logger_name : string;
-        msg : string;
-        tags : tag list
-      }
-    type log_formatter = log_item -> string
+  (** Applies the handler to a [log_item] *)
+  val apply : t -> log_item -> unit
 
-    (** Applies the handler to a [log_item] *)
-    val apply : t -> log_item -> unit
+  (** Type used to instantiate a handler*)
+  type desc
 
-    (** Type used to instantiate a handler*)
-    type desc
-    (** Instantiates a handler *)
-    val make : desc -> t
+  (** Instantiates a handler *)
+  val make : desc -> t
 
-  end                   
+end
