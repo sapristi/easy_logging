@@ -1,73 +1,11 @@
-open Logging_types
-
-(** Makes a Logging module from a Handlers module. *)
-module MakeLogging :
-  functor (H : HandlersT) ->
-  sig
-
-    include (module type of Logging_types)
-    val debug : bool ref
-    (** See {! Easy_logging.Logging.logger} for documentation *)
-    class logger :
-      ?parent:logger option ->
-      string ->
-      object
-        val name : string
-        val mutable level : level option
-        val mutable handlers : H.t list
-        val parent : logger option
-        val propagate : bool
-        val mutable tag_generators : (unit -> string) list
-
-        method add_handler : H.t -> unit
-        method get_handlers : H.t list
-        method set_handlers : H.t list -> unit
-
-        method set_level : level  -> unit
-        method get_handlers_propagate : H.t list
-        method set_propagate : bool -> unit
-
-        method effective_level : level
-        method add_tag_generator : (unit -> string) -> unit
-
-        method flash :   'a. ?tags:string list ->
-          ('a, unit, string, unit) format4 -> 'a
-        method error :   'a. ?tags:string list ->
-          ('a, unit, string, unit) format4 -> 'a
-        method warning : 'a. ?tags:string list ->
-          ('a, unit, string, unit) format4 -> 'a
-        method info :    'a. ?tags:string list ->
-          ('a, unit, string, unit) format4 -> 'a
-        method trace :    'a. ?tags:string list ->
-          ('a, unit, string, unit) format4 -> 'a
-        method debug :   'a. ?tags:string list ->
-          ('a, unit, string, unit) format4 -> 'a
-
-        method ldebug : ?tags:string list -> string lazy_t -> unit
-        method ltrace : ?tags:string list -> string lazy_t -> unit
-        method lerror : ?tags:string list -> string lazy_t -> unit
-        method lflash : ?tags:string list -> string lazy_t -> unit
-        method linfo : ?tags:string list -> string lazy_t -> unit
-        method lwarning : ?tags:string list -> string lazy_t -> unit
-
-
-        method sdebug : ?tags:string list -> string -> unit
-        method strace : ?tags:string list -> string -> unit
-        method sinfo : ?tags:string list -> string -> unit
-        method swarning : ?tags:string list -> string -> unit
-        method serror : ?tags:string list -> string -> unit
-        method sflash : ?tags:string list -> string -> unit
-      end
-
-    val get_logger : string -> logger
-    val make_logger : ?propagate:bool -> string -> level  -> H.desc list -> logger
-
-
-  end
-
+(** Types used in easy_logging*)
+module Logging_types = Logging_types
 
 (** Default implementation of a Handlers module. *)
 module Handlers = Handlers
+
+(** Log formatters *)
+module Formatters = Formatters
 
 (** Default implementation of a Logging module. *)
 module Logging :
@@ -103,7 +41,7 @@ sig
 
 
       (** {3 Classic logging Methods}
-          Each of these methods takes an optional [tag list], then a set of parameters the way a printf function does. If the log level of the instance is low enough, a log item will be created theb passed to the handlers.
+          Each of these methods takes an optional [string list] of tags, then a set of parameters the way a printf function does. If the log level of the instance is low enough, a log item will be created theb passed to the handlers.
 
           Example :
           {[logger#warning "Unexpected value: %s" (to_string my_value)]}
@@ -117,14 +55,12 @@ sig
       method debug : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
 
 
-
       (** {3 Lazy logging methods}
-          Each of these methods takes a [string lazy_t] as an input (as well as the optional [tag list]. If the log level of the instance is low enough, the lazy value will forced into a [string], a log item will be created then passed to the handlers.
+          Each of these methods takes a [string lazy_t] as an input (as well as the optional tags. If the log level of the instance is low enough, the lazy value will forced into a [string], a log item will be created then passed to the handlers.
 
           Example:
           {[logger#ldebug (lazy (heavy_calculation () ))]}
       *)
-
 
       method ldebug : ?tags:string list -> string lazy_t -> unit
       method ltrace : ?tags:string list -> string lazy_t -> unit
@@ -133,8 +69,8 @@ sig
       method lerror : ?tags:string list -> string lazy_t -> unit
       method lflash : ?tags:string list -> string lazy_t -> unit
 
-      (** {4 String logging methods}
-          Each of these methods takes a [string] as an input (as well as the optional [tag list].
+      (** {3 String logging methods}
+          Each of these methods takes a [string] as an input (as well as the optional tags).
 
           Example:
           {[logger#sdebug string_variable]}
@@ -175,10 +111,6 @@ sig
 
       (** Returns this logger level if it is not [None], else searches amongst ancestors for the first defined level; returns [NoLevel] if no level can be found. *)
       method effective_level : level
-
-      method set_propagate : bool -> unit
-
-      method add_tag_generator: (unit -> string) -> unit
     end
 
   (** [make_logger name level handlers_descs]
@@ -191,3 +123,6 @@ sig
   val get_logger : string -> logger
 
 end
+
+
+module MakeLogging = Make_logging.MakeLogging

@@ -140,7 +140,3 @@ struct
     debug := v
 
 end
-
-module Handlers = Handlers
-
-module Logging = MakeLogging(Handlers)
