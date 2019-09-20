@@ -38,7 +38,7 @@ type log_item = {
   level : level;
   logger_name : string;
   msg : string;
-  tags : string list
+  tags : string list;
 }
 
 

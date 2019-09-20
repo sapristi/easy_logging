@@ -6,8 +6,8 @@
 It has the following features :
    - one line logger creation
    - log messages printf style, or provide [string] or [string lazy_t] message
-   - tree architecture for easy configuration
-   - handlers associated to each logger will format, filter and treat the message independantly
+   - loggers for tree architecture for easy level configuration
+   - handlers associated to each logger will filter, format and treat the message independantly
    - use the infrastructure with your own handlers with the [MakeLogging] functor.
    - use tags to add contextual information to log messages  
 {4     Basic example } 

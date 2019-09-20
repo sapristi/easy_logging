@@ -1,16 +1,27 @@
-(** Types used in easy_logging*)
-module Logging_types = Logging_types
+module Level :
+sig
+  type t = Logging_types.level =
+    | Debug
+    | Trace
+    | Info
+    | Warning
+    | Error
+    | Flash
+    | NoLevel
+  end
+
+open Logging_types
+
 
 (** Default implementation of a Handlers module. *)
 module Handlers = Handlers
 
-(** Log formatters *)
+(** Log formatters: functions of type [log_item -> string]. *)
 module Formatters = Formatters
 
 (** Default implementation of a Logging module. *)
 module Logging :
 sig
-  include (module type of Logging_types)
   val debug : bool ref
   class logger :
     ?parent:logger option ->
@@ -126,3 +137,14 @@ end
 
 
 module MakeLogging = Make_logging.MakeLogging
+
+module Internal:
+  sig
+    module Logging_types = Logging_types
+    (** Types used in easy_logging. *)
+
+    module MakeLogging = MakeLogging
+    (** Functor to generate a Logging module over a Handlers module.*)
+
+    module Logging_infra = Logging_infra
+  end

@@ -3,8 +3,6 @@ open Logging_types
 module MakeLogging (H : HandlersT) =
 struct
 
-  include Logging_types
-
   let debug = ref false
 
   class logger
