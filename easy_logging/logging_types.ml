@@ -52,7 +52,12 @@ sig
   (** Type used to instantiate a handler*)
   type desc
 
+  type config
+
+  (** default configuration used to instantiate handlers*)
+  val default_config : config
+
   (** Instantiates a handler *)
-  val make : desc -> t
+  val make : ?config:config -> desc -> t
 
 end

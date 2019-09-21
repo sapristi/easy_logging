@@ -4,7 +4,7 @@ module E = Easy_logging
 
 module Logging_types =
 struct
-  include E.Internal.Logging_types
+  include E.Logging_internals.Logging_types
 
   let level_to_yojson lvl : Yojson.Safe.t =
     `String (show_level lvl)
@@ -22,10 +22,9 @@ sig
 
   val desc_of_yojson :  Yojson.Safe.t -> (desc,string) result
   val desc_to_yojson : desc -> Yojson.Safe.t
-  type config
-  [@@deriving of_yojson]
-  val config : config
-  val set_config : config -> unit
+
+  val config_of_yojson : Yojson.Safe.t -> (config,string) result
+  val config_to_yojson : config -> Yojson.Safe.t
 end
 
 
@@ -37,12 +36,12 @@ struct
   module FileHandlers = struct
     include E.Handlers.FileHandler
     type config_ = config =
-      { logs_folder: string; [@default !default_config.logs_folder]
-        truncate: bool; [@default !default_config.truncate]
-        file_perms: int; [@default !default_config.file_perms]
-        date_prefix: string option; [@default !default_config.date_prefix]
-        versioning: int option; [@default !default_config.versioning]
-        suffix: string; [@default !default_config.suffix]
+      { logs_folder: string; [@default default_config.logs_folder]
+        truncate: bool; [@default default_config.truncate]
+        file_perms: int; [@default default_config.file_perms]
+        date_prefix: string option; [@default default_config.date_prefix]
+        versioning: int option; [@default default_config.versioning]
+        suffix: string; [@default default_config.suffix]
       }
     [@@deriving yojson]
 
@@ -50,16 +49,13 @@ struct
     let config_of_yojson = config__of_yojson
   end
   type config_ = E.Handlers.config
-  = {file_handlers: FileHandlers.config ref}
+  = {file_handlers: FileHandlers.config}
   [@@deriving yojson]
 
   let config_to_yojson = config__to_yojson
   let config_of_yojson = config__of_yojson
 
-  let config = {file_handlers = FileHandlers.default_config}
 
-
-  let set_config (c:config) = config.file_handlers := !(c.file_handlers)
   type cli_json_params = {level : level}
   [@@deriving yojson]
   type cli_json_desc =  {cli : cli_json_params}
@@ -96,7 +92,7 @@ end
 
 module MakeLogging (H : HandlersT) =
 struct
-  module L =  E.Internal.MakeLogging(H)
+  module L =  E.Logging_internals.MakeLogging(H)
   include L
 
   type config_logger = {
@@ -107,27 +103,27 @@ struct
   } [@@deriving of_yojson]
 
 
-  type config = {
-    handlers : H.config; [@default H.config]
-    loggers : config_logger list
+  type global_config = {
+    handlers_config : H.config; [@default H.default_config] [@key "handlers"]
+    loggers_config : config_logger list [@key "loggers"]
   } [@@deriving of_yojson]
 
-  let load_config config_json =
-    match config_of_yojson config_json with
-    | Ok {handlers;loggers} ->
-      H.set_config handlers;
+  let load_global_config config_json =
+    match global_config_of_yojson config_json with
+    | Ok {handlers_config;loggers_config} ->
+      set_handlers_config handlers_config;
       List.iter (fun {name=name;
                       level=level;
                       handlers=handlers;
                       propagate=propagate} ->
                   let l = make_logger name level handlers in
-                  l#set_propagate propagate) loggers
+                  l#set_propagate propagate) loggers_config
     | Error r ->
       failwith @@ "Error loading log config : "^r
 
-  let load_config_str config_str =
-    load_config (Yojson.Safe.from_string config_str)
+  let load_global_config_str config_str =
+    load_global_config (Yojson.Safe.from_string config_str)
 
-  let load_config_file config_file =
-    load_config (Yojson.Safe.from_file config_file)
+  let load_global_config_file config_file =
+    load_global_config (Yojson.Safe.from_file config_file)
 end

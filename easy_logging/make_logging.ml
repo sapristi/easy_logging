@@ -133,6 +133,9 @@ struct
     end)
 
 
+  let handlers_config = ref H.default_config
+  let set_handlers_config c = handlers_config := c
+
   let get_logger name =
     Infra.get name
 
@@ -140,7 +143,7 @@ struct
     let l = Infra.get name in
     l#set_level lvl;
     l#set_propagate propagate;
-    List.iter (fun hdesc -> l#add_handler (H.make hdesc)) hdescs;
+    List.iter (fun hdesc -> l#add_handler (H.make ~config:(!handlers_config) hdesc)) hdescs;
     l
 
   let set_debug v =

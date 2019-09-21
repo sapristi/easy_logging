@@ -5,7 +5,7 @@ let config = {|
       "handlers": [{"cli" : {"level" :"info"}}]}]
 }
 |};;
-Logging.load_config_str config;
+Logging.load_global_config_str config;
 let logger = Logging.get_logger "test_7" in
 logger#info "this message";
 logger#debug "but not this one";

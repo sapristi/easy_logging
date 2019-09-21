@@ -58,6 +58,7 @@ logger_1#info ~tags:["OOO"] "another message";
 let logger_4_root = Logging.get_logger "" in
 logger_4_root#error "WTF1";
 
+let open Logging_internals in 
 let h = Handlers.make (Cli Debug) in
 let logger_4_sub = Logging.make_logger "_4_ handlerLevelTest" Debug [] in
 logger_4_sub#error "WTF2";
@@ -68,18 +69,18 @@ logger_4_sub#debug "this message is not displayed";
 (* ]}
    {2 Modifying the file handler defaults}
    {[ *)
-module H = Handlers
-let config : H.FileHandler.config ={
-  logs_folder= "test/";
-  truncate= false;
-  file_perms=0o664;
-  date_prefix=None;
-  versioning=Some 2;
-  suffix=".log";
-};;
-H.set_file_handlers_config config;;
-module TestLogging = Internal.MakeLogging(H)
-let logger_5 = TestLogging.make_logger
+
+let h_config : Handlers.config =
+  {file_handlers = {
+      logs_folder= "test/";
+      truncate= false;
+      file_perms=0o664;
+      date_prefix=None;
+      versioning=Some 2;
+      suffix=".log";
+    } } in
+Logging.set_handlers_config h_config;;
+let logger_5 = Logging.make_logger
     "_4_ File logger demo" Debug [File ("test", Debug)];;
 logger_5#info "this is a message";
 assert (Sys.file_exists "test/test_00.log");
@@ -100,7 +101,7 @@ logger_6_AC#warning "two lines";
    {[ *)
 let logger_8 = Logging.get_logger "_8_ Json Formatter"
 and h = Handlers.make (Cli Debug) in
-Handlers.set_formatter h Formatters.format_json;
+h.fmt <- Logging_internals.Formatters.format_json;
 logger_8#add_handler h;
 logger_8#info "it is ok";
 logger_8#warning "is it json\"\nis it";
@@ -125,13 +126,13 @@ struct
   type t = string -> unit
   type tag = unit
 
-  type log_formatter = Internal.Logging_types.log_item -> string
+  type log_formatter = Logging_internals.Logging_types.log_item -> string
 
   type desc = string list ref
   [@@deriving yojson]
 
-  let apply h (item : Internal.Logging_types.log_item) = h item.msg
-  let make (_internal : desc) =
+  let apply h (item : Logging_internals.Logging_types.log_item) = h item.msg
+  let make ?config:(config=())(_internal : desc) =
     fun s -> _internal := s::!_internal
 
   type config = unit
@@ -140,7 +141,7 @@ struct
   let set_config = fun _ -> ()
 end
 
-module MyLogging = Internal.MakeLogging(MyHandlers)
+module MyLogging = Logging_internals.MakeLogging(MyHandlers)
 
 let l = ref [];;
 let logger_2 = MyLogging.make_logger "_2_ Custom Handlers module" Debug [l];;

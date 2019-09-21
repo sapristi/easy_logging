@@ -4,9 +4,6 @@ open Logging_types
 (** Default implementation of a Handlers module. *)
 module Handlers = Handlers
 
-(** Log formatters: functions of type [log_item -> string]. *)
-module Formatters = Formatters
-
 (** Default implementation of a Logging module. *)
 module Logging :
 sig
@@ -121,19 +118,25 @@ sig
   (** Returns a registered logger by name. *)
   val get_logger : string -> logger
 
+  val handlers_config : Handlers.config ref
+  val set_handlers_config : Handlers.config -> unit
+
 end
 
 
-module Internal:
-  sig
-    module Logging_types = Logging_types
-    (** Types used in easy_logging. *)
+module Logging_internals:
+sig
+  (** Log formatters: functions of type [log_item -> string]. *)
+  module Formatters = Formatters
 
-    module MakeLogging = Make_logging.MakeLogging
-    (** Functor to generate a Logging module over a Handlers module.*)
+  module Logging_types = Logging_types
+  (** Types used in easy_logging. *)
 
-    module Logging_infra = Logging_infra
+  module MakeLogging = Make_logging.MakeLogging
+  (** Functor to generate a Logging module over a Handlers module.*)
 
-    module Colorize = Colorize
-    (** Used to create terminal colors*)
-  end
+  module Logging_infra = Logging_infra
+
+  module Colorize = Colorize
+  (** Used to create terminal colors*)
+end

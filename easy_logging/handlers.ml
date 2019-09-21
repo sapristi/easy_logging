@@ -24,7 +24,7 @@ type t =
    - a formatter that transforms a log item into a string.
    - a level used to filter out items.
    - an array of possible additional custom filters.
-   - an [out_channel], where log strings are outputed by the function [Pervasives.output_string].
+   - an [output] function, that takes a string and does the output job.
 
 *)
 
@@ -49,7 +49,7 @@ module FileHandler = struct
     suffix: string;
   }
 
-  let default_config = ref {
+  let default_config = {
     logs_folder = "logs/";
     truncate = true;
     file_perms = 0o660;
@@ -58,8 +58,8 @@ module FileHandler = struct
     suffix : string = ".log"
   }
 
-  let generate_prefix () =
-    match !default_config.date_prefix with
+  let generate_prefix config  =
+    match config.date_prefix with
     | None -> ""
     | Some f ->
       let open CalendarLib in
@@ -70,18 +70,18 @@ module FileHandler = struct
       Time_Zone.change initial_tz;
       prefix
 
-  let generate_filename base =
+  let generate_filename config base =
     let rec find_versioned pattern i =
       let name = Printf.sprintf pattern i in
       if Sys.file_exists name
       then find_versioned pattern (i+1)
       else name
     in
-    let prefix = generate_prefix ()
-    and suffix = !default_config.suffix
-    and folder = !default_config.logs_folder
+    let prefix = generate_prefix config
+    and suffix = config.suffix
+    and folder = config.logs_folder
     in
-    match !default_config.versioning
+    match config.versioning
     with
     | None -> Filename.concat folder prefix^base^suffix
     | Some i ->
@@ -91,21 +91,21 @@ module FileHandler = struct
       let filename_pattern  = Scanf.format_from_string filename_pattern_string "%i" in
       find_versioned filename_pattern 0
 
-  let make level filename_base =
+  let make ?config:(config=default_config) level filename_base =
 
-    if not (Sys.file_exists !default_config.logs_folder)
+    if not (Sys.file_exists config.logs_folder)
     then
-      Unix.mkdir !default_config.logs_folder 0o775;
+      Unix.mkdir config.logs_folder 0o775;
 
-    let filename = generate_filename filename_base in
+    let filename = generate_filename config filename_base in
     let open_flags =
-      if !default_config.truncate
+      if config.truncate
       then [Open_wronly; Open_creat;Open_trunc]
       else [Open_wronly; Open_creat]
     in
     let oc =
       open_out_gen open_flags
-        !default_config.file_perms filename
+        config.file_perms filename
 
     in
     {fmt = format_default;
@@ -116,19 +116,15 @@ module FileHandler = struct
 end
 
 type config =
-  {file_handlers: FileHandler.config ref}
-let config = {file_handlers = FileHandler.default_config}
-
-let set_file_handlers_config c = config.file_handlers := c
-(** Sets how log files are created when using make_file_handler *)
-
+  {file_handlers: FileHandler.config }
+let default_config = {file_handlers = FileHandler.default_config}
 
 type desc = | Cli of level | CliErr of level | File of string * level
 
-let make d = match d with
+let make ?config:(config=default_config) desc = match desc with
   | Cli lvl -> CliHandler.make stdout lvl
   | CliErr lvl -> CliHandler.make stderr lvl
-  | File (f, lvl) -> FileHandler.make lvl f
+  | File (f, lvl) -> FileHandler.make ~config:config.file_handlers lvl f
 (** Used for quick handler creation, e.g.
 
 
