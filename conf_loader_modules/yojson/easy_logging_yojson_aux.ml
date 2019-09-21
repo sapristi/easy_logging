@@ -45,7 +45,7 @@ struct
         suffix: string; [@default !default_config.suffix]
       }
     [@@deriving yojson]
-    
+
     let config_to_yojson = config__to_yojson
     let config_of_yojson = config__of_yojson
   end
@@ -96,7 +96,7 @@ end
 
 module MakeLogging (H : HandlersT) =
 struct
-  module L =  E.MakeLogging(H)
+  module L =  E.Internal.MakeLogging(H)
   include L
 
   type config_logger = {

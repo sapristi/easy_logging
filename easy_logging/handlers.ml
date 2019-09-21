@@ -119,7 +119,7 @@ type config =
   {file_handlers: FileHandler.config ref}
 let config = {file_handlers = FileHandler.default_config}
 
-let set_config c = config.file_handlers := !(c.file_handlers)
+let set_file_handlers_config c = config.file_handlers := c
 (** Sets how log files are created when using make_file_handler *)
 
 

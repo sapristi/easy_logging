@@ -124,15 +124,16 @@ sig
 end
 
 
-module MakeLogging = Make_logging.MakeLogging
-
 module Internal:
   sig
     module Logging_types = Logging_types
     (** Types used in easy_logging. *)
 
-    module MakeLogging = MakeLogging
+    module MakeLogging = Make_logging.MakeLogging
     (** Functor to generate a Logging module over a Handlers module.*)
 
     module Logging_infra = Logging_infra
+
+    module Colorize = Colorize
+    (** Used to create terminal colors*)
   end

@@ -13,4 +13,5 @@ module Internal =
     module Logging_types = Logging_types
     module MakeLogging = MakeLogging
     module Logging_infra = Logging_infra
+    module Colorize = Colorize
   end

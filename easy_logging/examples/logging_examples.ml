@@ -69,17 +69,16 @@ logger_4_sub#debug "this message is not displayed";
    {2 Modifying the file handler defaults}
    {[ *)
 module H = Handlers
-let config : H.config =
-  {file_handlers = {
-      logs_folder= "test/";
-      truncate= false;
-      file_perms=0o664;
-      date_prefix=None;
-      versioning=Some 2;
-      suffix=".log";
-    }};;
-H.set_config config;;
-module TestLogging = MakeLogging(H)
+let config : H.FileHandler.config ={
+  logs_folder= "test/";
+  truncate= false;
+  file_perms=0o664;
+  date_prefix=None;
+  versioning=Some 2;
+  suffix=".log";
+};;
+H.set_file_handlers_config config;;
+module TestLogging = Internal.MakeLogging(H)
 let logger_5 = TestLogging.make_logger
     "_4_ File logger demo" Debug [File ("test", Debug)];;
 logger_5#info "this is a message";
@@ -126,12 +125,12 @@ struct
   type t = string -> unit
   type tag = unit
 
-  type log_formatter = Logging_types.log_item -> string
+  type log_formatter = Internal.Logging_types.log_item -> string
 
   type desc = string list ref
   [@@deriving yojson]
 
-  let apply h (item : Logging_types.log_item) = h item.msg
+  let apply h (item : Internal.Logging_types.log_item) = h item.msg
   let make (_internal : desc) =
     fun s -> _internal := s::!_internal
 
@@ -141,7 +140,7 @@ struct
   let set_config = fun _ -> ()
 end
 
-module MyLogging = MakeLogging(MyHandlers)
+module MyLogging = Internal.MakeLogging(MyHandlers)
 
 let l = ref [];;
 let logger_2 = MyLogging.make_logger "_2_ Custom Handlers module" Debug [l];;
