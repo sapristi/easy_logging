@@ -6,7 +6,7 @@ open Easy_logging_yojson_aux
 module Handlers = Handlers
 module Logging = MakeLogging(Handlers)
 
-module Logging_iInternals =
+module Logging_internals =
 struct
 
   module Logging_types = Logging_types

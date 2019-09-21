@@ -10,7 +10,7 @@ open Formatters
 type log_formatter = log_item -> string
 type filter= log_item -> bool
 
-(** type of a handler *)
+(** Type of a handler *)
 type t =
   {
     mutable fmt : log_formatter;
@@ -31,6 +31,7 @@ type t =
 
 (** {1 Handlers creation helpers } *)
 
+(** Module to create handlers that [output] to stdout or [stderr] *)
 module CliHandler = struct
   let make oc level =
     {fmt = format_color;
@@ -39,6 +40,7 @@ module CliHandler = struct
      filters = []}
 end
 
+(** Module to create handlers that output to a file *)
 module FileHandler = struct
   type config = {
     logs_folder: string;

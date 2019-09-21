@@ -92,9 +92,7 @@ end
 
 module MakeLogging (H : HandlersT) =
 struct
-  module L =  E.Logging_internals.MakeLogging(H)
-  include L
-
+  include E.Logging_internals.MakeLogging(H)
   type config_logger = {
     name: string;
     level : level; [@default NoLevel]

@@ -12,6 +12,9 @@ struct
     | Flash
     | NoLevel
 
+  let show_level = Logging_types.show_level
+  let pp_level = Logging_types.pp_level
+
   let debug = ref false
 
   class logger
@@ -147,8 +150,5 @@ struct
     l#set_propagate propagate;
     List.iter (fun hdesc -> l#add_handler (H.make ~config:(!handlers_config) hdesc)) hdescs;
     l
-
-  let set_debug v =
-    debug := v
 
 end

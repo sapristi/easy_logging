@@ -4,14 +4,15 @@
 
 (rule
  (targets examples.mld)
+ (deps (file examples/logging_examples.ml))
  (action (with-stdout-to examples.mld
-                         (progn
-                           (echo "{1 Examples}\n{[")
-                           (cat examples/logging_examples.ml)
-                           (echo "]}")
-                           )))
- )
-         
+          (progn
+           (echo "{1 Examples}\n")
+           (bash "sed '1d; s/(\\*/]}/g; s/\\*)/{[/g' examples/logging_examples.ml")
+           (echo "]}")
+ )))
+)
+
 (library
  (name easy_logging)
  (public_name easy_logging)
@@ -21,4 +22,3 @@
   calendar
   )
  )
-

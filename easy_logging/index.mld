@@ -1,3 +1,5 @@
+{0:top easy_logging}
+
 {1 Easy logging }
      Logging infrastructure inspired by the Python logging module.
      The aim of this module is to provide a quick and easy to use logging
@@ -13,8 +15,8 @@ It has the following features :
 {4     Basic example } 
 {[   
 open Easy_logging
-logger = Logging.make_logger "my_logger" (Some Debug) [Cli Debug];;
-logger#info "log_message";; ]}   
+logger = Logging.make_logger "my_logger" (Some Debug) [Cli Debug]
+logger#info "log_message" ]}   
 will output to the stdout a message of the form
 {v 1.306  my_logger    Info    log_message v}
 
@@ -97,9 +99,11 @@ A log item has type
 {2 Defaults}
 
 {3:handlers Handlers}
-Two handler creation helper function are provided. They  instantiate handlers with a level of their own to filter messages :
+Three handler creation helper function are provided. They  instantiate handlers with a level of their own to filter messages :
  - Cli handler: outputs colored messages to stdout.
    {[ let h = Default_handlers.make (Cli Debug) ]}
+ - CliErr handler: outputs colored messages to stderr.
+   {[ let h = Default_handlers.make (CliErr Debug) ]}
  - File handler : outputs messages to a given file.
    {[ let h = Default_handlers.make (File ("filename", Debug)) ]}
 

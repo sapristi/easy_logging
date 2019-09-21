@@ -126,6 +126,7 @@ end
 
 module Logging_internals:
 sig
+
   (** Log formatters: functions of type [log_item -> string]. *)
   module Formatters = Formatters
 
