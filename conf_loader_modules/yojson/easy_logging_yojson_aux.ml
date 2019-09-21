@@ -24,7 +24,7 @@ sig
   val desc_to_yojson : desc -> Yojson.Safe.t
   type config
   [@@deriving of_yojson]
-  val default_config : config
+  val config : config
   val set_config : config -> unit
 end
 
@@ -34,33 +34,37 @@ struct
 
   include E.Handlers
 
-  type file_handlers_config_ = file_handlers_config =
-    { logs_folder: string; [@default file_handlers_defaults.logs_folder]
-      truncate: bool; [@default file_handlers_defaults.truncate]
-      file_perms: int; [@default file_handlers_defaults.file_perms]
-      date_prefix: string option; [@default file_handlers_defaults.date_prefix]
-      versioning: int option; [@default file_handlers_defaults.versioning]
-      suffix: string; [@default file_handlers_defaults.suffix]
-    }
-  [@@deriving yojson]
-
-  let file_handlers_config_to_yojson = file_handlers_config__to_yojson
-  let file_handlers_config_of_yojson = file_handlers_config__of_yojson
-
+  module FileHandlers = struct
+    include E.Handlers.FileHandler
+    type config_ = config =
+      { logs_folder: string; [@default !default_config.logs_folder]
+        truncate: bool; [@default !default_config.truncate]
+        file_perms: int; [@default !default_config.file_perms]
+        date_prefix: string option; [@default !default_config.date_prefix]
+        versioning: int option; [@default !default_config.versioning]
+        suffix: string; [@default !default_config.suffix]
+      }
+    [@@deriving yojson]
+    
+    let config_to_yojson = config__to_yojson
+    let config_of_yojson = config__of_yojson
+  end
   type config_ = E.Handlers.config
-  = {mutable file_handlers: file_handlers_config}
+  = {file_handlers: FileHandlers.config ref}
   [@@deriving yojson]
 
   let config_to_yojson = config__to_yojson
   let config_of_yojson = config__of_yojson
 
-  let default_config = {file_handlers = file_handlers_defaults}
+  let config = {file_handlers = FileHandlers.default_config}
 
 
-  let set_config c = config.file_handlers <- c.file_handlers
+  let set_config (c:config) = config.file_handlers := !(c.file_handlers)
   type cli_json_params = {level : level}
   [@@deriving yojson]
   type cli_json_desc =  {cli : cli_json_params}
+  [@@deriving yojson]
+  type cli_err_json_desc =  {cli_err : cli_json_params}
   [@@deriving yojson]
   type file_json_desc_params = {filename : string;level: level}
   [@@deriving yojson]
@@ -71,14 +75,18 @@ struct
     match cli_json_desc_of_yojson json with
     | Ok {cli={level}} -> Ok (Cli level)
     | Error _ ->
-      match file_json_desc_of_yojson json with
-      | Ok {file={filename;level}} ->
-        Ok (File (filename, level))
-      | Error r -> Error ("desc_of yojson: "^r)
+      match cli_err_json_desc_of_yojson json with
+      | Ok {cli_err={level}} -> Ok (CliErr level)
+      | Error _ ->
+        match file_json_desc_of_yojson json with
+        | Ok {file={filename;level}} ->
+          Ok (File (filename, level))
+        | Error r -> Error ("desc_of yojson: "^r)
 
   let desc_to_yojson d =
     match d with
     | Cli level -> cli_json_desc_to_yojson {cli={level}}
+    | CliErr level -> cli_err_json_desc_to_yojson {cli_err={level}}
     | File (fname, lvl) ->
       file_json_desc_to_yojson
         {file= {filename=fname;level=lvl}}
@@ -100,7 +108,7 @@ struct
 
 
   type config = {
-    handlers : H.config; [@default H.default_config]
+    handlers : H.config; [@default H.config]
     loggers : config_logger list
   } [@@deriving of_yojson]
 

@@ -3,6 +3,15 @@ open Logging_types
 module MakeLogging (H : HandlersT) =
 struct
 
+  type level = Logging_types.level =
+    | Debug
+    | Trace
+    | Info
+    | Warning
+    | Error
+    | Flash
+    | NoLevel
+
   let debug = ref false
 
   class logger

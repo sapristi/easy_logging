@@ -1,18 +1,5 @@
 open Make_logging
 
-
-module Level = struct
-  type level = Logging_types.level =
-    | Debug
-    | Trace
-    | Info
-    | Warning
-    | Error
-    | Flash
-    | NoLevel
-
-  end
-
 module Handlers = Handlers
 
 module Formatters = Formatters

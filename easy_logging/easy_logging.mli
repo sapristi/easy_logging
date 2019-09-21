@@ -1,15 +1,3 @@
-module Level :
-sig
-  type t = Logging_types.level =
-    | Debug
-    | Trace
-    | Info
-    | Warning
-    | Error
-    | Flash
-    | NoLevel
-  end
-
 open Logging_types
 
 
