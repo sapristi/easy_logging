@@ -1,5 +1,5 @@
 open Logging_types
-
+open CalendarLib
 module MakeLogging (H : HandlersT) =
 struct
 
@@ -71,7 +71,9 @@ struct
             level = msg_level;
             logger_name = name;
             msg = unwrap_fun msg;
-            tags=generated_tags @ tags} in
+            tags=generated_tags @ tags;
+            timestamp = Fcalendar.to_unixfloat @@ Fcalendar.now ()
+          } in
           List.iter (fun handler ->
               H.apply handler item)
             self#get_handlers_propagate

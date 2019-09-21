@@ -39,6 +39,7 @@ type log_item = {
   logger_name : string;
   msg : string;
   tags : string list;
+  timestamp: float;
 }
 
 
