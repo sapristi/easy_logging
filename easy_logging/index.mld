@@ -1,3 +1,5 @@
+{0:top easy_logging}
+
 {1 Easy logging }
      Logging infrastructure inspired by the Python logging module.
      The aim of this module is to provide a quick and easy to use logging
@@ -6,19 +8,19 @@
 It has the following features :
    - one line logger creation
    - log messages printf style, or provide [string] or [string lazy_t] message
-   - tree architecture for easy configuration
-   - handlers associated to each logger will format, filter and treat the message independantly
+   - loggers for tree architecture for easy level configuration
+   - handlers associated to each logger will filter, format and treat the message independantly
    - use the infrastructure with your own handlers with the [MakeLogging] functor.
    - use tags to add contextual information to log messages  
 {4     Basic example } 
 {[   
 open Easy_logging
-logger = Logging.make_logger "my_logger" (Some Debug) [Cli Debug];;
-logger#info "log_message";; ]}   
+logger = Logging.make_logger "my_logger" (Some Debug) [Cli Debug]
+logger#info "log_message" ]}   
 will output to the stdout a message of the form
 {v 1.306  my_logger    Info    log_message v}
 
-{2 Index }
+{2 Table of contents }
 
 {ol
 {- {!section:description} (see also {! Easy_logging})}
@@ -26,8 +28,9 @@ will output to the stdout a message of the form
    + {!section:handlers} (see also {! Easy_logging__Handlers})
    + {!section:logger} (see also {! Easy_logging.Logging.logger} )
    + {!section:logging}  (see also {! Easy_logging.Logging}) }
-{- {!section:makelogging} (see also {! Easy_logging.MakeLogging} )} 
+{- {!section:makelogging} (see also {! Easy_logging__Make_logging.MakeLogging} )} 
 {- {{:examples.html} More examples}}
+{- {{!section:index} Index of modules}}
 }
 {2:description Overall description }
 
@@ -64,7 +67,7 @@ Loggers are stored in a tree structure, with the following properties :
                                                 propagate=false)
 v}
 For example, with the above logging tree
- - logs made to [A], [A.B] or [A.C] of level Info or more are written to the stdout.
+ - logs made to [A], [A.B] or [A.C] of level [Info] or more are written to the stdout.
  - logs made to [A.B.D] of level [Warning] or above are written the stdout.
  - logs made to [A.C.E] are only written to the file ["f"]
 
@@ -87,24 +90,24 @@ The predefined levels are, in increasing order of precedence :
 A log item has type
 {[
     type log_item = {
-        level : level;
-        logger_name : string;
-        msg : string;
-        tags : tag list
+        level : level;          (* the level of the log item *)
+        logger_name : string;   (* the name of the logger to which the log call was passed *)
+        msg : string;           (* the actual log message *)
+        tags : string list      (* a list of tags *)
       } ]}
-      where the [tag] type is defined by the [Handlers] module.
 
 {2 Defaults}
 
 {3:handlers Handlers}
-Two handler creation helper function are provided. They  instantiate handlers with a level of their own to filter messages :
+Three handler creation helper function are provided. They  instantiate handlers with a level of their own to filter messages :
  - Cli handler: outputs colored messages to stdout.
    {[ let h = Default_handlers.make (Cli Debug) ]}
+ - CliErr handler: outputs colored messages to stderr.
+   {[ let h = Default_handlers.make (CliErr Debug) ]}
  - File handler : outputs messages to a given file.
    {[ let h = Default_handlers.make (File ("filename", Debug)) ]}
 
 Note that file handlers will write to files in the [logs] folder in the current path, creating it if it doesn't exist.
-See more about default handlers at {!module:Easy_logging__Default_handlers}.
 
 See more at {! Easy_logging.Handlers}
 
@@ -131,7 +134,7 @@ A logger object has three methods for each of the log levels:
 
 {3:logging The Logging module}
 
-The {! Easy_logging.Logging} module is that application of [MakeLogging] over [DefaultHandlers].
+The {! Easy_logging.Logging} module is that application of [MakeLogging] over [Handlers].
 It provides two functions :
 
  - {[ val make_logger :
@@ -148,6 +151,19 @@ The MakeLogging functor takes a {!Easy_logging__.Easy_logging_types.HandlersT} t
 {3 WARNING}
 When declaring your Handlers module, do not coerce it the type [HandlersT], because then  its internal types [t] and [desc] won't be accessible.
 
-{3 Examples}
+{2 Examples}
 
 See {{:examples.html} the examples page} for more examples.
+
+{2:index Index of modules}
+
+{ol
+
+{- {! Easy_logging__Colorize}}
+{- {! Easy_logging}}
+{- {! Easy_logging__Formatters}}
+{- {! Easy_logging__Handlers}}
+{- {! Easy_logging__Logging_infra}}
+{- {! Easy_logging__Logging_types}}
+{- {! Easy_logging__Make_logging}}
+}
