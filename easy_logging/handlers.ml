@@ -42,6 +42,8 @@ end
 
 (** Module to create handlers that output to a file *)
 module FileHandler = struct
+
+  (** configuration when creating a file handler : specifies how the file name is built, and how the file is oppened.*)
   type config = {
     logs_folder: string;
     truncate: bool;

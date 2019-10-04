@@ -1,17 +1,21 @@
 {0:top easy_logging}
 
 {1 Easy logging }
-     Logging infrastructure inspired by the Python logging module.
-     The aim of this module is to provide a quick and easy to use logging
-     infrastructure.
+
+   Logging library inspired by the Python logging module.
+
+  Easy_logging allows fine-grained tuning of of when and where and how log messages are printed,
+  with relatively low configuration, and simple logger configuration and usage.
 
 It has the following features :
    - one line logger creation
    - log messages printf style, or provide [string] or [string lazy_t] message
-   - loggers for tree architecture for easy level configuration
+   - loggers for tree architecture for easy level and handlers configuration
    - handlers associated to each logger will filter, format and treat the message independantly
-   - use the infrastructure with your own handlers with the [MakeLogging] functor.
-   - use tags to add contextual information to log messages  
+   - use tags and tag generators to add contextual information to log messages
+   - use default handlers for outputing log messages to stdout, stderr or to a file
+   - declare your own handler for anything else
+
 {4     Basic example } 
 {[   
 open Easy_logging
@@ -134,7 +138,7 @@ A logger object has three methods for each of the log levels:
 
 {3:logging The Logging module}
 
-The {! Easy_logging.Logging} module is that application of [MakeLogging] over [Handlers].
+The {! Easy_logging.Logging} module is the application of [MakeLogging] over [Handlers].
 It provides two functions :
 
  - {[ val make_logger :
