@@ -66,6 +66,11 @@ struct
   [@@deriving yojson]
   type file_json_desc = {file : file_json_desc_params}
   [@@deriving yojson]
+  type rotating_file_json_desc_params = {
+    filename: string; level: level; max_kb: int; backup_count: int}
+  [@@deriving yojson]
+  type rotating_file_json_desc = {rotating_file: rotating_file_json_desc_params }
+  [@@deriving yojson]
 
   let desc_of_yojson json =
     match cli_json_desc_of_yojson json with
@@ -77,16 +82,21 @@ struct
         match file_json_desc_of_yojson json with
         | Ok {file={filename;level}} ->
           Ok (File (filename, level))
-        | Error r -> Error ("desc_of yojson: "^r)
+        | Error r ->
+          match rotating_file_json_desc_of_yojson json with
+          | Ok {rotating_file={filename;level;max_kb;backup_count}} ->
+            Ok (RotatingFile (filename,level,max_kb,backup_count))
+          | Error r ->
+            Error ("desc_of yojson: "^r)
 
   let desc_to_yojson d =
     match d with
     | Cli level -> cli_json_desc_to_yojson {cli={level}}
     | CliErr level -> cli_err_json_desc_to_yojson {cli_err={level}}
-    | File (fname, lvl) ->
-      file_json_desc_to_yojson
-        {file= {filename=fname;level=lvl}}
-
+    | File (filename, level) -> file_json_desc_to_yojson {file= {filename;level}}
+    | RotatingFile (filename, level, max_kb,backup_count) ->
+      rotating_file_json_desc_to_yojson
+        {rotating_file = {filename;level;max_kb;backup_count}}
 end
 
 

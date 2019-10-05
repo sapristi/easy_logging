@@ -43,3 +43,7 @@ See documentation at https://sapristi.github.io/easy_logging/easy_logging
  - modified handlers type so that fully custom handlers can be instantiated
  - cleaned module API
  - log items contains a timestamp
+
+#### Version 0.6.2
+
+ - Added RotatingFile handlers : log file rotation based on file size

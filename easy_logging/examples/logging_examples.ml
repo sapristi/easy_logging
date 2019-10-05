@@ -29,7 +29,7 @@ logger_1#ldebug (lazy (heavy_calculation ()));
 
 (*
    {4 Log string}
-You might also want to log a [string], 
+You might also want to log a [string],
 *)
 let my_string = "such a beautiful string" in
 logger_1#sdebug my_string;
@@ -103,14 +103,14 @@ let h_config : Handlers.config =
       truncate= false;
       file_perms=0o664;
       date_prefix=None;
-      versioning=Some 2;
+      versioning=None;
       suffix=".log";
     } } in
 Logging.set_handlers_config h_config;;
 let logger_5 = Logging.make_logger
     "_4_ File logger demo" Debug [File ("test", Debug)];;
 logger_5#info "this is a message";
-assert (Sys.file_exists "test/test_00.log");
+assert (Sys.file_exists "test/test.log");
 (*
    {2 Subloggers}
     *)
@@ -137,45 +137,20 @@ logger_8#warning "is it json\"\nis it";
    {2 Filters}
     *)
 let logger_9 = Logging.get_logger "_9_ Handler filter" in
-logger_8#set_level Debug;
+logger_9#set_level Debug;
 let h = Handlers.make (Cli Debug) in
 Handlers.add_filter h (fun _ -> false);
 logger_9#warning "this is not printed"
+
 (*
-   {2 Custom handlers module example }
-
-   Replacing the DefaultHandlers module with your own.
-   
-Custom handlers example:
-    logs are stored in a given list ref
+   {2 Rotating File}
 *)
-module MyHandlers =
-struct
-  type t = string -> unit
-  type tag = unit
 
-  type log_formatter = Logging_internals.Logging_types.log_item -> string
-
-  type desc = string list ref
-  [@@deriving yojson]
-
-  let apply h (item : Logging_internals.Logging_types.log_item) = h item.msg
-  let make ?config:(config=())(_internal : desc) =
-    fun s -> _internal := s::!_internal
-
-  type config = unit
-  [@@deriving of_yojson]
-  let default_config = ()
-  let set_config = fun _ -> ()
-end
-
-module MyLogging = Logging_internals.MakeLogging(MyHandlers)
-
-let l = ref [];;
-let logger_2 = MyLogging.make_logger "_2_ Custom Handlers module" Debug [l];;
-logger_2#info "this is a message";
-assert (!l = ["this is a message"]);
-
-logger_2#set_level Warning;
-logger_2#debug "this message will not be passed to the handler";
-assert (!l = ["this is a message"]);
+let logger_10 = Logging.make_logger
+    "_10_rotating" Debug
+    [RotatingFile ("rotating", Debug, 2, 3)];;
+let c = ref 0 in
+for i=0 to 1000 do
+  logger_10#info "This is line # %i" !c;
+  incr c
+done

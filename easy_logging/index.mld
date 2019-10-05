@@ -100,32 +100,33 @@ A log item has type
         tags : string list      (* a list of tags *)
       } ]}
 
-{2 Defaults}
 
-{3:handlers Handlers}
-Three handler creation helper function are provided. They  instantiate handlers with a level of their own to filter messages :
+{2:handlers Handlers}
+Four handler creation helper function are provided. They  instantiate handlers with a level of their own to filter messages :
  - Cli handler: outputs colored messages to stdout.
-   {[ let h = Default_handlers.make (Cli Debug) ]}
+   {[ let h = Handlers.make (Cli Debug) ]}
  - CliErr handler: outputs colored messages to stderr.
-   {[ let h = Default_handlers.make (CliErr Debug) ]}
+   {[ let h = Handlers.make (CliErr Debug) ]}
  - File handler : outputs messages to a given file.
-   {[ let h = Default_handlers.make (File ("filename", Debug)) ]}
+   {[ let h = Handlers.make (File ("filename", Debug)) ]}
+ - RotatingFile handler : outputs messages to a given file. Takes as argument the max number of kb per log file, and the number of backup log files.
+   {[ let h = Handlers.make (RotatingFile ("filename", Debug, 65536, 3)) ]}
 
-Note that file handlers will write to files in the [logs] folder in the current path, creating it if it doesn't exist.
+Log file creation is governed by configuration values (setting up file name prefix/suffix, folder, file creation mode, etc...). The configuration can be specified when creating the handlers explicitely (like above), and a default configuration can be set in the Logging module.
 
 See more at {! Easy_logging.Handlers}
 
-{3:logger Loggers}
+{2:logger Loggers}
 
 See complete class documentation at {! Easy_logging.Logging.logger}
 
-{4 Creation}
+{3 Creation}
 
 A logger object can be created directly (in which case it will not be part of the logging tree)
 {[ let logger1 = new Logging.logger "my_logger1" ]}
 or through helper functions of the {!logging} module.
 
-{4 Usage}
+{3 Usage}
 
 A logger object has three methods for each of the log levels:
 
@@ -136,17 +137,20 @@ A logger object has three methods for each of the log levels:
  - one that takes a [string]
   {[ logger1#sdebug (to_string myvar);]}
 
-{3:logging The Logging module}
+{2:logging The Logging module}
 
 The {! Easy_logging.Logging} module is the application of [MakeLogging] over [Handlers].
 It provides two functions :
 
  - {[ val make_logger :
-    ?propagate:bool -> string -> log_level -> Default_handlers.desc list ]}
+    ?propagate:bool -> string -> log_level -> Handlers.desc list ]}
     Instantiates a logger with some paramters, and adds it to the logging tree.
 
  - {[ val get_logger : string -> logger ]}
  Returns a registered logger, or creates a new one if it doesn't exist.
+
+ - {[val set_handlers_config : Handlers.config -> unit]}
+  Sets the default handlers configuration, used when creating new handlers via [make_logger].
 
 {2:makelogging The MakeLogging functor }
 
