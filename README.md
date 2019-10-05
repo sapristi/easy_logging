@@ -35,3 +35,15 @@ See documentation at https://sapristi.github.io/easy_logging/easy_logging
 #### version 0.5.2
 
  - more file_handler options (timestamp, versioning)
+ 
+### Version 0.6
+
+ - Added more options to file handlers (automatic timestamps and/or versioning of file names)
+ - Added CliErr handler to output to stderr
+ - modified handlers type so that fully custom handlers can be instantiated
+ - cleaned module API
+ - log items contains a timestamp
+
+#### Version 0.6.2
+
+ - Added RotatingFile handlers : log file rotation based on file size
