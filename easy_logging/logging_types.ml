@@ -42,23 +42,3 @@ type log_item = {
   timestamp: float;
 }
 
-
-module type HandlersT =
-sig
-  (** Type of a handler *)
-  type t
-  (** Applies the handler to a [log_item] *)
-  val apply : t -> log_item -> unit
-
-  (** Type used to instantiate a handler*)
-  type desc
-
-  type config
-
-  (** default configuration used to instantiate handlers*)
-  val default_config : config
-
-  (** Instantiates a handler *)
-  val make : ?config:config -> desc -> t
-
-end
