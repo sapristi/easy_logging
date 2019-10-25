@@ -14,7 +14,7 @@ struct
 
   let show_level = Logging_types.show_level
   let pp_level = Logging_types.pp_level
-
+  let level_of_string = Logging_types.level_of_string
   let debug = ref false
 
   class logger
@@ -69,14 +69,14 @@ struct
             print_endline ( Printf.sprintf "[%s]/%s -- Treating msg \"%s\" at level %s"
                               name (show_level level)
                               (unwrap_fun msg) (show_level msg_level));
-
+          
           let generated_tags = List.map (fun x -> x ()) tag_generators in
           let item : log_item= {
             level = msg_level;
             logger_name = name;
             msg = unwrap_fun msg;
             tags=generated_tags @ tags;
-            timestamp = Fcalendar.to_unixfloat @@ Fcalendar.now ()
+            timestamp = Fcalendar.Precise.to_unixfloat @@ Fcalendar.Precise.now ()
           } in
           List.iter (fun handler ->
               H.apply handler item)

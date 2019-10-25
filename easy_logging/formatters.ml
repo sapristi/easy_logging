@@ -73,9 +73,10 @@ let format_json (item: log_item) =
   in
 
   Printf.sprintf
-    "{\"level\": \"%s\", \"logger_name\": \"%s\", \"message\": \"%s\", \"tags\": %s}"
+    "{\"timestamp\": %f, \"level\": \"%s\", \"logger_name\": \"%s\", \"message\": \"%s\", \"tags\": %s}"
+    (item.timestamp)
     (show_level item.level)
     (String.escaped item.logger_name)
     (String.escaped item.msg)
     (format_tags item.tags)
-(** JSON logs for software interoperability. *)
+(** JSON object. *)
