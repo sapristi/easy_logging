@@ -47,3 +47,10 @@ See documentation at https://sapristi.github.io/easy_logging/easy_logging
 #### Version 0.6.2
 
  - Added RotatingFile handlers : log file rotation based on file size
+
+### Version 0.7
+
+ - added tree_to_yojson function
+ - added level\_of\_string to Logging
+ - logger level is no more option type (NoLevel takes the role of None)
+ - fix json formatter
