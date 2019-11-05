@@ -14,7 +14,7 @@ struct
 
   let show_level = Logging_types.show_level
   let pp_level = Logging_types.pp_level
-
+  let level_of_string = Logging_types.level_of_string
   let debug = ref false
 
   class logger
@@ -24,7 +24,7 @@ struct
     object(self)
 
       val name = name
-      val mutable level : level option = None
+      val mutable level : level = NoLevel
       val mutable handlers : H.t list = []
       val parent : logger option = parent
       val mutable propagate = true
@@ -32,7 +32,7 @@ struct
       val mutable tag_generators : (unit -> string) list = []
 
       method set_level new_level =
-        level <- Some new_level
+        level <- new_level
       method add_handler h = handlers <- h::handlers
 
       method get_handlers = handlers
@@ -42,9 +42,12 @@ struct
 
       method effective_level : level =
         match level, parent  with
-        | None, None  -> NoLevel
-        | None, Some p -> p#effective_level
-        | Some l,_ -> l
+        | NoLevel, None  -> NoLevel
+        | NoLevel, Some p -> p#effective_level
+        | l,_ -> l
+
+      method real_level = level
+      method name = name
 
       method get_handlers_propagate =
         if !debug
@@ -64,18 +67,16 @@ struct
           if !debug
           then
             print_endline ( Printf.sprintf "[%s]/%s -- Treating msg \"%s\" at level %s"
-                              name (match level with
-                                  | None -> "None"
-                                  | Some lvl -> (show_level lvl))
+                              name (show_level level)
                               (unwrap_fun msg) (show_level msg_level));
-
+          
           let generated_tags = List.map (fun x -> x ()) tag_generators in
           let item : log_item= {
             level = msg_level;
             logger_name = name;
             msg = unwrap_fun msg;
             tags=generated_tags @ tags;
-            timestamp = Fcalendar.to_unixfloat @@ Fcalendar.now ()
+            timestamp = Fcalendar.Precise.to_unixfloat @@ Fcalendar.Precise.now ()
           } in
           List.iter (fun handler ->
               H.apply handler item)
@@ -137,6 +138,19 @@ struct
       let root = root_logger
     end)
 
+  let rec _tree_to_yojson tree =
+    match tree with
+    | Infra.Node (logger, children_map) ->
+      let children_json = Infra.SMap.to_seq children_map
+                     |> Seq.map (fun (a,b) -> _tree_to_yojson b)
+                     |> List.of_seq in
+
+      `Assoc ["name", `String logger#name;
+              "level", `String (show_level logger#real_level);
+              "children", `List children_json]
+  let tree_to_yojson () =
+    _tree_to_yojson Infra.internal.data
+  
 
   let handlers_config = ref H.default_config
   let set_handlers_config c = handlers_config := c

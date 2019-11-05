@@ -21,7 +21,7 @@ sig
       val name : string
 
       (** Value used to filter log messages.*)
-      val mutable level : level option
+      val mutable level : level
 
       (** Registered handlers for this logger. *)
       val mutable handlers : Handlers.t list
@@ -83,6 +83,8 @@ sig
 
       (** {3 Other methods} *)
 
+      method name: string
+      method real_level : level
 
       (** Sets the log level of the logger instance. *)
       method set_level : level  -> unit

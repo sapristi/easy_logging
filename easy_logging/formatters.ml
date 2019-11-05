@@ -15,11 +15,17 @@ let reduce (f: 'a -> 'a -> 'a) (l: 'a list) (d: 'a) =
   | [] -> d
   | h::t -> aux t h
 
+let rec join (sep: string) (l : string list) =
+  match l with
+  | [] -> ""
+  | h :: [] -> h
+  | h :: t -> h ^ sep ^ (join sep t)
+
 let format_tags (tags : string list) =
   match tags with
   | [] -> ""
   | _ ->
-    let elems_str = reduce (fun s e -> s ^ " | " ^ e) tags ""
+    let elems_str = join  " | " tags
     in "[" ^ elems_str ^ "] "
 
 (** Auxiliary functions. *)
@@ -62,20 +68,19 @@ let format_color (item : log_item) =
 (** Human readable log messages, with level depending colors.*)
 
 let format_json (item: log_item) =
-  let format_tags tags =
-    match tags with
-    | [] -> "[]"
-    | _ ->
-      let elems_str = reduce (fun s e ->
-          s^", \""^(String.escaped e)^"\"") tags ""
-      in "[" ^ elems_str ^ "] "
+  let format_tags_json tags =
+    let elems_str =
+      join ", "
+      (List.map (fun e ->  "\"" ^ e ^ "\"") tags)
+    in "[" ^ elems_str ^ "] "
 
   in
 
   Printf.sprintf
-    "{\"level\": \"%s\", \"logger_name\": \"%s\", \"message\": \"%s\", \"tags\": %s}"
+    "{\"timestamp\": %f, \"level\": \"%s\", \"logger_name\": \"%s\", \"message\": \"%s\", \"tags\": %s}"
+    (item.timestamp)
     (show_level item.level)
     (String.escaped item.logger_name)
     (String.escaped item.msg)
-    (format_tags item.tags)
-(** JSON logs for software interoperability. *)
+    (format_tags_json item.tags)
+(** JSON object. *)

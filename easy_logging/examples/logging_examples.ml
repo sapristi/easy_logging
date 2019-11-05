@@ -131,8 +131,8 @@ and h = Handlers.make (Cli Debug) in
 logger_8#set_level Debug;
 h.fmt <- Logging_internals.Formatters.format_json;
 logger_8#add_handler h;
-logger_8#info "it is ok";
-logger_8#warning "is it json\"\nis it";
+logger_8#info ~tags:["t1"]"it is ok";
+logger_8#warning ~tags:["t1"; "t2"] "is it json\"\nis it";
 (*
    {2 Filters}
     *)

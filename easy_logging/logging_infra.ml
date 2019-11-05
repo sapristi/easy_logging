@@ -14,7 +14,6 @@ struct
 
   type t = Node of D.t * t SMap.t
 
-
   type _t = {mutable data : t}
 
   let internal = {data= Node (D.root, SMap.empty )}
@@ -22,7 +21,6 @@ struct
   let make_part_name a b =
     let open Printf in
     if a = "" then b else sprintf "%s.%s" a b
-
 
   let get s =
     let path = String.split_on_char '.' s in
