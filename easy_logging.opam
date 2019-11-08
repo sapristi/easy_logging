@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "easy_logging"
-version: "0.7"
+version: "0.7.1"
 synopsis: "Module to log messages. Aimed at being both powerful and easy to use"
 maintainer: "mathiasmillet@gmail.com"
 authors: "Mathias Millet"
