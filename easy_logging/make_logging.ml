@@ -141,16 +141,15 @@ struct
   let rec _tree_to_yojson tree =
     match tree with
     | Infra.Node (logger, children_map) ->
-      let children_json = Infra.SMap.to_seq children_map
-                     |> Seq.map (fun (a,b) -> _tree_to_yojson b)
-                     |> List.of_seq in
-
+      let children_json = Infra.SMap.fold
+          (fun _ child l -> (_tree_to_yojson child) :: l)
+          children_map []
+          in
       `Assoc ["name", `String logger#name;
               "level", `String (show_level logger#real_level);
               "children", `List children_json]
   let tree_to_yojson () =
     _tree_to_yojson Infra.internal.data
-  
 
   let handlers_config = ref H.default_config
   let set_handlers_config c = handlers_config := c

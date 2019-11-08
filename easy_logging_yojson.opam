@@ -18,7 +18,7 @@ depends: [
 ]
 build: [
   ["dune" "build" "-p" name "-j" jobs]
-  ["dune" "runtest" "-p" name "conf_loader_modules/yojson"] {with-test}
+  ["dune" "runtest" "-p" name "-j" jobs "conf_loader_modules/yojson"] {with-test}
 ]
 
 description: """Provides deserialisation of logging configuration 
