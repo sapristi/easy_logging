@@ -1,6 +1,6 @@
 {0:top easy_logging}
 
-{1 Easy logging }
+{1 Easy logging %%VERSION%%}
 
    Logging library inspired by the Python logging module.
 
@@ -174,4 +174,12 @@ See {{:examples.html} the examples page} for more examples.
 {- {! Easy_logging__Logging_infra}}
 {- {! Easy_logging__Logging_types}}
 {- {! Easy_logging__Make_logging}}
+}
+
+{1 Reference }
+
+{ul
+  {- Author: %%PKG_AUTHORS%%}
+  {- Homepage:  %%PKG_HOMEPAGE%%}
+  {- Repo: %%PKG_REPO%%}
 }
