@@ -32,7 +32,7 @@ class logger :
     val name : string
 
     (** Value used to filter log messages.*)
-    val mutable level : level option
+    val mutable level : level
 
     (** Registered handlers for this logger. *)
     val mutable handlers : Handlers.t list
