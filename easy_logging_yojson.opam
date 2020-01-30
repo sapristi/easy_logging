@@ -1,11 +1,6 @@
-version: "0.7.1-5-ge722029-dirty"
-version: "0.7.1-5-ge722029-dirty"
-version: "0.7.1-5-ge722029"
 opam-version: "2.0"
 name: "easy_logging_yojson"
-version: "0.7.1"
 synopsis: "Configuration loader for easy_logging with yojson backend"
-
 maintainer: "mathiasmillet@gmail.com"
 authors: "Mathias Millet"
 license: "GPL"
@@ -20,11 +15,14 @@ depends: [
   "easy_logging" {= version}
 ]
 build: [
+  ["dune" "subst"] {pinned}
   ["dune" "build" "-p" name "-j" jobs]
+]
+run-test: [
   ["dune" "runtest" "-p" name "-j" jobs "conf_loader_modules/yojson"] {with-test}
 ]
 
-description: """Provides deserialisation of logging configuration 
+description: """Provides deserialisation of logging configuration
 (loggers instantation and handlers parameters) from json,
 using ppx_deriving_yojson.
 
