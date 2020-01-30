@@ -47,7 +47,7 @@ class logger
     val name = name
 
     (** Value used to filter log messages.*)
-    val mutable level : level option = None
+    val mutable level : level = NoLevel
 
     (** Registered handlers for this logger. *)
     val mutable handlers : Handlers.t list = []
@@ -63,7 +63,7 @@ class logger
     val mutable tag_generators : (unit -> string) list = []
 
     method set_level new_level =
-      level <- Some new_level
+      level <- new_level
     method add_handler h = handlers <- h::handlers
 
     method get_handlers = handlers
@@ -73,9 +73,9 @@ class logger
 
     method effective_level : level =
       match level, parent  with
-      | None, None  -> NoLevel
-      | None, Some p -> p#effective_level
-      | Some l,_ -> l
+      | NoLevel, None  -> NoLevel
+      | NoLevel, Some p -> p#effective_level
+      | l,_ -> l
 
     method get_handlers_propagate =
       if !debug
@@ -95,9 +95,7 @@ class logger
         if !debug
         then
           print_endline ( Printf.sprintf "[%s]/%s -- Treating msg \"%s\" at level %s"
-                            name (match level with
-                                | None -> "None"
-                                | Some lvl -> (show_level lvl))
+                            name (show_level level)
                             (unwrap_fun msg) (show_level msg_level));
 
         let generated_tags = List.map (fun x -> x ()) tag_generators in
