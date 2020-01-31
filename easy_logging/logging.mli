@@ -18,6 +18,7 @@
 
 open Logging_types
 
+type level = Logging_types.level
 val level_of_string : string -> (level, string) result
 
 
