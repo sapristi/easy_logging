@@ -30,6 +30,8 @@ type level = Logging_types.level =
 
 let show_level = Logging_types.show_level
 let pp_level = Logging_types.pp_level
+let level_of_string = Logging_types.level_of_string
+
 
 let debug = ref false
 
