@@ -1,3 +1,19 @@
+(*
+    This file is part of easy_logging.
+
+    easy_logging is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    easy_logging is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with easy_logging.  If not, see <https://www.gnu.org/licenses/>.
+*)
 
 
 (** Possible level of a log item. *)
@@ -42,23 +58,3 @@ type log_item = {
   timestamp: float;
 }
 
-
-module type HandlersT =
-sig
-  (** Type of a handler *)
-  type t
-  (** Applies the handler to a [log_item] *)
-  val apply : t -> log_item -> unit
-
-  (** Type used to instantiate a handler*)
-  type desc
-
-  type config
-
-  (** default configuration used to instantiate handlers*)
-  val default_config : config
-
-  (** Instantiates a handler *)
-  val make : ?config:config -> desc -> t
-
-end

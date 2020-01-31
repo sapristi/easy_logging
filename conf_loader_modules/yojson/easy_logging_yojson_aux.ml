@@ -16,18 +16,6 @@ struct
 end
 
 open Logging_types
-module type HandlersT =
-sig
-  include HandlersT
-
-  val desc_of_yojson :  Yojson.Safe.t -> (desc,string) result
-  val desc_to_yojson : desc -> Yojson.Safe.t
-
-  val config_of_yojson : Yojson.Safe.t -> (config,string) result
-  val config_to_yojson : config -> Yojson.Safe.t
-end
-
-
 module Handlers =
 struct
 
@@ -100,19 +88,19 @@ struct
 end
 
 
-module MakeLogging (H : HandlersT) =
-struct
-  include E.Logging_internals.MakeLogging(H)
+module Logging = struct
+  include E.Logging
+
   type config_logger = {
     name: string;
     level : level; [@default NoLevel]
-    handlers : H.desc list; [@default [] ]
+    handlers : Handlers.desc list; [@default [] ]
     propagate : bool; [@default true]
   } [@@deriving of_yojson]
 
 
   type global_config = {
-    handlers_config : H.config; [@default H.default_config] [@key "handlers"]
+    handlers_config : Handlers.config; [@default Handlers.default_config] [@key "handlers"]
     loggers_config : config_logger list [@key "loggers"]
   } [@@deriving of_yojson]
 

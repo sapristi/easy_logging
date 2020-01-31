@@ -12,30 +12,18 @@ See documentation at https://sapristi.github.io/easy_logging/easy_logging
 
 ## Changelog
 
-### Version 0.4
+### Version 0.8
 
- * printf style logging is now the default
- * simplifed configuration in case of multiple loggers (and closer to the python module) :
-   the loggers form a tree (based on their name, dots indicating descendence)
-    - log items are passed to the handlers of a logger’s ancestors (so that few handlers need initialisation) (possible to override)
-    - loggers inherit the level of their ancestor if not set explicitely
- * an additional package easy_logging_yojson provides initialisation of loggers from the json format (with ppx_deriving_yojson), so that configuration can be fully done outside the code.
+  - General cleanup
+  - Some refactoring (removed MakeLogging functor)
 
-### Version 0.5
+### Version 0.7
 
- * Renamed the Default_handlers module to handlers
- * tag type in Handlers is now string (was unit)
- * added the possibility to add filters to handlers
- * added tag_generator feature to loggers, to automatically add tags to all messages passed to a logger
+ - added tree_to_yojson function
+ - added level\_of\_string to Logging
+ - logger level is no more option type (NoLevel takes the role of None)
+ - fix json formatter
 
-#### version 0.5.1
-
- * log_level type is direcly accessible from Easy_logging and Easy_logging_yojson modules
- 
-#### version 0.5.2
-
- - more file_handler options (timestamp, versioning)
- 
 ### Version 0.6
 
  - Added more options to file handlers (automatic timestamps and/or versioning of file names)
@@ -48,9 +36,26 @@ See documentation at https://sapristi.github.io/easy_logging/easy_logging
 
  - Added RotatingFile handlers : log file rotation based on file size
 
-### Version 0.7
+### Version 0.5
 
- - added tree_to_yojson function
- - added level\_of\_string to Logging
- - logger level is no more option type (NoLevel takes the role of None)
- - fix json formatter
+ * Renamed the Default_handlers module to handlers
+ * tag type in Handlers is now string (was unit)
+ * added the possibility to add filters to handlers
+ * added tag_generator feature to loggers, to automatically add tags to all messages passed to a logger
+
+#### version 0.5.1
+
+ * log_level type is direcly accessible from Easy_logging and Easy_logging_yojson modules
+
+#### version 0.5.2
+
+ - more file_handler options (timestamp, versioning)
+
+### Version 0.4
+
+ * printf style logging is now the default
+ * simplifed configuration in case of multiple loggers (and closer to the python module) :
+   the loggers form a tree (based on their name, dots indicating descendence)
+    - log items are passed to the handlers of a logger’s ancestors (so that few handlers need initialisation) (possible to override)
+    - loggers inherit the level of their ancestor if not set explicitely
+ * an additional package easy_logging_yojson provides initialisation of loggers from the json format (with ppx_deriving_yojson), so that configuration can be fully done outside the code.
