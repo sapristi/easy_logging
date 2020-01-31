@@ -15,8 +15,7 @@
     along with easy_logging.  If not, see <https://www.gnu.org/licenses/>.
 *)
 
-
-open Logging_types
+include module type of Logging_types
 
 val debug : bool ref
 class logger :
@@ -24,7 +23,7 @@ class logger :
   string ->
   object
 
-    (** {3 Attributes} *)
+    (** {1 Attributes} *)
 
     (** Name of the logger:
         - can be displayed in log messages.
@@ -43,57 +42,15 @@ class logger :
     (** Whether messages passed to this logger are propagated to its ancestors' handlers.*)
     val propagate : bool
 
-    (** The list of functions used for dynamic tagging of messages *)
+    (** The list of functions used for dynamic tagging of messages. *)
     val mutable tag_generators : (unit -> string) list
 
 
-    (** {3 Classic logging Methods}
-        Each of these methods takes an optional [string list] of tags, then a set of parameters the way a printf function does. If the log level of the instance is low enough, a log item will be created theb passed to the handlers.
 
-        Example :
-        {[logger#warning "Unexpected value: %s" (to_string my_value)]}
-    *)
+   (** {1 Getters and setters} *)
 
-    method flash : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
-    method error : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
-    method warning : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
-    method info : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
-    method trace : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
-    method debug : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
-
-
-    (** {3 Lazy logging methods}
-        Each of these methods takes a [string lazy_t] as an input (as well as the optional tags. If the log level of the instance is low enough, the lazy value will forced into a [string], a log item will be created then passed to the handlers.
-
-        Example:
-        {[logger#ldebug (lazy (heavy_calculation () ))]}
-    *)
-
-    method ldebug : ?tags:string list -> string lazy_t -> unit
-    method ltrace : ?tags:string list -> string lazy_t -> unit
-    method linfo : ?tags:string list -> string lazy_t -> unit
-    method lwarning : ?tags:string list -> string lazy_t -> unit
-    method lerror : ?tags:string list -> string lazy_t -> unit
-    method lflash : ?tags:string list -> string lazy_t -> unit
-
-    (** {3 String logging methods}
-        Each of these methods takes a [string] as an input (as well as the optional tags).
-
-        Example:
-        {[logger#sdebug string_variable]}
-    *)
-
-
-    method sdebug : ?tags:string list -> string -> unit
-    method strace : ?tags:string list -> string -> unit
-    method sinfo : ?tags:string list -> string -> unit
-    method swarning : ?tags:string list -> string -> unit
-    method serror : ?tags:string list -> string -> unit
-    method sflash : ?tags:string list -> string -> unit
-
-
-    (** {3 Other methods} *)
-
+    (** Returns the logger name. *)
+    method name : string
 
     (** Sets the log level of the logger instance. *)
     method set_level : level  -> unit
@@ -110,24 +67,80 @@ class logger :
     (** Sets the propagate attribute, which decides whether messages passed to this logger are propagated to its ancestors' handlers. *)
     method set_propagate : bool -> unit
 
-    (** {4 Internal methods} *)
-
     (** Returns the list of handlers of the logger, recursing with parents handlers
         if propagate is true*)
     method get_handlers_propagate : Handlers.t list
 
     (** Returns this logger level if it is not [None], else searches amongst ancestors for the first defined level; returns [NoLevel] if no level can be found. *)
     method effective_level : level
+
+    (** Returns the logger internal level.*)
+    method internal_level : level
+
+
+    (** {1 Classic logging Methods}
+        Each of these methods takes an optional [string list] of tags, then a set of parameters the way a printf function does. If the log level of the instance is low enough, a log item will be created theb passed to the handlers.
+
+        Example :
+        {[logger#warning "Unexpected value: %s" (to_string my_value)]}
+    *)
+
+    method flash : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
+    method error : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
+    method warning : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
+    method info : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
+    method trace : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
+    method debug : 'a. ?tags:string list -> ('a, unit, string, unit) format4 -> 'a
+
+
+    (** {1 Lazy logging methods}
+        Each of these methods takes a [string lazy_t] as an input (as well as the optional tags. If the log level of the instance is low enough, the lazy value will forced into a [string], a log item will be created then passed to the handlers.
+
+        Example:
+        {[logger#ldebug (lazy (heavy_calculation () ))]}
+    *)
+
+    method ldebug : ?tags:string list -> string lazy_t -> unit
+    method ltrace : ?tags:string list -> string lazy_t -> unit
+    method linfo : ?tags:string list -> string lazy_t -> unit
+    method lwarning : ?tags:string list -> string lazy_t -> unit
+    method lerror : ?tags:string list -> string lazy_t -> unit
+    method lflash : ?tags:string list -> string lazy_t -> unit
+
+
+    (** {1 String logging methods}
+        Each of these methods takes a [string] as an input (as well as the optional tags).
+
+        Example:
+        {[logger#sdebug string_variable]}
+    *)
+
+    method sdebug : ?tags:string list -> string -> unit
+    method strace : ?tags:string list -> string -> unit
+    method sinfo : ?tags:string list -> string -> unit
+    method swarning : ?tags:string list -> string -> unit
+    method serror : ?tags:string list -> string -> unit
+    method sflash : ?tags:string list -> string -> unit
+
   end
 
-(** [make_logger name level handlers_descs]
-    creates a new logger instance from the given arguments,
-    then register it internally, and returns it.  *)
+(** Returns a registered logger by name, creating it if does not exist. *)
+val get_logger : string -> logger
+
+(** Convenience method used to fetch a logger and initialize it.
+
+    [make_logger name level handlers_descs] calls get_logger with the given [name],
+    then sets its [level], adds the [handlers], and then returns it.
+
+    Calling this function multiple times with the same name will keep adding handlers.
+*)
 val make_logger :
   ?propagate:bool -> string -> level  -> Handlers.desc list -> logger
 
-(** Returns a registered logger by name. *)
-val get_logger : string -> logger
+
 
 val handlers_config : Handlers.config ref
 val set_handlers_config : Handlers.config -> unit
+
+(** Returns the logging tree as yojson, with logger name and level as node data. *)
+val tree_to_yojson: unit -> ([> `Assoc of (string * [> `List of 'a list | `String of string ]) list ] as 'a)

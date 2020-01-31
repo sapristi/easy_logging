@@ -16,20 +16,9 @@
 *)
 
 
-open Logging_types
+include Logging_types
 open CalendarLib
 
-type level = Logging_types.level =
-  | Debug
-  | Trace
-  | Info
-  | Warning
-  | Error
-  | Flash
-  | NoLevel
-
-let show_level = Logging_types.show_level
-let pp_level = Logging_types.pp_level
 
 let debug = ref false
 
@@ -39,31 +28,20 @@ class logger
   =
   object(self)
 
-    (** {3 Attributes} *)
-
-    (** Name of the logger:
-        - can be displayed in log messages.
-        - defines the logger place in the logging tree. *)
     val name = name
 
-    (** Value used to filter log messages.*)
     val mutable level : level = NoLevel
 
-    (** Registered handlers for this logger. *)
     val mutable handlers : Handlers.t list = []
 
-    (** The parent of this logger. *)
     val parent : logger option = parent
 
-    (** Whether messages passed to this logger are propagated to its ancestors' handlers.*)
     val mutable propagate = true
 
-
-    (** The list of functions used for dynamic tagging of messages *)
     val mutable tag_generators : (unit -> string) list = []
 
-    method set_level new_level =
-      level <- new_level
+    method name = name
+    method set_level new_level = level <- new_level
     method add_handler h = handlers <- h::handlers
 
     method get_handlers = handlers
@@ -76,6 +54,8 @@ class logger
       | NoLevel, None  -> NoLevel
       | NoLevel, Some p -> p#effective_level
       | l,_ -> l
+
+    method internal_level = level
 
     method get_handlers_propagate =
       if !debug
@@ -148,6 +128,7 @@ class logger
     method ltrace ?tags:(tags=[]) =  self#_log_msg Lazy.force tags Trace
     method ldebug ?tags:(tags=[]) = self#_log_msg Lazy.force tags Debug
 
+
     method sflash ?tags:(tags=[]) = self#_log_msg (fun x -> x) tags Flash
     method serror ?tags:(tags=[]) = self#_log_msg (fun x -> x) tags Error
     method swarning ?tags:(tags=[]) = self#_log_msg (fun x -> x) tags Warning
@@ -179,4 +160,18 @@ let make_logger ?propagate:(propagate=true) name lvl hdescs  =
   l#set_propagate propagate;
   List.iter (fun hdesc -> l#add_handler (Handlers.make ~config:(!handlers_config) hdesc)) hdescs;
   l
+
+
+let rec _tree_to_yojson tree =
+  match tree with
+  | Infra.Node (logger, children_map) ->
+    let children_json = Infra.SMap.to_seq children_map
+                        |> Seq.map (fun (a,b) -> _tree_to_yojson b)
+                        |> List.of_seq in
+
+    `Assoc ["name", `String logger#name;
+            "level", `String (show_level logger#internal_level);
+            "children", `List children_json]
+let tree_to_yojson () =
+  _tree_to_yojson Infra.internal.data
 
