@@ -134,3 +134,5 @@ val get_logger : string -> logger
 
 val handlers_config : Handlers.config ref
 val set_handlers_config : Handlers.config -> unit
+
+val tree_to_yojson: unit -> ([> `Assoc of (string * [> `List of 'a list | `String of string ]) list ] as 'a)
