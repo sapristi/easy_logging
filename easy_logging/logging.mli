@@ -118,6 +118,9 @@ class logger :
 
     (** Returns this logger level if it is not [None], else searches amongst ancestors for the first defined level; returns [NoLevel] if no level can be found. *)
     method effective_level : level
+
+    method name : string
+    method real_level : level
   end
 
 (** [make_logger name level handlers_descs]
