@@ -18,7 +18,15 @@
 
 open Logging_types
 
-type level = Logging_types.level
+type level = Logging_types.level = 
+  | Debug
+  | Trace
+  | Info
+  | Warning
+  | Error
+  | Flash
+  | NoLevel
+
 val level_of_string : string -> (level, string) result
 
 
