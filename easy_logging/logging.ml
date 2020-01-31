@@ -77,6 +77,9 @@ class logger
       | NoLevel, Some p -> p#effective_level
       | l,_ -> l
 
+    method name = name
+    method real_level = level
+
     method get_handlers_propagate =
       if !debug
       then
@@ -179,4 +182,18 @@ let make_logger ?propagate:(propagate=true) name lvl hdescs  =
   l#set_propagate propagate;
   List.iter (fun hdesc -> l#add_handler (Handlers.make ~config:(!handlers_config) hdesc)) hdescs;
   l
+
+
+let rec _tree_to_yojson tree =
+  match tree with
+  | Infra.Node (logger, children_map) ->
+    let children_json = Infra.SMap.to_seq children_map
+                        |> Seq.map (fun (a,b) -> _tree_to_yojson b)
+                        |> List.of_seq in
+
+    `Assoc ["name", `String logger#name;
+            "level", `String (show_level logger#real_level);
+            "children", `List children_json]
+let tree_to_yojson () =
+  _tree_to_yojson Infra.internal.data
 
