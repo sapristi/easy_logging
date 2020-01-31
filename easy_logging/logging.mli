@@ -18,7 +18,7 @@
 
 open Logging_types
 
-val level_of_string : string -> level
+val level_of_string : string -> (level, string) result
 
 
 val debug : bool ref
