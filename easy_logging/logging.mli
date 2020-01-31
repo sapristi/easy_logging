@@ -18,6 +18,9 @@
 
 open Logging_types
 
+val level_of_string : string -> level
+
+
 val debug : bool ref
 class logger :
   ?parent:logger option ->
