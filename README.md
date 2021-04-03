@@ -12,10 +12,12 @@ See documentation at https://sapristi.github.io/easy_logging/easy_logging
 
 ## Changelog
 
-### Version 0.8
+### Version 0.8.1
 
-  - General cleanup
-  - Some refactoring (removed MakeLogging functor)
+ - General cleanup
+ - Some refactoring (removed MakeLogging functor)
+ - Relax `ppx_deriving` dependency requirements.
+ - Switch to Mozilla Public License 2.0
 
 ### Version 0.7
 
