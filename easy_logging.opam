@@ -4,19 +4,19 @@ version: "0.8.1"
 synopsis: "Module to log messages. Aimed at being both powerful and easy to use"
 maintainer: "mathiasmillet@gmail.com"
 authors: "Mathias Millet"
-license: "GPL"
+license: "MPL-2.0"
 homepage: "https://sapristi.github.io/easy_logging/"
 bug-reports: "https://github.com/sapristi/easy_logging/issues"
 dev-repo: "git+https://github.com/sapristi/easy_logging.git"
 depends: [
-  "ocaml" {>= "4.04.0"}
+  "ocaml" {>= "4.07.0"}
   "dune" {>= "1.8"}
   "calendar" {>= "2.0"}
 ]
 build: [
   ["dune" "subst"] {pinned}
   ["dune" "build" "-p" name "-j" jobs]
-  ["dune" "runtest" "-p" name "-j" jobs] {with-test}
+  ["dune" "runtest" "-p" name "-j" jobs "easy_logging"] {with-test}
 ]
 
 description: """Logging infrastructure inspired by the Python logging module.

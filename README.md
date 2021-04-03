@@ -18,6 +18,7 @@ See documentation at https://sapristi.github.io/easy_logging/easy_logging
  - Some refactoring (removed MakeLogging functor)
  - Relax `ppx_deriving` dependency requirements.
  - Switch to Mozilla Public License 2.0
+ - Minimal version of OCaml is not 4.07
 
 ### Version 0.7
 
