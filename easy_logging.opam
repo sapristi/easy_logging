@@ -14,7 +14,6 @@ depends: [
   "calendar" {>= "2.0"}
 ]
 build: [
-  ["dune" "subst"] {pinned}
   ["dune" "build" "-p" name "-j" jobs]
   ["dune" "runtest" "-p" name "-j" jobs "easy_logging"] {with-test}
 ]
