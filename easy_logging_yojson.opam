@@ -16,7 +16,6 @@ depends: [
   "easy_logging" {= version}
 ]
 build: [
-  ["dune" "subst"] {pinned}
   ["dune" "build" "-p" name "-j" jobs]
   ["dune" "runtest" "-p" name "-j" jobs "conf_loader_modules/yojson"] {with-test}
 ]
