@@ -12,7 +12,7 @@ depends: [
   "ocaml" {>= "4.07.0"}
   "dune" {>= "1.8"}
   "ppx_deriving"{>= "4.0"}
-  "ppx_deriving_yojson"
+  "ppx_deriving_yojson"{>="3.0"}
   "easy_logging" {= version}
 ]
 build: [
